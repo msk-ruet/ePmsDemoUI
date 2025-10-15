@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Management Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#1e40af',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar {
+            background-color: #1e3a8a;
+            color: white;
+        }
+        .sidebar a:not(.active-nav-item):hover {
+            background-color: #1e40af;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 flex flex-col">
+            <div class="p-4 flex items-center justify-center border-b border-blue-700">
+                <h1 class="text-xl font-bold">Logo</h1>
+            </div>
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-tachometer-alt mr-3"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg" id="kraNavBtn">
+                            <i class="fas fa-user-clock mr-3"></i>
+                            <span>Attendance</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-calendar-alt mr-3"></i>
+                            <span>Leave</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-user-check mr-3"></i>
+                            <span>Employee Visit</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.html" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-chart-line mr-3"></i>
+                            <span>ePMS</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-address-book mr-3"></i>
+                            <span>Employee Contact</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="p-4 border-t border-blue-700">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                        <span class="font-bold">AD</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">Admin User</p>
+                        <p class="text-xs text-blue-200">admin@company.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between px-4 lg:px-6 py-4">
+                    <div class="flex items-center">
+                        <h2 class="text-lg lg:text-xl font-semibold text-gray-800">Welcome to ESS</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="p-2 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span class="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">5</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center">
+                            <img class="h-8 w-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Supervisor+User&background=0D8ABC&color=fff" alt="Supervisor User">
+                            <span class="ml-2 text-sm font-medium text-gray-700 hidden md:block">Admin User</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="flex-1 overflow-y-auto p-4 lg:p-8">
+                <div class="container mx-auto">
+                    <header class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-800">Organizational Goals</h1>
+                    </header>
+
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <!-- Left Panel - Goals List -->
+                        <div class="w-full lg:w-1/3 bg-white rounded-lg shadow-md p-6">
+                            <div class="mb-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-xl font-semibold text-gray-700">All Goals (3)</h2>
+                                    <button id="create-goal-btn" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg flex items-center">
+                                        <i class="fas fa-plus mr-2"></i> New Goal
+                                    </button>
+                                </div>
+                                
+                                <!-- Status Tabs -->
+                                <div class="flex border-b border-gray-200 mb-4">
+                                    <button class="status-tab active px-4 py-2 font-medium text-primary border-b-2 border-primary">All</button>
+                                    <button class="status-tab px-4 py-2 font-medium text-gray-500 hover:text-gray-700">In Progress</button>
+                                    <button class="status-tab px-4 py-2 font-medium text-gray-500 hover:text-gray-700">Completed</button>
+                                </div>
+                            </div>
+
+                            <!-- Goals List -->
+                            <div id="goals-list" class="space-y-4">
+                                <!-- Goal cards will be dynamically inserted here -->
+                            </div>
+                        </div>
+
+                        <!-- Right Panel - Goal Details -->
+                        <div class="w-full lg:w-2/3 bg-white rounded-lg shadow-md p-6">
+                            <div id="goal-details" class="h-full">
+                                <div class="flex flex-col items-center justify-center h-full text-center text-gray-500">
+                                    <i class="fas fa-bullseye text-5xl mb-4"></i>
+                                    <h3 class="text-xl font-medium mb-2">Select a Goal</h3>
+                                    <p>Click on a goal from the list to view its details</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Goal Modal -->
+    <div id="create-goal-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <h3 id="modal-title" class="text-xl font-semibold text-gray-800 mb-4">Create New Goal</h3>
+                <form id="create-goal-form">
+                    <input type="hidden" id="goal-id">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="goal-name">Goal Name</label>
+                        <input type="text" id="goal-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="goal-description">Description</label>
+                        <textarea id="goal-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="goal-start-date">Start Date</label>
+                            <input type="date" id="goal-start-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2" for="goal-end-date">End Date</label>
+                            <input type="date" id="goal-end-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" required>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="goal-departments">Assign to Departments</label>
+                        <select id="goal-departments" multiple class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="Engineering">Engineering</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="HR">HR</option>
+                            <option value="Sales">Sales</option>
+                            <option value="Finance">Finance</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple departments</p>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancel-create-goal" class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100">Cancel</button>
+                        <button type="submit" id="save-goal-btn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Sub-Goal Modal -->
+    <div id="add-subgoal-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Add Sub-Goal</h3>
+                <form id="add-subgoal-form">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="subgoal-name">Sub-Goal Name</label>
+                        <input type="text" id="subgoal-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="subgoal-owner">Assign to Department Head</label>
+                        <select id="subgoal-owner" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="">Select Department Head</option>
+                            <option value="Charlie Brown">Charlie Brown (Engineering)</option>
+                            <option value="Diana Prince">Diana Prince (Marketing)</option>
+                            <option value="John Smith">John Smith (HR)</option>
+                            <option value="Sarah Johnson">Sarah Johnson (Sales)</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancel-add-subgoal" class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="add-task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Add Task</h3>
+                <form id="add-task-form">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="task-name">Task Name</label>
+                        <input type="text" id="task-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="task-assignee">Assign to</label>
+                        <select id="task-assignee" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="">Select Assignee</option>
+                            <option value="Charlie Brown">Charlie Brown</option>
+                            <option value="Diana Prince">Diana Prince</option>
+                            <option value="John Smith">John Smith</option>
+                            <option value="Sarah Johnson">Sarah Johnson</option>
+                            <option value="Mike Johnson">Mike Johnson</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancel-add-task" class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        const goals = [
+            {
+                id: 1,
+                name: "Launch New Platform Q3 2024",
+                description: "Target: Successfully launch the new customer platform by end of Q3.",
+                departments: ["Engineering", "Marketing"],
+                startDate: "2024-07-01",
+                endDate: "2024-09-30",
+                progress: 66,
+                status: "in-progress",
+                subgoals: [
+                    { 
+                        id: 1, 
+                        name: "Develop Core Features", 
+                        owner: "Charlie Brown", 
+                        expanded: false,
+                        tasks: [
+                            { id: 1, name: "Scope feature requirements", completed: true, assignee: "Charlie Brown" },
+                            { id: 2, name: "Develop authentication module", completed: true, assignee: "Charlie Brown" },
+                            { id: 3, name: "Build dashboard UI", completed: true, assignee: "Charlie Brown" }
+                        ]
+                    },
+                    { 
+                        id: 2, 
+                        name: "Marketing & Go-to-Market Strategy", 
+                        owner: "Diana Prince", 
+                        expanded: false,
+                        tasks: [
+                            { id: 1, name: "Define target audience", completed: true, assignee: "Diana Prince" },
+                            { id: 2, name: "Create launch campaign assets", completed: true, assignee: "Diana Prince" },
+                            { id: 3, name: "Plan social media push", completed: false, assignee: "Diana Prince" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                name: "Improve Customer Satisfaction",
+                description: "Increase customer satisfaction scores by 15% through improved support and product enhancements.",
+                departments: ["Marketing", "HR"],
+                startDate: "2024-06-01",
+                endDate: "2024-12-31",
+                progress: 25,
+                status: "in-progress",
+                subgoals: []
+            },
+            {
+                id: 3,
+                name: "Engineering HR Progress",
+                description: "Improve HR processes within the engineering department.",
+                departments: ["Engineering", "HR"],
+                startDate: "2024-05-15",
+                endDate: "2024-08-15",
+                progress: 0,
+                status: "all",
+                subgoals: []
+            }
+        ];
+
+        // DOM Elements
+        const goalsList = document.getElementById('goals-list');
+        const goalDetails = document.getElementById('goal-details');
+        const createGoalModal = document.getElementById('create-goal-modal');
+        const addSubgoalModal = document.getElementById('add-subgoal-modal');
+        const addTaskModal = document.getElementById('add-task-modal');
+        const createGoalBtn = document.getElementById('create-goal-btn');
+        const cancelCreateGoalBtn = document.getElementById('cancel-create-goal');
+        const cancelAddSubgoalBtn = document.getElementById('cancel-add-subgoal');
+        const cancelAddTaskBtn = document.getElementById('cancel-add-task');
+        const createGoalForm = document.getElementById('create-goal-form');
+        const addSubgoalForm = document.getElementById('add-subgoal-form');
+        const addTaskForm = document.getElementById('add-task-form');
+        const statusTabs = document.querySelectorAll('.status-tab');
+        const modalTitle = document.getElementById('modal-title');
+        const saveGoalBtn = document.getElementById('save-goal-btn');
+        const goalIdInput = document.getElementById('goal-id');
+
+        // Current selected goal
+        let selectedGoalId = null;
+        let isEditing = false;
+        let selectedSubgoalId = null;
+
+        // Initialize the dashboard
+        function initDashboard() {
+            renderGoalsList();
+            setupEventListeners();
+        }
+
+        // Render goals list based on selected status
+        function renderGoalsList(status = 'all') {
+            goalsList.innerHTML = '';
+            
+            const filteredGoals = goals.filter(goal => 
+                status === 'all' || goal.status === status
+            );
+            
+            if (filteredGoals.length === 0) {
+                goalsList.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-inbox text-4xl mb-2"></i>
+                        <p>No goals found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredGoals.forEach(goal => {
+                const goalCard = document.createElement('div');
+                goalCard.className = 'goal-card bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer';
+                goalCard.dataset.id = goal.id;
+                
+                const departments = goal.departments.join(', ');
+                
+                goalCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-gray-800">${goal.name}</h3>
+                        <div class="relative">
+                            <button class="goal-actions-btn text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="goal-actions-menu absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg py-1 z-10 hidden">
+                                <button class="edit-goal-btn block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</button>
+                                <button class="delete-goal-btn block w-full text-left px-4 py-2 text-sm text-danger hover:bg-gray-100">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">${departments}</p>
+                    <div class="flex items-center">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                            <div class="bg-primary h-2.5 rounded-full" style="width: ${goal.progress}%"></div>
+                        </div>
+                        <span class="text-xs font-medium text-gray-700">${goal.progress}%</span>
+                    </div>
+                `;
+                
+                goalsList.appendChild(goalCard);
+            });
+            
+            // Add event listeners to goal cards and action buttons
+            document.querySelectorAll('.goal-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.goal-actions-btn') && !e.target.closest('.goal-actions-menu')) {
+                        const goalId = parseInt(card.dataset.id);
+                        selectGoal(goalId);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.goal-actions-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const menu = btn.nextElementSibling;
+                    document.querySelectorAll('.goal-actions-menu').forEach(m => {
+                        if (m !== menu) m.classList.add('hidden');
+                    });
+                    menu.classList.toggle('hidden');
+                });
+            });
+            
+            document.querySelectorAll('.edit-goal-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const goalId = parseInt(btn.closest('.goal-card').dataset.id);
+                    editGoal(goalId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-goal-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const goalId = parseInt(btn.closest('.goal-card').dataset.id);
+                    deleteGoal(goalId);
+                });
+            });
+        }
+
+        // Render goal details
+        function renderGoalDetails(goalId) {
+            const goal = goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            const departments = goal.departments.join(', ');
+            const startDate = new Date(goal.startDate).toLocaleDateString();
+            const endDate = new Date(goal.endDate).toLocaleDateString();
+            
+            goalDetails.innerHTML = `
+                <div class="mb-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800">${goal.name}</h2>
+                        <div class="relative">
+                            <button class="goal-details-actions-btn text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="goal-details-actions-menu absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg py-1 z-10 hidden">
+                                <button class="edit-goal-details-btn block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</button>
+                                <button class="delete-goal-details-btn block w-full text-left px-4 py-2 text-sm text-danger hover:bg-gray-100">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">${goal.description}</p>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <span class="text-sm font-medium text-gray-700">Start Date:</span>
+                            <span class="text-sm text-gray-600 ml-2">${startDate}</span>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-gray-700">End Date:</span>
+                            <span class="text-sm text-gray-600 ml-2">${endDate}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700 mr-2">Assigned Departments:</span>
+                        <span class="text-sm text-gray-600">${departments}</span>
+                    </div>
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">Overall Progress</span>
+                            <span class="text-sm font-medium text-gray-700">${goal.progress}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-primary h-2.5 rounded-full" style="width: ${goal.progress}%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Sub-Goals</h3>
+                        <button id="add-subgoal-btn" class="bg-primary hover:bg-secondary text-white px-3 py-1 rounded-md flex items-center">
+                            <i class="fas fa-plus mr-1"></i> Add Sub-Goal
+                        </button>
+                    </div>
+                    
+                    <div id="subgoals-list" class="space-y-4">
+                        ${goal.subgoals.length > 0 ? 
+                            goal.subgoals.map(subgoal => {
+                                const completedTasks = subgoal.tasks.filter(task => task.completed).length;
+                                const totalTasks = subgoal.tasks.length;
+                                const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+                                
+                                return `
+                                    <div class="border border-gray-200 rounded-lg">
+                                        <div class="subgoal-header p-4 cursor-pointer flex justify-between items-center" data-subgoal-id="${subgoal.id}">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-chevron-${subgoal.expanded ? 'down' : 'right'} mr-2 text-gray-500"></i>
+                                                <h4 class="font-medium text-gray-800">${subgoal.name}</h4>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-gray-600 mr-3">Owner: ${subgoal.owner}</span>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full ${progress === 100 ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}">
+                                                    ${progress}%
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="subgoal-content ${subgoal.expanded ? '' : 'hidden'} p-4 border-t border-gray-200">
+                                            <div class="mb-3">
+                                                <div class="flex justify-between mb-1">
+                                                    <span class="text-xs text-gray-600">Progress</span>
+                                                    <span class="text-xs font-medium text-gray-700">${progress}%</span>
+                                                </div>
+                                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-success h-2 rounded-full" style="width: ${progress}%"></div>
+                                                </div>
+                                            </div>
+                                            <div class="flex justify-between items-center mb-2">
+                                                <h5 class="text-sm font-medium text-gray-700">Tasks</h5>
+                                                <button class="add-task-btn text-xs bg-primary hover:bg-secondary text-white px-2 py-1 rounded flex items-center" data-subgoal-id="${subgoal.id}">
+                                                    <i class="fas fa-plus mr-1"></i> Add Task
+                                                </button>
+                                            </div>
+                                            <div class="space-y-2">
+                                                ${subgoal.tasks.map(task => `
+                                                    <div class="flex items-center justify-between">
+                                                        <div class="flex items-center">
+                                                            <input type="checkbox" ${task.completed ? 'checked' : ''} class="mr-2 task-checkbox" data-goal-id="${goal.id}" data-subgoal-id="${subgoal.id}" data-task-id="${task.id}">
+                                                            <span class="text-sm ${task.completed ? 'text-gray-500 line-through' : 'text-gray-700'}">${task.name}</span>
+                                                        </div>
+                                                        <span class="text-xs text-gray-500">${task.assignee}</span>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('') : 
+                            '<p class="text-gray-500 text-center py-4">No sub-goals added yet</p>'
+                        }
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener to the add subgoal button
+            document.getElementById('add-subgoal-btn').addEventListener('click', () => openAddSubgoalModal(goalId));
+            
+            // Add event listeners to goal details action buttons
+            const goalDetailsActionsBtn = document.querySelector('.goal-details-actions-btn');
+            const goalDetailsActionsMenu = document.querySelector('.goal-details-actions-menu');
+            
+            goalDetailsActionsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                goalDetailsActionsMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelector('.edit-goal-details-btn').addEventListener('click', () => {
+                editGoal(goalId);
+            });
+            
+            document.querySelector('.delete-goal-details-btn').addEventListener('click', () => {
+                deleteGoal(goalId);
+            });
+            
+            // Add event listeners to subgoal headers for expand/collapse
+            document.querySelectorAll('.subgoal-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const subgoalId = parseInt(header.dataset.subgoalId);
+                    toggleSubgoal(goalId, subgoalId);
+                });
+            });
+            
+            // Add event listeners to task checkboxes
+            document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const goalId = parseInt(checkbox.dataset.goalId);
+                    const subgoalId = parseInt(checkbox.dataset.subgoalId);
+                    const taskId = parseInt(checkbox.dataset.taskId);
+                    toggleTaskCompletion(goalId, subgoalId, taskId, e.target.checked);
+                });
+            });
+            
+            // Add event listeners to add task buttons
+            document.querySelectorAll('.add-task-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const subgoalId = parseInt(btn.dataset.subgoalId);
+                    openAddTaskModal(goalId, subgoalId);
+                });
+            });
+        }
+
+        // Toggle subgoal expand/collapse
+        function toggleSubgoal(goalId, subgoalId) {
+            const goal = goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            const subgoal = goal.subgoals.find(sg => sg.id === subgoalId);
+            if (!subgoal) return;
+            
+            subgoal.expanded = !subgoal.expanded;
+            renderGoalDetails(goalId);
+        }
+
+        // Toggle task completion
+        function toggleTaskCompletion(goalId, subgoalId, taskId, completed) {
+            const goal = goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            const subgoal = goal.subgoals.find(sg => sg.id === subgoalId);
+            if (!subgoal) return;
+            
+            const task = subgoal.tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            task.completed = completed;
+            
+            // Update goal progress
+            updateGoalProgress(goalId);
+            
+            // Re-render the goal details to show updated progress
+            renderGoalDetails(goalId);
+        }
+
+        // Update goal progress based on subgoal completion
+        function updateGoalProgress(goalId) {
+            const goal = goals.find(g => g.id === goalId);
+            if (!goal || goal.subgoals.length === 0) return;
+            
+            let totalProgress = 0;
+            goal.subgoals.forEach(subgoal => {
+                const completedTasks = subgoal.tasks.filter(task => task.completed).length;
+                const totalTasks = subgoal.tasks.length;
+                const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+                totalProgress += progress;
+            });
+            
+            goal.progress = Math.round(totalProgress / goal.subgoals.length);
+        }
+
+        // Select a goal to view details
+        function selectGoal(goalId) {
+            selectedGoalId = goalId;
+            document.querySelectorAll('.goal-card').forEach(card => {
+                card.classList.remove('border-primary', 'bg-blue-50');
+                if (parseInt(card.dataset.id) === goalId) {
+                    card.classList.add('border-primary', 'bg-blue-50');
+                }
+            });
+            renderGoalDetails(goalId);
+        }
+
+        // Open create goal modal
+        function openCreateGoalModal() {
+            isEditing = false;
+            modalTitle.textContent = "Create New Goal";
+            saveGoalBtn.textContent = "Create";
+            createGoalForm.reset();
+            goalIdInput.value = "";
+            createGoalModal.classList.remove('hidden');
+        }
+
+        // Close create goal modal
+        function closeCreateGoalModal() {
+            createGoalModal.classList.add('hidden');
+            createGoalForm.reset();
+            goalIdInput.value = "";
+        }
+
+        // Open edit goal modal with data
+        function editGoal(goalId) {
+            const goal = goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            isEditing = true;
+            modalTitle.textContent = "Edit Goal";
+            saveGoalBtn.textContent = "Save Changes";
+            
+            // Fill form with goal data
+            goalIdInput.value = goal.id;
+            document.getElementById('goal-name').value = goal.name;
+            document.getElementById('goal-description').value = goal.description;
+            document.getElementById('goal-start-date').value = goal.startDate;
+            document.getElementById('goal-end-date').value = goal.endDate;
+            
+            // Set selected departments
+            const departmentsSelect = document.getElementById('goal-departments');
+            Array.from(departmentsSelect.options).forEach(option => {
+                option.selected = goal.departments.includes(option.value);
+            });
+            
+            createGoalModal.classList.remove('hidden');
+        }
+
+        // Open add subgoal modal
+        function openAddSubgoalModal(goalId) {
+            selectedGoalId = goalId;
+            addSubgoalModal.classList.remove('hidden');
+        }
+
+        // Close add subgoal modal
+        function closeAddSubgoalModal() {
+            addSubgoalModal.classList.add('hidden');
+            addSubgoalForm.reset();
+        }
+
+        // Open add task modal
+        function openAddTaskModal(goalId, subgoalId) {
+            selectedGoalId = goalId;
+            selectedSubgoalId = subgoalId;
+            addTaskModal.classList.remove('hidden');
+        }
+
+        // Close add task modal
+        function closeAddTaskModal() {
+            addTaskModal.classList.add('hidden');
+            addTaskForm.reset();
+        }
+
+        // Create or update a goal
+        function saveGoal(event) {
+            event.preventDefault();
+            
+            const id = goalIdInput.value ? parseInt(goalIdInput.value) : null;
+            const name = document.getElementById('goal-name').value;
+            const description = document.getElementById('goal-description').value;
+            const startDate = document.getElementById('goal-start-date').value;
+            const endDate = document.getElementById('goal-end-date').value;
+            const departments = Array.from(document.getElementById('goal-departments').selectedOptions)
+                .map(option => option.value);
+            
+            if (name && departments.length > 0 && startDate && endDate) {
+                if (isEditing && id) {
+                    // Update existing goal
+                    const goalIndex = goals.findIndex(g => g.id === id);
+                    if (goalIndex !== -1) {
+                        goals[goalIndex].name = name;
+                        goals[goalIndex].description = description;
+                        goals[goalIndex].startDate = startDate;
+                        goals[goalIndex].endDate = endDate;
+                        goals[goalIndex].departments = departments;
+                        
+                        // Show success message
+                        alert('Goal updated successfully!');
+                    }
+                } else {
+                    // Create new goal
+                    const newGoal = {
+                        id: goals.length > 0 ? Math.max(...goals.map(g => g.id)) + 1 : 1,
+                        name,
+                        description,
+                        departments,
+                        startDate,
+                        endDate,
+                        progress: 0,
+                        status: 'all',
+                        subgoals: []
+                    };
+                    
+                    goals.push(newGoal);
+                    
+                    // Show success message
+                    alert('Goal created successfully!');
+                }
+                
+                renderGoalsList();
+                closeCreateGoalModal();
+                
+                // If we were editing the currently selected goal, update the details view
+                if (isEditing && selectedGoalId === id) {
+                    renderGoalDetails(id);
+                }
+            }
+        }
+
+        // Add a subgoal
+        function addSubgoal(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('subgoal-name').value;
+            const owner = document.getElementById('subgoal-owner').value;
+            
+            if (name && owner && selectedGoalId) {
+                const goal = goals.find(g => g.id === selectedGoalId);
+                if (goal) {
+                    const newSubgoal = {
+                        id: goal.subgoals.length > 0 ? Math.max(...goal.subgoals.map(sg => sg.id)) + 1 : 1,
+                        name,
+                        owner,
+                        expanded: false,
+                        tasks: []
+                    };
+                    
+                    goal.subgoals.push(newSubgoal);
+                    renderGoalDetails(selectedGoalId);
+                    closeAddSubgoalModal();
+                    
+                    // Show success message
+                    alert('Sub-goal added successfully!');
+                }
+            }
+        }
+
+        // Add a task
+        function addTask(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('task-name').value;
+            const assignee = document.getElementById('task-assignee').value;
+            
+            if (name && assignee && selectedGoalId && selectedSubgoalId) {
+                const goal = goals.find(g => g.id === selectedGoalId);
+                if (goal) {
+                    const subgoal = goal.subgoals.find(sg => sg.id === selectedSubgoalId);
+                    if (subgoal) {
+                        const newTask = {
+                            id: subgoal.tasks.length > 0 ? Math.max(...subgoal.tasks.map(t => t.id)) + 1 : 1,
+                            name,
+                            completed: false,
+                            assignee: assignee
+                        };
+                        
+                        subgoal.tasks.push(newTask);
+                        updateGoalProgress(selectedGoalId);
+                        renderGoalDetails(selectedGoalId);
+                        closeAddTaskModal();
+                        
+                        // Show success message
+                        alert('Task added successfully!');
+                    }
+                }
+            }
+        }
+
+        // Delete goal
+        function deleteGoal(goalId) {
+            if (confirm('Are you sure you want to delete this goal?')) {
+                const index = goals.findIndex(g => g.id === goalId);
+                if (index !== -1) {
+                    goals.splice(index, 1);
+                    renderGoalsList();
+                    
+                    // If the deleted goal was selected, clear the details view
+                    if (selectedGoalId === goalId) {
+                        selectedGoalId = null;
+                        goalDetails.innerHTML = `
+                            <div class="flex flex-col items-center justify-center h-full text-center text-gray-500">
+                                <i class="fas fa-bullseye text-5xl mb-4"></i>
+                                <h3 class="text-xl font-medium mb-2">Select a Goal</h3>
+                                <p>Click on a goal from the list to view its details</p>
+                            </div>
+                        `;
+                    }
+                    
+                    // Show success message
+                    alert('Goal deleted successfully!');
+                }
+            }
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Create goal modal
+            createGoalBtn.addEventListener('click', openCreateGoalModal);
+            cancelCreateGoalBtn.addEventListener('click', closeCreateGoalModal);
+            createGoalForm.addEventListener('submit', saveGoal);
+            
+            // Add subgoal modal
+            cancelAddSubgoalBtn.addEventListener('click', closeAddSubgoalModal);
+            addSubgoalForm.addEventListener('submit', addSubgoal);
+            
+            // Add task modal
+            cancelAddTaskBtn.addEventListener('click', closeAddTaskModal);
+            addTaskForm.addEventListener('submit', addTask);
+            
+            // Status tabs
+            statusTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    statusTabs.forEach(t => t.classList.remove('active', 'text-primary', 'border-primary'));
+                    statusTabs.forEach(t => t.classList.add('text-gray-500'));
+                    
+                    tab.classList.add('active', 'text-primary', 'border-primary');
+                    tab.classList.remove('text-gray-500');
+                    
+                    const status = tab.textContent.toLowerCase().replace(' ', '-');
+                    renderGoalsList(status);
+                });
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === createGoalModal) {
+                    closeCreateGoalModal();
+                }
+                if (e.target === addSubgoalModal) {
+                    closeAddSubgoalModal();
+                }
+                if (e.target === addTaskModal) {
+                    closeAddTaskModal();
+                }
+            });
+            
+            // Close action menus when clicking elsewhere
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.goal-actions-menu').forEach(menu => {
+                    menu.classList.add('hidden');
+                });
+                document.querySelectorAll('.goal-details-actions-menu').forEach(menu => {
+                    menu.classList.add('hidden');
+                });
+            });
+        }
+
+        // Initialize the dashboard when the page loads
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
