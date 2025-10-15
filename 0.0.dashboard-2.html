@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>PMS Dashboard with Cards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        /* Enhanced DIU Color Palette */
+        .bg-diu-900 { background-color: #034ea2; }
+        .bg-diu-800 { background-color: #0072BC; }
+        .bg-diu-700 { background-color: #0089CF; }
+        .bg-diu-600 { background-color: #00A1E4; }
+        .bg-diu-500 { background-color: #53B7E8; }
+        .bg-diu-400 { background-color: #9AC8EC; }
+        .bg-diu-300 { background-color: #D4E7F7; }
+        .bg-diu-200 { background-color: #E8F2FC; }
+        .bg-diu-100 { background-color: #F5FAFF; }
+
+        /* Gradient backgrounds */
+        .bg-gradient-diu {
+            background: linear-gradient(135deg, #034ea2 0%, #0072BC 100%);
+        }
+        
+        .bg-gradient-light {
+            background: linear-gradient(135deg, #D4E7F7 0%, #E8F2FC 100%);
+        }
+
+        /* Text colors */
+        .text-diu-900 { color: #034ea2; }
+        .text-diu-800 { color: #0072BC; }
+        .text-diu-700 { color: #0089CF; }
+
+        /* Border colors */
+        .border-diu-900 { border-color: #034ea2; }
+        .border-diu-600 { border-color: #00A1E4; }
+        .border-diu-300 { border-color: #D4E7F7; }
+        .border-diu-200 { border-color: #E8F2FC; }
+
+        /* Enhanced shadows */
+        .shadow-soft {
+            box-shadow: 0 4px 6px -1px rgba(3, 78, 162, 0.1), 0 2px 4px -1px rgba(3, 78, 162, 0.06);
+        }
+
+        .shadow-card {
+            box-shadow: 0 10px 15px -3px rgba(3, 78, 162, 0.1), 0 4px 6px -2px rgba(3, 78, 162, 0.05);
+        }
+
+        /* Hover effects */
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(3, 78, 162, 0.1), 0 10px 10px -5px rgba(3, 78, 162, 0.04);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #0072BC;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #034ea2;
+        }
+    </style>
+</head>
+<body class="bg-diu-100 text-gray-800">
+<main class="min-h-screen p-6 space-y-6">
+
+    <!-- Header Section -->
+    <section class="bg-gradient-diu text-white p-6 rounded-2xl shadow-card hover-lift">
+        <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+            <div class="flex items-center space-x-4">
+                <div class="w-20 h-20 border-2 border-white border-opacity-30 rounded-full overflow-hidden shadow-lg">
+                    <img class="w-full h-full object-cover" src="pic\staff.jpg" alt="Staff" />
+                </div>
+                <div>
+                    <p class="font-bold text-xl">Alice Johnson</p>
+                    <p class="text-diu-200 opacity-90">Lead Engineer</p>
+                </div>
+            </div>
+
+            <div class="text-center bg-white bg-opacity-10 rounded-xl px-6 py-3 backdrop-blur-sm">
+                <p class="font-semibold text-diu-200">Assessment Year</p>
+                <select class="mt-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+                    <option class="text-gray-800">2024</option>
+                    <option class="text-gray-800">2025</option>
+                </select>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="font-bold text-xl">Eva Martinez</p>
+                    <p class="text-diu-200 opacity-90">Tech Lead</p>
+                </div>
+                <div class="w-20 h-20 border-2 border-white border-opacity-30 rounded-full overflow-hidden shadow-lg">
+                    <img class="w-full h-full object-cover" src="pic\supervisor.jpg" alt="Supervisor" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Cards Section -->
+    <section class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <!-- Organizational Goals -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-gradient-to-br from-blue-600 to-blue-800 text-white p-4 h-32 flex flex-col items-center justify-between rounded-2xl text-center shadow-card hover-lift transition-all duration-300">
+                <h3 class="font-bold text-sm lg:text-base">Organizational Goals</h3>
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-8 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="text-xl font-bold text-white">5</span>
+                </div>
+            </div>
+            <!-- Dropdown -->
+            <div class="dropdown hidden absolute mt-3 left-0 w-full bg-white border border-diu-300 rounded-xl shadow-card text-left z-10 overflow-hidden">
+                <ul class="divide-y divide-diu-200">
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-diu-800 bg-diu-50">Self</li>
+                    <li class="px-6 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-diu-900 border-l-4 border-blue-500" onclick="onClickFn('2.staff-objective-setting-submit.html')">Objective Settings</li>
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-diu-800 bg-diu-50">Team</li>
+                    <li class="px-6 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-diu-900 border-l-4 border-blue-500" onclick="onClickFn('1.supervisor-Objective-assign.html')">Goal Breakdown and Assign</li>
+                    <li class="px-6 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-diu-900 border-l-4 border-blue-500" onclick="onClickFn('4.1.Supervisor-objective-approval-section-NEW.html')">Objective Approval</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- KPI -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-gradient-to-br from-green-600 to-green-800 text-white p-4 h-32 flex flex-col items-center justify-between rounded-2xl text-center shadow-card hover-lift transition-all duration-300">
+                <h3 class="font-bold text-sm lg:text-base">KPI</h3>
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-8 text-green-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <span class="text-xl font-bold text-white">12</span>
+                </div>
+            </div>
+            <div class="dropdown hidden absolute mt-3 left-0 w-full bg-white border border-diu-300 rounded-xl shadow-card text-left z-10 overflow-hidden">
+                <ul class="divide-y divide-diu-200">
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-red-600 bg-diu-50">Self</li>
+                    <li class="px-6 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-red-700 border-l-4 border-red-500" onclick="onClickFn('4.2.Staff-submit-for-instant-review.html')">Request for Instant Review</li>
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-red-600 bg-diu-50">Team</li>
+                    <li class="px-6 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-red-700 border-l-4 border-red-500" onclick="onClickFn('4.3.supervisor-instant-review.html')">Instant Review</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 360 Degree Feedback -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-gradient-to-br from-purple-600 to-purple-800 text-white p-4 h-32 flex flex-col items-center justify-between rounded-2xl text-center shadow-card hover-lift transition-all duration-300">
+                <h3 class="font-bold text-sm lg:text-base">360° Feedback</h3>
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-8 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="text-xl font-bold text-white">8</span>
+                </div>
+            </div>
+            <div class="dropdown hidden absolute mt-3 left-0 w-full bg-white border border-diu-300 rounded-xl shadow-card text-left z-10 overflow-hidden">
+                <ul class="divide-y divide-diu-200">
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-purple-600 bg-diu-50">Self</li>
+                    <li class="px-6 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-purple-700 border-l-4 border-purple-500">Request for Year End Rating</li>
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-purple-600 bg-diu-50">Team</li>
+                    <li class="px-6 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-purple-700 border-l-4 border-purple-500" onclick="onClickFn('4.5-EndYearRating.html')">Year End Rating and Recommendation</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rating -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-gradient-to-br from-yellow-600 to-yellow-700 text-white p-4 h-32 flex flex-col items-center justify-between rounded-2xl text-center shadow-card hover-lift transition-all duration-300">
+                <h3 class="font-bold text-sm lg:text-base">Rating</h3>
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-8 text-yellow-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                    </svg>
+                    <span class="text-xl font-bold text-white">4.5</span>
+                </div>
+            </div>
+            <div class="dropdown hidden absolute mt-3 left-0 w-full bg-white border border-diu-300 rounded-xl shadow-card text-left z-10 overflow-hidden">
+                <ul class="divide-y divide-diu-200">
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-green-600 bg-diu-50">Self</li>
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-green-600 bg-diu-50">Team</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Amendment -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-gradient-to-br from-indigo-600 to-indigo-800 text-white p-4 h-32 flex flex-col items-center justify-between rounded-2xl text-center shadow-card hover-lift transition-all duration-300">
+                <h3 class="font-bold text-sm lg:text-base">Amendment</h3>
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-8 text-indigo-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <span class="text-xl font-bold text-white">3</span>
+                </div>
+            </div>
+            <div class="dropdown hidden absolute mt-3 left-0 w-full bg-white border border-diu-300 rounded-xl shadow-card text-left z-10 overflow-hidden">
+                <ul class="divide-y divide-diu-200">
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-indigo-600 bg-diu-50">Self</li>
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-indigo-600 bg-diu-50">Team</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Admin -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-gradient-to-br from-gray-700 to-gray-900 text-white p-4 h-32 flex flex-col items-center justify-between rounded-2xl text-center shadow-card hover-lift transition-all duration-300">
+                <h3 class="font-bold text-sm lg:text-base">Admin</h3>
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="text-xl font-bold text-white">7</span>
+                </div>
+            </div>
+            <div class="dropdown hidden absolute mt-3 left-0 w-full bg-white border border-diu-300 rounded-xl shadow-card text-left z-10 overflow-hidden">
+                <ul class="divide-y divide-diu-200">
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-gray-700 border-l-4 border-gray-500" onclick="onClickFn('0.Organization-goal-setup_and_assign.html')">Organization Goal Setup</li>
+                    <li class="px-4 py-3 hover:bg-diu-100 cursor-pointer font-semibold text-gray-700 border-l-4 border-gray-500">Others Setup</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Staff Distribution Chart -->
+        <div class="bg-white shadow-card rounded-2xl p-6 hover-lift">
+            <div class="text-center">
+                <div id="myChart" style="width:auto; max-width:600px; height:250px;"></div>
+            </div>
+        </div>
+
+        <!-- Timeline Table -->
+        <div class="bg-white shadow-card rounded-2xl overflow-hidden hover-lift">
+            <div class="bg-gradient-diu text-white font-bold text-center py-4 text-lg">Timeline Overview</div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-diu-100">
+                    <tr>
+                        <th class="border border-diu-200 px-4 py-3 font-semibold text-diu-800">Item</th>
+                        <th class="border border-diu-200 px-4 py-3 font-semibold text-diu-800">Start Date</th>
+                        <th class="border border-diu-200 px-4 py-3 font-semibold text-diu-800">End Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="hover:bg-diu-50 transition-colors">
+                        <td class="border border-diu-200 px-4 py-3 font-medium">KPI Assign</td>
+                        <td class="border border-diu-200 px-4 py-3">01-Dec-2023</td>
+                        <td class="border border-diu-200 px-4 py-3">30-Sep-2025</td>
+                    </tr>
+                    <tr class="hover:bg-diu-50 transition-colors">
+                        <td class="border border-diu-200 px-4 py-3 font-medium">KPI Review</td>
+                        <td class="border border-diu-200 px-4 py-3">01-Oct-2024</td>
+                        <td class="border border-diu-200 px-4 py-3">30-Sep-2025</td>
+                    </tr>
+                    <tr class="hover:bg-diu-50 transition-colors">
+                        <td class="border border-diu-200 px-4 py-3 font-medium">Goal Setting</td>
+                        <td class="border border-diu-200 px-4 py-3">20-Apr-2025</td>
+                        <td class="border border-diu-200 px-4 py-3">30-Sep-2025</td>
+                    </tr>
+                    <tr class="hover:bg-diu-50 transition-colors">
+                        <td class="border border-diu-200 px-4 py-3 font-medium">360 Review</td>
+                        <td class="border border-diu-200 px-4 py-3">20-Apr-2025</td>
+                        <td class="border border-diu-200 px-4 py-3">30-Sep-2025</td>
+                    </tr>
+                    <tr class="hover:bg-diu-50 transition-colors">
+                        <td class="border border-diu-200 px-4 py-3 font-medium">Amendment</td>
+                        <td class="border border-diu-200 px-4 py-3">20-Apr-2025</td>
+                        <td class="border border-diu-200 px-4 py-3">30-Sep-2025</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Status and Charts Section -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Status Table -->
+        <div class="bg-white shadow-card rounded-2xl overflow-hidden hover-lift">
+            <div class="bg-gradient-diu text-white font-bold text-center py-4 text-lg">Progress Overview</div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-center">
+                    <thead class="bg-diu-100">
+                    <tr>
+                        <th colspan="2" class="border border-diu-200 px-4 py-3 font-semibold text-diu-800 bg-blue-50">Self</th>
+                        <th colspan="3" class="border border-diu-200 px-4 py-3 font-semibold text-diu-800 bg-green-50">Team</th>
+                    </tr>
+                    <tr>
+                        <th class="border border-diu-200 px-4 py-3 font-semibold text-diu-800 text-left">Item</th>
+                        <th class="border border-diu-200 px-4 py-3 font-semibold text-diu-800">Status</th>
+                        <th class="border border-diu-200 px-4 py-3 font-semibold text-diu-800">Not Started</th>
+                        <th class="border border-diu-200 px-4 py-3 font-semibold text-diu-800">In Progress</th>
+                        <th class="border border-diu-200 px-4 py-3 font-semibold text-diu-800">Complete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="hover:bg-diu-50 transition-colors">
+                        <td class="border border-diu-200 px-4 py-3 text-left font-medium">Objective Setting</td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-green-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">Completed</span></td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-red-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">2</span></td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-red-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">2</span></td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-red-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">2</span></td>
+                    </tr>
+                    <tr class="hover:bg-diu-50 transition-colors">
+                        <td class="border border-diu-200 px-4 py-3 text-left font-medium">Mid-Year Review</td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-yellow-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">In Progress</span></td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-yellow-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">3</span></td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-yellow-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">3</span></td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-yellow-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">3</span></td>
+                    </tr>
+                    <tr class="hover:bg-diu-50 transition-colors">
+                        <td class="border border-diu-200 px-4 py-3 text-left font-medium">Year-End Rating</td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-red-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">Not Started</span></td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-green-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">5</span></td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-green-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">5</span></td>
+                        <td class="border border-diu-200 px-4 py-3"><span class="bg-green-500 text-white px-3 py-1.5 rounded-full text-xs font-semibold">5</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Small Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white shadow-card rounded-2xl p-6 hover-lift">
+                <h2 class="text-diu-800 font-semibold mb-4 text-center">Goal Status Overview</h2>
+                <canvas id="goalStatusChart" height="200"></canvas>
+            </div>
+
+            <div class="bg-white shadow-card rounded-2xl p-6 hover-lift">
+                <h2 class="text-diu-800 font-semibold mb-4 text-center">KPI Weight Distribution</h2>
+                <canvas id="kpiWeightChart" height="200"></canvas>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Bottom Sections -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Learn ePMS -->
+        <div class="bg-white shadow-card rounded-2xl p-6 hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-diu-800 font-semibold text-lg">Learn ePMS</h2>
+                <span class="bg-diu-100 text-diu-800 px-3 py-1 rounded-full text-sm font-semibold">4 Videos</span>
+            </div>
+            <ul class="space-y-3">
+                <li class="flex items-center space-x-3 p-3 rounded-lg hover:bg-diu-50 transition-colors cursor-pointer">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-blue-600 font-bold">1</span>
+                    </div>
+                    <span class="text-diu-700 font-medium">Video Tutorial for Objective Setting</span>
+                </li>
+                <li class="flex items-center space-x-3 p-3 rounded-lg hover:bg-diu-50 transition-colors cursor-pointer">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <span class="text-green-600 font-bold">2</span>
+                    </div>
+                    <span class="text-diu-700 font-medium">Video Tutorial for Instant Review</span>
+                </li>
+                <li class="flex items-center space-x-3 p-3 rounded-lg hover:bg-diu-50 transition-colors cursor-pointer">
+                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                        <span class="text-purple-600 font-bold">3</span>
+                    </div>
+                    <span class="text-diu-700 font-medium">Video Tutorial for Year-End Review</span>
+                </li>
+                <li class="flex items-center space-x-3 p-3 rounded-lg hover:bg-diu-50 transition-colors cursor-pointer">
+                    <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <span class="text-yellow-600 font-bold">4</span>
+                    </div>
+                    <span class="text-diu-700 font-medium">Video Tutorial for 360° Feedback</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Guidelines -->
+        <div class="bg-white shadow-card rounded-2xl p-6 hover-lift">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-diu-800 font-semibold text-lg">Guidelines</h2>
+                <span class="bg-diu-100 text-diu-800 px-3 py-1 rounded-full text-sm font-semibold">3 Docs</span>
+            </div>
+            <ul class="space-y-3">
+                <li class="flex items-center space-x-3 p-3 rounded-lg hover:bg-diu-50 transition-colors cursor-pointer">
+                    <div class="w-2 h-2 bg-diu-600 rounded-full"></div>
+                    <span class="text-diu-700 font-medium">Objective Setting Guideline</span>
+                </li>
+                <li class="flex items-center space-x-3 p-3 rounded-lg hover:bg-diu-50 transition-colors cursor-pointer">
+                    <div class="w-2 h-2 bg-diu-600 rounded-full"></div>
+                    <span class="text-diu-700 font-medium">Year-End Review Guideline</span>
+                </li>
+                <li class="flex items-center space-x-3 p-3 rounded-lg hover:bg-diu-50 transition-colors cursor-pointer">
+                    <div class="w-2 h-2 bg-diu-600 rounded-full"></div>
+                    <span class="text-diu-700 font-medium">Instant Review Guideline</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- KPI Achievement Chart -->
+        <div class="bg-white shadow-card rounded-2xl p-6 hover-lift">
+            <h2 class="text-diu-800 font-semibold mb-4 text-center">KPI Achievement vs Target</h2>
+            <canvas id="kpiTargetChart" height="200"></canvas>
+        </div>
+    </section>
+</main>
+
+<script>
+
+
+    document.querySelectorAll('.card').forEach((card) => {
+        card.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            const dropdown = card.parentElement.querySelector('.dropdown');
+            const isVisible = !dropdown.classList.contains('hidden');
+
+            // Hide all dropdowns first
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.add('hidden'));
+
+            // Toggle the clicked one only if it wasn't visible
+            if (!isVisible) {
+                dropdown.classList.remove('hidden');
+            }
+        });
+    });
+
+    // Close dropdowns when clicking anywhere else
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.dropdown').forEach(d => d.classList.add('hidden'));
+    });
+</script>
+
+
+
+
+<script>
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    let chart;
+    let resizeTimer;
+
+    function drawChart() {
+        const container = document.getElementById('myChart');
+        const containerWidth = container.clientWidth;
+
+        const data = google.visualization.arrayToDataTable([
+            ['Daffodil International University', 'DIU'],
+            ['Faculty',1700],
+            ['Admin',500],
+            ['Bellow Officer',300]
+        ]);
+
+        // Dynamic options based on screen size
+        const options = {
+            title: 'Staff Distribution by Type (Total: 2,500)',
+            is3D: true,
+            colors: ['#0072BC', '#8dc63f', '#c9252c'],
+            backgroundColor: 'transparent',
+            chartArea: getChartAreaConfig(containerWidth),
+            legend: getLegendConfig(containerWidth),
+            titleTextStyle: {
+                fontSize: getTitleSize(containerWidth),
+                bold: true
+            }
+        };
+
+        chart = new google.visualization.PieChart(container);
+        chart.draw(data, options);
+    }
+
+    // Responsive configuration functions
+    function getChartAreaConfig(width) {
+        if (width < 480) {
+            return { left: 10, top: 50, width: '90%', height: '70%' };
+        } else if (width < 768) {
+            return { left: '10%', top: '15%', width: '80%', height: '75%' };
+        } else {
+            return { left: '15%', top: '10%', width: '70%', height: '80%' };
+        }
+    }
+
+    function getLegendConfig(width) {
+        if (width < 480) {
+            return {
+                position: 'bottom',
+                alignment: 'center',
+                textStyle: { fontSize: 10 }
+            };
+        } else {
+            return {
+                position: 'labeled',
+                textStyle: { fontSize: 12 }
+            };
+        }
+    }
+
+    function getTitleSize(width) {
+        if (width < 480) return 14;
+        if (width < 768) return 16;
+        return 18;
+    }
+
+    // Optimized resize handler
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (chart) {
+                drawChart();
+            }
+        }, 250); // Debounce resize events
+    });
+
+    // Redraw when orientation changes
+    window.addEventListener('orientationchange', function() {
+        setTimeout(function() {
+            if (chart) {
+                drawChart();
+            }
+        }, 500);
+    });
+</script>
+
+
+<script>
+
+    // Responsive configuration functions
+    function getChartAreaConfig(width) {
+        if (width < 480) {
+            return { left: 10, top: 50, width: '90%', height: '70%' };
+        } else if (width < 768) {
+            return { left: '10%', top: '15%', width: '80%', height: '75%' };
+        } else {
+            return { left: '15%', top: '10%', width: '70%', height: '80%' };
+        }
+    }
+
+    function getLegendConfig(width) {
+        if (width < 480) {
+            return {
+                position: 'bottom',
+                alignment: 'center',
+                textStyle: { fontSize: 10 }
+            };
+        } else {
+            return {
+                position: 'labeled',
+                textStyle: { fontSize: 12 }
+            };
+        }
+    }
+
+    function getTitleSize(width) {
+        if (width < 480) return 14;
+        if (width < 768) return 16;
+        return 18;
+    }
+
+    // Optimized resize handler
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (chart) {
+                drawChart();
+            }
+        }, 250); // Debounce resize events
+    });
+
+    // Redraw when orientation changes
+    window.addEventListener('orientationchange', function() {
+        setTimeout(function() {
+            if (chart) {
+                drawChart();
+            }
+        }, 500);
+    });
+</script>
+
+<script>
+    new Chart(document.getElementById('goalStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Completed', 'In Progress', 'Not Started', 'Delayed'],
+            datasets: [{
+                data: [45, 30, 15, 10],
+                backgroundColor: ['#10B981', '#3B82F6', '#EAB308', '#EF4444'],
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            cutout: '60%',
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    new Chart(document.getElementById('kpiTargetChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Sales', 'Customer Service', 'Operations', 'HR', 'Finance'],
+            datasets: [
+                {
+                    label: 'Target',
+                    data: [90, 85, 88, 80, 87],
+                    backgroundColor: '#E5E7EB',
+                    borderRadius: 6
+                },
+                {
+                    label: 'Achieved',
+                    data: [82, 79, 85, 76, 84],
+                    backgroundColor: '#3B82F6',
+                    borderRadius: 6
+                }
+            ]
+        },
+        options: {
+            plugins: { legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20 } } }
+        }
+    });
+
+    new Chart(document.getElementById('kpiWeightChart'), {
+        type: 'radar',
+        data: {
+            labels: ['Sales', 'Quality', 'Teamwork', 'Innovation', 'Efficiency'],
+            datasets: [{
+                label: 'Weight %',
+                data: [25, 20, 15, 25, 15],
+                backgroundColor: 'rgba(59,130,246,0.2)',
+                borderColor: '#3B82F6',
+                pointBackgroundColor: '#3B82F6'
+            }]
+        },
+        options: {
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 30,
+                    ticks: { stepSize: 5 }
+                }
+            },
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+</script>
+</body>
+</html>

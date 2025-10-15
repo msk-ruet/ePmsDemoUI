@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI PMS - Supervisor Screen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sidebar-blue': '#034ea2',
+                        'table-blue': '#0089CF',
+                        'edit-green': '#39b54a',
+                        'delete-red': '#c9252c',
+                    },
+                    fontFamily: {
+                        'roboto': ['Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .comment-section {
+            position: relative;
+        }
+        
+        .comment-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 6px;
+            font-size: 0.75rem;
+            resize: vertical;
+            min-height: 50px;
+        }
+        
+        .send-btn {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background-color: #0089CF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+        
+        .send-btn:hover {
+            background-color: #0069a3;
+        }
+        
+        .score-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 3px;
+            font-size: 0.75rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .compact-table th,
+        .compact-table td {
+            padding: 6px 8px !important;
+        }
+        
+        @media (max-width: 768px) {
+            .table-container table {
+                font-size: 0.7rem;
+            }
+            
+            .compact-table th,
+            .compact-table td {
+                padding: 4px 6px !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 font-roboto">
+    <!-- Mobile Menu Button -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md p-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">Welcome to ESS</h1>
+        <button id="mobileMenuBtn" class="text-gray-600">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <div class="flex h-screen pt-16 lg:pt-0">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar w-64 flex flex-col bg-sidebar-blue text-white -translate-x-full lg:translate-x-0 fixed lg:relative top-0 bottom-0 z-40 transition-transform duration-300">
+            <div class="p-4 flex items-center justify-center border-b border-blue-700">
+                <h1 class="text-xl font-bold">Logo</h1>
+            </div>
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg active-nav-item">
+                            <i class="fas fa-tachometer-alt mr-3"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg" id="kraNavBtn">
+                            <i class="fas fa-user-clock mr-3"></i>
+                            <span>Attendance</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-calendar-alt mr-3"></i>
+                            <span>Leave</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-user-check mr-3"></i>
+                            <span>Employee Visit</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.html" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-chart-line mr-3"></i>
+                            <span>ePMS</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-address-book mr-3"></i>
+                            <span>Employee Contact</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="p-4 border-t border-blue-700">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                        <span class="font-bold">AD</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">Admin User</p>
+                        <p class="text-xs text-blue-200">admin@company.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden w-full">
+            <!-- Top Navbar -->
+            <header class="bg-white shadow-sm hidden lg:block">
+                <div class="flex items-center justify-between px-4 lg:px-6 py-4">
+                    <div class="flex items-center">
+                        <h2 class="text-lg lg:text-xl font-semibold text-gray-800">Welcome to ESS</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="p-2 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span
+                                    class="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">5</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center">
+                            <img class="h-8 w-8 rounded-full object-cover"
+                                src="https://ui-avatars.com/api/?name=Supervisor+User&background=0D8ABC&color=fff"
+                                alt="Supervisor User">
+                            <span class="ml-2 text-sm font-medium text-gray-700 hidden md:block">Admin User</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
+                <!-- Employee Information Table -->
+                <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+                    <div class="p-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Employee Information</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full compact-table">
+                            <thead>
+                                <tr class="bg-table-blue text-white">
+                                    <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Employee ID</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Employee Name</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Faculty</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Department</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                        EMP-001</td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
+                                        John Smith</td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                        Business Operations</td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                        Sales</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- KPI Content -->
+                <div id="kpisContent" class="tab-content">
+                    <!-- Table -->
+                    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                        <div class="p-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">KPI Evaluation</h3>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table class="min-w-full compact-table">
+                                <thead>
+                                    <tr class="bg-table-blue text-white">
+                                        <th width="3%"
+                                            class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                            SL</th>
+                                        <th width="10%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                            KRA</th>
+                                        <th width="15%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            KPI</th>
+                                        <th width="6%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Weightage</th>
+                                        <th width="8%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Target</th>
+                                        <th width="8%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Start Date</th>
+                                        <th width="8%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            End Date</th>
+                                        <th width="12%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Employee Comments</th>
+                                        <th width="12%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Comment</th>
+                                        <th width="8%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Progress (%)</th>
+                                        <th width="8%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Score</th>
+                                        <th width="8%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Final Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <!-- Sample Data Row 1 -->
+                                    <tr>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center"
+                                            rowspan="3">
+                                            <div class="flex items-center justify-center h-full">
+                                                1
+                                            </div>
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left"
+                                            rowspan="3">
+                                            <div class="h-full">
+                                                Performance
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                            Revenue Growth
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            30</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            15</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            01/01/2023</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            31/12/2023</td>
+                                        <td
+                                            class="px-2 py-2 text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="bg-gray-100 p-2 rounded text-xs">
+                                                Working on achieving the target. Facing challenges in Q3.
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex flex-col space-y-1">
+                                                <div class="flex space-x-1">
+                                                    <input type="text" class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs" placeholder="Add your comment...">
+                                                    <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 transition-colors">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="progress-bar w-full">
+                                                    <div class="progress-fill bg-green-600" style="width: 95%"></div>
+                                                </div>
+                                                <span class="ml-1 text-xs">95%</span>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <input type="text" class="score-input" value="95">
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            28.5
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td
+                                            class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                            Cost Reduction
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            10</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            10</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            01/01/2023</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            31/12/2023</td>
+                                        <td
+                                            class="px-2 py-2 text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="bg-gray-100 p-2 rounded text-xs">
+                                                Implemented new cost-saving measures. Results pending.
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex flex-col space-y-1">
+                                                <div class="flex space-x-1">
+                                                    <input type="text" class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs" placeholder="Add your comment...">
+                                                    <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 transition-colors">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="progress-bar w-full">
+                                                    <div class="progress-fill bg-yellow-500" style="width: 45%"></div>
+                                                </div>
+                                                <span class="ml-1 text-xs">45%</span>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <input type="text" class="score-input" value="45">
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            4.5
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td
+                                            class="px-2 py-2 text-sm font-medium text-gray-900 border-r border-gray-200">
+                                            Profit Margin
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            35</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            22</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            01/01/2023</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            31/12/2023</td>
+                                        <td
+                                            class="px-2 py-2 text-sm text-gray-500 border-r border-gray-200">
+                                            <div class="bg-gray-100 p-2 rounded text-xs">
+                                                Exceeded target by 3%. Very satisfied with the results.
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex flex-col space-y-1">
+                                                <div class="flex space-x-1">
+                                                    <input type="text" class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs" placeholder="Add your comment...">
+                                                    <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 transition-colors">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="progress-bar w-full">
+                                                    <div class="progress-fill bg-green-600" style="width: 85%"></div>
+                                                </div>
+                                                <span class="ml-1 text-xs">85%</span>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            <input type="text" class="score-input" value="85">
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            29.75
+                                        </td>
+                                    </tr>
+
+                                    <!-- Sample Data Row 2 -->
+                                    <tr>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center"
+                                            rowspan="2">
+                                            <div class="flex items-center justify-center h-full">
+                                                2
+                                            </div>
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left"
+                                            rowspan="2">
+                                            <div class="h-full">
+                                                Customer Satisfaction
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                            NPS Score
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            15</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            75</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            01/04/2023</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            30/09/2023</td>
+                                        <td
+                                            class="px-2 py-2 text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="bg-gray-100 p-2 rounded text-xs">
+                                                Achieved NPS score of 78. Very positive customer feedback.
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex flex-col space-y-1">
+                                                <div class="flex space-x-1">
+                                                    <input type="text" class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs" placeholder="Add your comment...">
+                                                    <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 transition-colors">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="progress-bar w-full">
+                                                    <div class="progress-fill bg-green-600" style="width: 100%"></div>
+                                                </div>
+                                                <span class="ml-1 text-xs">100%</span>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <input type="text" class="score-input" value="100">
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            15
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td
+                                            class="px-2 py-2 text-sm font-medium text-gray-900 border-r border-gray-200">
+                                            Customer Retention
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            10</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            85</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            01/04/2023</td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            30/09/2023</td>
+                                        <td
+                                            class="px-2 py-2 text-sm text-gray-500 border-r border-gray-200">
+                                            <div class="bg-gray-100 p-2 rounded text-xs">
+                                                Working on improving retention strategies. Current rate is 82%.
+                                            </div>
+                                        </td>
+                                       <td
+                                            class="px-2 py-2 text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex flex-col space-y-1">
+                                                <div class="flex space-x-1">
+                                                    <input type="text" class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs" placeholder="Add your comment...">
+                                                    <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 transition-colors">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="progress-bar w-full">
+                                                    <div class="progress-fill bg-blue-500" style="width: 75%"></div>
+                                                </div>
+                                                <span class="ml-1 text-xs">75%</span>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            <input type="text" class="score-input" value="75">
+                                        </td>
+                                        <td
+                                            class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            7.5
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Total Row -->
+                                    <tr class="bg-gray-50 font-semibold">
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-l border-r border-gray-200 text-center"
+                                            colspan="3">
+                                            Total
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            100
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            <!-- Empty cell for alignment -->
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            <!-- Empty cell for alignment -->
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            <!-- Empty cell for alignment -->
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            <!-- Empty cell for alignment -->
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            <!-- Empty cell for alignment -->
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            <!-- Empty cell for alignment -->
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                            85.25
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Overlay for mobile menu -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        mobileMenuBtn.addEventListener('click', function () {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay.addEventListener('click', function () {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // Comment send functionality
+        document.querySelectorAll('.send-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const textarea = this.parentElement.querySelector('.comment-input');
+                const comment = textarea.value.trim();
+                
+                if (comment) {
+                    alert('Comment sent: ' + comment);
+                    // In a real application, you would send this to the server
+                    // and potentially update the UI with the new comment
+                    textarea.value = ''; // Clear the input after sending
+                } else {
+                    alert('Please enter a comment before sending.');
+                }
+            });
+        });
+
+        // Score calculation (simplified example)
+        document.querySelectorAll('.score-input').forEach(input => {
+            input.addEventListener('change', function() {
+                // In a real application, you would recalculate totals here
+                console.log('Score updated: ' + this.value);
+            });
+        });
+    </script>
+</body>
+
+</html>

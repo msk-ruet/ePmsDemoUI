@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRA Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .sidebar {
+            background-color: #034ea2;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #1e40af;
+        }
+
+        .header {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 0.5rem;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .table-header {
+            background-color: #0089CF;
+        }
+
+        .edit-btn {
+            background-color: #39b54a;
+        }
+
+        .edit-btn:hover {
+            background-color: #2e9c3e;
+        }
+
+        .delete-btn {
+            background-color: #c9252c;
+        }
+
+        .delete-btn:hover {
+            background-color: #b01e24;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 flex flex-col">
+            <div class="p-4 flex items-center justify-center border-b border-blue-700">
+                <h1 class="text-xl font-bold">Logo</h1>
+            </div>
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                <li>
+                    <a href="#" class="flex items-center p-3 rounded-lg active-nav-item">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-3 rounded-lg" id="kraNavBtn">
+                        <i class="fas fa-user-clock mr-3"></i>
+                        <span>Attendance</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-3 rounded-lg">
+                        <i class="fas fa-calendar-alt mr-3"></i>
+                        <span>Leave</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-3 rounded-lg">
+                        <i class="fas fa-user-check mr-3"></i>
+                        <span>Employee Visit</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="index.html" class="flex items-center p-3 rounded-lg">
+                        <i class="fas fa-chart-line mr-3"></i>
+                        <span>ePMS</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-3 rounded-lg">
+                        <i class="fas fa-address-book mr-3"></i>
+                        <span>Employee Contact</span>
+                    </a>
+                </li>
+            </ul>
+            </nav>
+            <div class="p-4 border-t border-blue-700">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                        <span class="font-bold">AD</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">Admin User</p>
+                        <p class="text-xs text-blue-200">admin@company.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+           <!-- Top Navbar -->
+            <header class="bg-white shadow-sm hidden lg:block">
+                <div class="flex items-center justify-between px-4 lg:px-6 py-4">
+                    <div class="flex items-center">
+                        <h2 class="text-lg lg:text-xl font-semibold text-gray-800">Welcome to ESS</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="p-2 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span
+                                    class="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">5</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center">
+                            <img class="h-8 w-8 rounded-full object-cover"
+                                src="https://ui-avatars.com/api/?name=Supervisor+User&background=0D8ABC&color=fff"
+                                alt="Supervisor User">
+                            <span class="ml-2 text-sm font-medium text-gray-700 hidden md:block">Admin User</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Table Section -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h2 class="text-xl font-semibold text-gray-700">KRA List</h2>
+                        <div class="flex space-x-3">
+                            <!-- Search Bar -->
+                            <div class="relative">
+                                <input type="text" id="searchInput" placeholder="Search KRAs..."
+                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                            <!-- Add KRA Button -->
+                            <button id="addKraBtn"
+                                class="px-4 py-2 bg-[#034ea2] text-white font-medium rounded-lg transition duration-200 hover:bg-blue-800">
+                                <i class="fas fa-plus mr-2"></i>Add KRA
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="table-header">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        SL No</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        KRA Name</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        KRA Description</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kraTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Table rows will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal for Add/Edit KRA -->
+    <div id="kraModal" class="modal">
+        <div class="modal-content">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-gray-700" id="modalTitle">Add KRA</h2>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="kraForm">
+                    <div class="mb-4">
+                        <label for="kraName" class="block text-gray-700 font-medium mb-2">KRA Name</label>
+                        <input type="text" id="kraName"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter KRA name">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="kraDescription" class="block text-gray-700 font-medium mb-2">KRA Description</label>
+                        <textarea id="kraDescription" rows="4"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter KRA description"></textarea>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2">Status</label>
+                        <div class="flex space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="status" value="active" class="h-4 w-4 text-blue-600" checked>
+                                <span class="ml-2 text-gray-700">Active</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="status" value="inactive" class="h-4 w-4 text-blue-600">
+                                <span class="ml-2 text-gray-700">Inactive</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-3">
+                        <button type="submit" id="submitBtn"
+                            class="px-4 py-2 bg-[#034ea2] text-white font-medium rounded-lg transition duration-200">Save</button>
+                        <button type="button" id="cancelBtn"
+                            class="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-400 transition duration-200">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        let kraData = [
+            {
+                id: 1,
+                name: "Customer Satisfaction",
+                description: "Measure and improve customer satisfaction levels across all touchpoints",
+                status: "active"
+            },
+            {
+                id: 2,
+                name: "Employee Engagement",
+                description: "Enhance employee engagement and reduce turnover rates",
+                status: "active"
+            },
+            {
+                id: 3,
+                name: "Revenue Growth",
+                description: "Achieve targeted revenue growth through new and existing channels",
+                status: "inactive"
+            },
+            {
+                id: 4,
+                name: "Operational Efficiency",
+                description: "Improve operational processes to reduce costs and increase productivity",
+                status: "active"
+            },
+            {
+                id: 5,
+                name: "Product Quality",
+                description: "Maintain and enhance product quality standards across all offerings",
+                status: "inactive"
+            }
+        ];
+
+        let editId = null;
+
+        // DOM elements
+        const kraModal = document.getElementById('kraModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const kraForm = document.getElementById('kraForm');
+        const kraNameInput = document.getElementById('kraName');
+        const kraDescriptionInput = document.getElementById('kraDescription');
+        const submitBtn = document.getElementById('submitBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const addKraBtn = document.getElementById('addKraBtn');
+        const closeModal = document.getElementById('closeModal');
+        const kraTableBody = document.getElementById('kraTableBody');
+        const kraNavBtn = document.getElementById('kraNavBtn');
+        const searchInput = document.getElementById('searchInput');
+
+        // Function to open modal
+        function openModal() {
+            kraModal.style.display = 'flex';
+        }
+
+        // Function to close modal
+        function closeModalFunc() {
+            kraModal.style.display = 'none';
+            resetForm();
+        }
+
+        // Function to reset form
+        function resetForm() {
+            kraForm.reset();
+            document.querySelector('input[name="status"][value="active"]').checked = true;
+            submitBtn.textContent = 'Save';
+            modalTitle.textContent = 'Add KRA';
+            editId = null;
+        }
+
+        // Function to filter KRAs based on search input
+        function filterKRAs(searchTerm) {
+            const filteredData = kraData.filter(kra =>
+                kra.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                kra.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            renderFilteredTable(filteredData);
+        }
+
+        // Function to render filtered table
+        function renderFilteredTable(filteredData) {
+            kraTableBody.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                kraTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                            No KRAs found matching your search.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filteredData.forEach((kra, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${index + 1}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${kra.name}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${kra.description}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${kra.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${kra.status === 'active' ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="editKRA(${kra.id})" class="px-3 py-1 edit-btn text-white font-medium rounded-md hover:bg-green-700 transition duration-200 mr-2">
+                            <i class="fas fa-edit mr-1"></i> Edit
+                        </button>
+                        <button onclick="deleteKRA(${kra.id})" class="px-3 py-1 delete-btn text-white font-medium rounded-md hover:bg-red-700 transition duration-200">
+                            <i class="fas fa-trash mr-1"></i> Delete
+                        </button>
+                    </td>
+                `;
+                kraTableBody.appendChild(row);
+            });
+        }
+
+        // Function to render table
+        function renderTable(data = null) {
+            const dataToRender = data || kraData;
+            renderFilteredTable(dataToRender);
+        }
+
+        // Function to handle form submission
+        kraForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = kraNameInput.value.trim();
+            const description = kraDescriptionInput.value.trim();
+            const status = document.querySelector('input[name="status"]:checked').value;
+
+            if (!name) {
+                alert('Please enter a KRA name');
+                return;
+            }
+
+            if (!description) {
+                alert('Please enter a KRA description');
+                return;
+            }
+
+            if (editId) {
+                // Update existing KRA
+                const index = kraData.findIndex(kra => kra.id === editId);
+                if (index !== -1) {
+                    kraData[index] = {
+                        id: editId,
+                        name,
+                        description,
+                        status
+                    };
+                }
+            } else {
+                // Add new KRA
+                const newId = kraData.length > 0 ? Math.max(...kraData.map(kra => kra.id)) + 1 : 1;
+                kraData.push({
+                    id: newId,
+                    name,
+                    description,
+                    status
+                });
+            }
+
+            // Close modal and reset form
+            closeModalFunc();
+
+            // Check if we're in search mode
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm) {
+                filterKRAs(searchTerm); // Refresh search results
+            } else {
+                renderTable(); // Refresh full table
+            }
+        });
+
+        // Function to edit KRA
+        window.editKRA = function (id) {
+            const kra = kraData.find(kra => kra.id === id);
+            if (kra) {
+                kraNameInput.value = kra.name;
+                kraDescriptionInput.value = kra.description;
+                document.querySelector(`input[name="status"][value="${kra.status}"]`).checked = true;
+
+                submitBtn.textContent = 'Update KRA';
+                modalTitle.textContent = 'Edit KRA';
+                editId = id;
+
+                // Open modal
+                openModal();
+            }
+        };
+
+        // Function to delete KRA
+        window.deleteKRA = function (id) {
+            if (confirm('Are you sure you want to delete this KRA?')) {
+                kraData = kraData.filter(kra => kra.id !== id);
+
+                // Check if we're in search mode
+                const searchTerm = searchInput.value.trim();
+                if (searchTerm) {
+                    filterKRAs(searchTerm); // Refresh search results
+                } else {
+                    renderTable(); // Refresh full table
+                }
+            }
+        };
+
+        // Event listeners
+        addKraBtn.addEventListener('click', function () {
+            resetForm();
+            openModal();
+        });
+
+        closeModal.addEventListener('click', closeModalFunc);
+
+        cancelBtn.addEventListener('click', closeModalFunc);
+
+        // Search functionality
+        searchInput.addEventListener('input', function (e) {
+            const searchTerm = e.target.value.trim();
+            if (searchTerm) {
+                filterKRAs(searchTerm);
+            } else {
+                renderTable(); // Show all KRAs when search is cleared
+            }
+        });
+
+        // Close modal when clicking outside the modal content
+        window.addEventListener('click', function (e) {
+            if (e.target === kraModal) {
+                closeModalFunc();
+            }
+        });
+
+        // Set active navigation item
+        kraNavBtn.addEventListener('click', function () {
+            // Remove active class from all nav items
+            document.querySelectorAll('.sidebar a').forEach(item => {
+                item.classList.remove('active-nav-item');
+            });
+            // Add active class to clicked item
+            this.classList.add('active-nav-item');
+        });
+
+        // Initial render
+        renderTable();
+    </script>
+</body>
+
+</html>

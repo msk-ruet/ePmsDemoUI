@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>PMS Dashboard with Cards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        .bg-diu-900 {
+            background-color: #034ea2;
+        }
+
+        .bg-diu-800 {
+            background-color: #0072BC;
+        }
+
+        .bg-diu-700{
+            background-color: #0089CF;
+        }
+
+        .bg-diu-600{
+            background-color: #00A1E4;
+        }
+
+        .bg-diu-500{
+            background-color: #53B7E8;
+        }
+        .bg-diu-400{
+            background-color: #9AC8EC;
+        }
+        .bg-diu-300{
+            background-color: #D4E7F7;
+        }
+
+        .border-diu-900{
+            border-color: #034ea2;
+        }
+        .border-diu-600{
+            border-color: #00A1E4;
+        }
+        .border-diu-300{
+            border-color: #D4E7F7;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+<main class="min-h-screen p-6 space-y-6  bg-white ">
+
+    <!-- Header Section -->
+    <section class="bg-white p-4 border rounded-lg shadow flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-16 h-16 border rounded-full flex items-center justify-center text-sm">
+                <img class="w-16 h-16 border rounded-full flex items-center justify-center text-sm" src="pic\staff.jpg" />
+
+            </div>
+            <div>
+                <p class="font-semibold">Staff Name:Alice</p>
+                <p class="text-sm text-gray-600">Designation: Lead Engineer</p>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <p class="font-semibold">Assessment Year</p>
+            <select class="mt-1 border rounded px-3 py-1 text-sm">
+                <option>2024</option>
+                <option>2025</option>
+            </select>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <div>
+                <p class="font-semibold">Supervisor:Eva</p>
+                <p class="text-sm text-gray-600">Designation: Tech Lead</p>
+            </div>
+            <div class="w-16 h-16 border rounded-full flex items-center justify-center text-sm">
+                <img class="w-16 h-16 border rounded-full flex items-center justify-center text-sm" src="pic\supervisor.jpg" />
+            </div>
+        </div>
+    </section>
+
+    <!--<section class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        &lt;!&ndash; Objective Setting &ndash;&gt;
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">Organizational Goals</h3>
+                <div class="flex items-center gap-1">
+                    &lt;!&ndash; Target icon &ndash;&gt;
+                    &lt;!&ndash;<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-8" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 6v6l4 2m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>&ndash;&gt;
+                    <span class="text-lg font-bold">5</span>
+                </div>
+            </div>
+            &lt;!&ndash; Dropdown &ndash;&gt;
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-blue-700">Self</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-blue-900" onclick="onClickFn('2.staff-objective-setting-submit.html')">Objective Settings</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-blue-700">Team</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-blue-900" onclick="onClickFn('1.supervisor-Objective-assign.html')">Goal Breakdown and Assign</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-blue-900" onclick="onClickFn('4.1.Supervisor-objective-approval-section-NEW.html')">Objective Approval</li>
+                </ul>
+            </div>
+        </div>
+
+        &lt;!&ndash; Instant Review &ndash;&gt;
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">KPI</h3>
+                &lt;!&ndash; Lightning icon &ndash;&gt;
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-10" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+            </div>
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-red-600">Self</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-red-900" onclick="onClickFn('4.2.Staff-submit-for-instant-review.html')">Request for Instant Review</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-red-600">Team</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-red-900" onclick="onClickFn('4.3.supervisor-instant-review.html')">Instant Review</li>
+                </ul>
+            </div>
+        </div>
+
+        &lt;!&ndash; Year End Review &ndash;&gt;
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">360 Degree Feedback</h3>
+                &lt;!&ndash; Calendar icon &ndash;&gt;
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-10" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-purple-600">Self</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-purple-900" >Request for Year End Rating</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-purple-600">Team</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-purple-900" onclick="onClickFn('4.5-EndYearRating.html')">Year End Rating and Recommendation</li>
+                </ul>
+            </div>
+        </div>
+
+        &lt;!&ndash; Interim Rating &ndash;&gt;
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">Rating</h3>
+                &lt;!&ndash; Star icon &ndash;&gt;
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-10" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.118 6.517a1 1 0 00.95.69h6.862c.969 0 1.371 1.24.588 1.81l-5.556 4.04a1 1 0 00-.364 1.118l2.118 6.517c.3.921-.755 1.688-1.54 1.118l-5.556-4.04a1 1 0 00-1.176 0l-5.556 4.04c-.784.57-1.838-.197-1.539-1.118l2.118-6.517a1 1 0 00-.364-1.118L2.53 11.944c-.783-.57-.38-1.81.588-1.81h6.862a1 1 0 00.95-.69l2.119-6.517z"/>
+                </svg>
+            </div>
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-green-700">Self</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-green-700">Team</li>
+                </ul>
+            </div>
+        </div>
+
+        &lt;!&ndash; Amendment &ndash;&gt;
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">Amendment</h3>
+                &lt;!&ndash; Pencil icon &ndash;&gt;
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-10" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-6 6M3 21h4l11-11a2.828 2.828 0 00-4-4L3 17v4z"/>
+                </svg>
+            </div>
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-yellow-600">Self</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-yellow-600">Team</li>
+                </ul>
+            </div>
+        </div>
+
+        &lt;!&ndash; Others &ndash;&gt;
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">Admin</h3>
+                &lt;!&ndash; Dots icon &ndash;&gt;
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-10" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M6 12a2 2 0 11-4 0 2 2 0 014 0zm8 0a2 2 0 11-4 0 2 2 0 014 0zm8 0a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+            </div>
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-indigo-900" onclick="onClickFn('0.Organization-goal-setup_and_assign.html')">Organization Goal Setup</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-indigo-900">Others Setup</li>
+                </ul>
+            </div>
+        </div>
+    </section>-->
+
+    <section class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <!-- Organizational Goals -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">Goals</h3>
+                <div class="flex items-center gap-1">
+                    <!-- Target icon for goals -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-8" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="text-lg font-bold">5</span>
+                </div>
+            </div>
+            <!-- Dropdown -->
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-blue-700">Self</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-blue-900" onclick="onClickFn('2.staff-objective-setting-submit.html')">My Goals</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-blue-700">Team</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-blue-900" onclick="onClickFn('1.supervisor-Objective-assign.html')">Goal Assign</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- KPI -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">KPI</h3>
+                <div class="flex items-center gap-1">
+                    <!-- Bar chart icon for KPI -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-8" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <span class="text-lg font-bold">12</span>
+                </div>
+            </div>
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-red-600">Self</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-red-900" onclick="onClickFn('4.2.Staff-submit-for-instant-review.html')">My KPI</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-red-600">Team</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-red-900" onclick="onClickFn('4.3.supervisor-instant-review.html')">KPI Assign</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 360 Degree Feedback -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">360 Feedback</h3>
+                <div class="flex items-center gap-1">
+                    <!-- Users/feedback icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-8" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="text-lg font-bold">8</span>
+                </div>
+            </div>
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-purple-600">Self</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-purple-900">View Outcomes</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-purple-600">Team</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-purple-900" onclick="onClickFn('4.5-EndYearRating.html')">Feedback</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rating -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">KPI Review</h3>
+                <div class="flex items-center gap-1">
+                    <!-- Star icon for rating -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-8" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                    </svg>
+                    <span class="text-lg font-bold">4.5</span>
+                </div>
+            </div>
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-green-700">Self</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-purple-900" onclick="onClickFn('4.5-EndYearRating.html')">Feedback</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-green-700">Team</li>
+                    <li class="px-8 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-purple-900" onclick="onClickFn('4.5-EndYearRating.html')">Feedback</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Amendment -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">Amendment</h3>
+                <div class="flex items-center gap-1">
+                    <!-- Pencil/edit icon for amendment -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-8" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <span class="text-lg font-bold">3</span>
+                </div>
+            </div>
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-yellow-600">Self</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-yellow-600">Team</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Admin -->
+        <div class="relative w-full">
+            <div class="card cursor-pointer bg-diu-900 text-white p-4 h-28 flex flex-col items-center justify-between rounded-md text-center shadow hover:shadow-lg transition">
+                <h3 class="font-bold">Admin</h3>
+                <div class="flex items-center gap-1">
+                    <!-- Settings/cog icon for admin -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-8" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="text-lg font-bold"></span>
+                </div>
+            </div>
+            <div class="dropdown hidden absolute mt-2 left-0 w-full bg-white border border-gray-200 rounded-md shadow text-left z-10">
+                <ul class="divide-y divide-gray-200">
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-indigo-900" onclick="onClickFn('0.Organization-goal-setup_and_assign.html')">Organization Goal Setup</li>
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer font-semibold text-indigo-900">Others Setup</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!--<div class="bg-white shadow rounded-lg">--> <div class="bg-white shadow border rounded-lg w-full max-w-full ">
+            <div class="bg-white shadow rounded-lg p-4">
+                <div style="text-align: center">
+                    <!--<h2 class="text-gray-700 font-semibold mb-3">Goal Status Overview</h2>-->
+                    <div id="myChart" style="width:auto; max-width:600px; height:250px;" ></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white shadow rounded-lg">
+            <section class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+                <div class="border-diu-900 rounded-md overflow-hidden">
+                    <div class="bg-diu-900 text-white font-bold text-center py-2 border-b border-diu-900">Timeline</div>
+                    <table class="w-full text-sm text-left ">
+                        <thead>
+                        <tr>
+                            <th class="border px-3 py-2 ">Item</th>
+                            <th class="border px-3 py-2">Start Date</th>
+                            <th class="border px-3 py-2">End Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="border px-3 py-2">KPI Assign</td>
+                            <td class="border px-3 py-2">01-Dec-2023</td>
+                            <td class="border px-3 py-2">30-Sep-2025</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-3 py-2">KPI Review</td>
+                            <td class="border px-3 py-2">01-Oct-2024</td>
+                            <td class="border px-3 py-2">30-Sep-2025</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-3 py-2">Goal Setting</td>
+                            <td class="border px-3 py-2">20-Apr-2025</td>
+                            <td class="border px-3 py-2">30-Sep-2025</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-3 py-2">360 Review</td>
+                            <td class="border px-3 py-2">20-Apr-2025</td>
+                            <td class="border px-3 py-2">30-Sep-2025</td>
+                        </tr>
+
+                        <tr>
+                            <td class="border px-3 py-2">Amendment</td>
+                            <td class="border px-3 py-2">20-Apr-2025</td>
+                            <td class="border px-3 py-2">30-Sep-2025</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </section>
+
+
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="order-diu-900 rounded-md overflow-hidden">
+            <table class="w-full text-sm text-left text-center">
+                <thead >
+                <tr class="bg-diu-900 text-white font-bold text-center py-2 border-b border-diu-900">
+                    <th colspan="2" class="border-b border-diu-900 px-3 py-2.5">Self</th>
+                    <th colspan="3" class="border-b border-diu-900 px-3 py-2.5">Team</th>
+                </tr>
+
+                <tr>
+                    <th class="border px-3 py-2 text-left">Item</th>
+                    <th class="border px-3 py-2">Status</th>
+                    <th class="border px-3 py-2">Not Started</th>
+                    <th class="border px-3 py-2">In Progress</th>
+                    <th class="border px-3 py-2">Complete</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="border px-3 py-2 text-left">KPI Setting</td>
+                    <td class="border px-3 py-2"><span class="bg-green-500 text-white px-2 py-1 rounded">Completed</span></td>
+                    <td class="border px-3 py-2"><span class="bg-red-500 text-white px-2 py-1 rounded">2</span></td>
+                    <td class="border px-3 py-2"><span class="bg-red-500 text-white px-2 py-1 rounded">2</span></td>
+                    <td class="border px-3 py-2"><span class="bg-red-500 text-white px-2 py-1 rounded">2</span></td>
+                </tr>
+                <tr>
+                    <td class="border px-3 py-2 text-left">Mid-Year Review</td>
+                    <td class="border px-3 py-2"><span class="bg-yellow-400 text-white px-2 py-1 rounded">In Progress</span></td>
+                    <td class="border px-3 py-2"><span class="bg-yellow-400 text-white px-2 py-1 rounded">3</span></td>
+                    <td class="border px-3 py-2"><span class="bg-yellow-400 text-white px-2 py-1 rounded">3</span></td>
+                    <td class="border px-3 py-2"><span class="bg-yellow-400 text-white px-2 py-1 rounded">3</span></td>
+                </tr>
+                <tr>
+                    <td class="border px-3 py-2 text-left">Year-End Rating</td>
+                    <td class="border px-3 py-2"><span class="bg-red-500 text-white px-2 py-1 rounded">Not Started</span></td>
+                    <td class="border px-3 py-2"><span class="bg-green-500 text-white px-2 py-1 rounded">5</span></td>
+                    <td class="border px-3 py-2"><span class="bg-green-500 text-white px-2 py-1 rounded">5</span></td>
+                    <td class="border px-3 py-2"><span class="bg-green-500 text-white px-2 py-1 rounded">5</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="" style="text-align: center">
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white shadow rounded-lg p-4" style="text-align: center">
+                    <div>
+                        <h2 class="text-gray-700 font-semibold mb-3">Goal Status Overview</h2>
+                        <canvas id="goalStatusChart" height="100">100</canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white shadow rounded-lg p-4">
+                    <div>
+                        <h2 class="text-gray-700 font-semibold mb-3">KPI Weight Distribution</h2>
+                        <canvas id="kpiWeightChart" height="200"></canvas>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </section>
+
+    <!-- Bottom Sections -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div class="bg-white shadow-sm border rounded-lg w-full max-w-full md:max-w-2xl lg:max-w-[600px] p-3 sm:p-4 md:p-5 mx-4 sm:mx-auto">
+            <!-- Header -->
+            <div class="flex flex-col xs:flex-row xs:justify-between xs:items-center gap-2 xs:gap-4 border-b pb-3 mb-4">
+                <h2 class="text-gray-700 font-semibold text-base sm:text-lg md:text-xl text-center xs:text-left">Learn ePMS</h2>
+
+            </div>
+
+            <!-- Content -->
+            <div class="flex flex-col xl:flex-row items-center justify-between gap-4 md:gap-6">
+                <ul class="list-disc pl-5 text-sm space-y-1">
+                    <li>Video Tutorial for Objective Setting</li>
+                    <li>Video Tutorial for Instant Review</li>
+                    <li>Video Tutorial for Year-End Review</li>
+                    <li>Video Tutorial for 360 Degree Feedback</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-sm border rounded-lg w-full max-w-full md:max-w-2xl lg:max-w-[600px] p-3 sm:p-4 md:p-5 mx-4 sm:mx-auto">
+            <!-- Header -->
+            <div class="flex flex-col xs:flex-row xs:justify-between xs:items-center gap-2 xs:gap-4 border-b pb-3 mb-4">
+                <h2 class="text-gray-700 font-semibold text-base sm:text-lg md:text-xl text-center xs:text-left">Guidelines</h2>
+
+            </div>
+
+            <!-- Content -->
+            <div class="flex flex-col xl:flex-row items-center justify-between gap-4 md:gap-6">
+                <ul class="list-disc pl-5 text-sm space-y-1">
+                    <li>Objective Setting Guideline</li>
+                    <li>Year-End Review Guideline</li>
+                    <li>Instant review Guideline</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-4">
+            <div>
+                <h2 class="text-gray-700 font-semibold mb-3">KPI Achievement vs Target</h2>
+                <canvas id="kpiTargetChart" height="200"></canvas>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+
+
+    document.querySelectorAll('.card').forEach((card) => {
+        card.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            const dropdown = card.parentElement.querySelector('.dropdown');
+            const isVisible = !dropdown.classList.contains('hidden');
+
+            // Hide all dropdowns first
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.add('hidden'));
+
+            // Toggle the clicked one only if it wasn't visible
+            if (!isVisible) {
+                dropdown.classList.remove('hidden');
+            }
+        });
+    });
+
+    // Close dropdowns when clicking anywhere else
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.dropdown').forEach(d => d.classList.add('hidden'));
+    });
+</script>
+
+
+
+
+<script>
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    let chart;
+    let resizeTimer;
+
+    function drawChart() {
+        const container = document.getElementById('myChart');
+        const containerWidth = container.clientWidth;
+
+        const data = google.visualization.arrayToDataTable([
+            ['Daffodil International University', 'DIU'],
+            ['Faculty',1700],
+            ['Admin',500],
+            ['Bellow Officer',300]
+        ]);
+
+        // Dynamic options based on screen size
+        const options = {
+            title: 'Staff Distribution by Type (Total: 2,500)',
+            is3D: true,
+            colors: ['#0072BC', '#8dc63f', '#c9252c'],
+            backgroundColor: 'transparent',
+            chartArea: getChartAreaConfig(containerWidth),
+            legend: getLegendConfig(containerWidth),
+            titleTextStyle: {
+                fontSize: getTitleSize(containerWidth),
+                bold: true
+            }
+        };
+
+        chart = new google.visualization.PieChart(container);
+        chart.draw(data, options);
+    }
+
+    // Responsive configuration functions
+    function getChartAreaConfig(width) {
+        if (width < 480) {
+            return { left: 10, top: 50, width: '90%', height: '70%' };
+        } else if (width < 768) {
+            return { left: '10%', top: '15%', width: '80%', height: '75%' };
+        } else {
+            return { left: '15%', top: '10%', width: '70%', height: '80%' };
+        }
+    }
+
+    function getLegendConfig(width) {
+        if (width < 480) {
+            return {
+                position: 'bottom',
+                alignment: 'center',
+                textStyle: { fontSize: 10 }
+            };
+        } else {
+            return {
+                position: 'labeled',
+                textStyle: { fontSize: 12 }
+            };
+        }
+    }
+
+    function getTitleSize(width) {
+        if (width < 480) return 14;
+        if (width < 768) return 16;
+        return 18;
+    }
+
+    // Optimized resize handler
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (chart) {
+                drawChart();
+            }
+        }, 250); // Debounce resize events
+    });
+
+    // Redraw when orientation changes
+    window.addEventListener('orientationchange', function() {
+        setTimeout(function() {
+            if (chart) {
+                drawChart();
+            }
+        }, 500);
+    });
+</script>
+
+
+<script>
+
+    // Responsive configuration functions
+    function getChartAreaConfig(width) {
+        if (width < 480) {
+            return { left: 10, top: 50, width: '90%', height: '70%' };
+        } else if (width < 768) {
+            return { left: '10%', top: '15%', width: '80%', height: '75%' };
+        } else {
+            return { left: '15%', top: '10%', width: '70%', height: '80%' };
+        }
+    }
+
+    function getLegendConfig(width) {
+        if (width < 480) {
+            return {
+                position: 'bottom',
+                alignment: 'center',
+                textStyle: { fontSize: 10 }
+            };
+        } else {
+            return {
+                position: 'labeled',
+                textStyle: { fontSize: 12 }
+            };
+        }
+    }
+
+    function getTitleSize(width) {
+        if (width < 480) return 14;
+        if (width < 768) return 16;
+        return 18;
+    }
+
+    // Optimized resize handler
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (chart) {
+                drawChart();
+            }
+        }, 250); // Debounce resize events
+    });
+
+    // Redraw when orientation changes
+    window.addEventListener('orientationchange', function() {
+        setTimeout(function() {
+            if (chart) {
+                drawChart();
+            }
+        }, 500);
+    });
+</script>
+
+<script>
+    new Chart(document.getElementById('goalStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Completed', 'In Progress', 'Not Started', 'Delayed'],
+            datasets: [{
+                data: [45, 30, 15, 10],
+                backgroundColor: ['#10B981', '#3B82F6', '#EAB308', '#EF4444'],
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            cutout: '60%',
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    new Chart(document.getElementById('kpiTargetChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Sales', 'Customer Service', 'Operations', 'HR', 'Finance'],
+            datasets: [
+                {
+                    label: 'Target',
+                    data: [90, 85, 88, 80, 87],
+                    backgroundColor: '#E5E7EB',
+                    borderRadius: 6
+                },
+                {
+                    label: 'Achieved',
+                    data: [82, 79, 85, 76, 84],
+                    backgroundColor: '#3B82F6',
+                    borderRadius: 6
+                }
+            ]
+        },
+        options: {
+            plugins: { legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20 } } }
+        }
+    });
+
+    new Chart(document.getElementById('kpiWeightChart'), {
+        type: 'radar',
+        data: {
+            labels: ['Sales', 'Quality', 'Teamwork', 'Innovation', 'Efficiency'],
+            datasets: [{
+                label: 'Weight %',
+                data: [25, 20, 15, 25, 15],
+                backgroundColor: 'rgba(59,130,246,0.2)',
+                borderColor: '#3B82F6',
+                pointBackgroundColor: '#3B82F6'
+            }]
+        },
+        options: {
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 30,
+                    ticks: { stepSize: 5 }
+                }
+            },
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+</script>
+</body>
+</html>
