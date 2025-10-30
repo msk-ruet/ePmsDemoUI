@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI PMS - Supervisor Screen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sidebar-blue': '#034ea2',
+                        'table-blue': '#2E3094',
+                        'table-bg': '#F7F9FB',
+                        'edit-green': '#39b54a',
+                        'delete-red': '#c9252c',
+                    },
+                    fontFamily: {
+                        'roboto': ['Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .comment-section {
+            position: relative;
+        }
+
+        .comment-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 6px;
+            font-size: 0.75rem;
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .send-btn {
+            background-color: #2E3094;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .send-btn:hover {
+            background-color: #1e2074;
+        }
+
+        .score-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 3px;
+            font-size: 0.75rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .compact-table th,
+        .compact-table td {
+            padding: 6px 8px !important;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-right: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .details-btn {
+            background-color: #2E3094;
+            color: white;
+            border: none;
+        }
+
+        .details-btn:hover {
+            background-color: #1e2074;
+        }
+
+        .kra-cell {
+            background-color: #F7F9FB;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .table-container table {
+                font-size: 0.7rem;
+            }
+
+            .compact-table th,
+            .compact-table td {
+                padding: 4px 6px !important;
+            }
+            
+            .action-btn {
+                display: block;
+                width: 100%;
+                margin-bottom: 4px;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 font-roboto">
+    <!-- Mobile Menu Button -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md p-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">Welcome to ESS</h1>
+        <button id="mobileMenuBtn" class="text-gray-600">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <div class="flex h-screen pt-16 lg:pt-0">
+        <!-- Sidebar -->
+        <div id="sidebar"
+            class="sidebar w-64 flex flex-col bg-sidebar-blue text-white -translate-x-full lg:translate-x-0 fixed lg:relative top-0 bottom-0 z-40 transition-transform duration-300">
+            <div class="p-4 flex items-center justify-center border-b border-blue-700">
+                <h1 class="text-xl font-bold">Logo</h1>
+            </div>
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg active-nav-item">
+                            <i class="fas fa-tachometer-alt mr-3"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg" id="kraNavBtn">
+                            <i class="fas fa-user-clock mr-3"></i>
+                            <span>Attendance</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-calendar-alt mr-3"></i>
+                            <span>Leave</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-user-check mr-3"></i>
+                            <span>Employee Visit</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.html" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-chart-line mr-3"></i>
+                            <span>ePMS</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-address-book mr-3"></i>
+                            <span>Employee Contact</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="p-4 border-t border-blue-700">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                        <span class="font-bold">AD</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">Admin User</p>
+                        <p class="text-xs text-blue-200">admin@company.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden w-full">
+            <!-- Top Navbar -->
+            <header class="bg-white shadow-sm hidden lg:block">
+                <div class="flex items-center justify-between px-4 lg:px-6 py-4">
+                    <div class="flex items-center">
+                        <h2 class="text-lg lg:text-xl font-semibold text-gray-800">Welcome to ESS</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="p-2 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span
+                                    class="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">5</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center">
+                            <img class="h-8 w-8 rounded-full object-cover"
+                                src="https://ui-avatars.com/api/?name=Supervisor+User&background=0D8ABC&color=fff"
+                                alt="Supervisor User">
+                            <span class="ml-2 text-sm font-medium text-gray-700 hidden md:block">Admin User</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
+                <!-- Employee Information Table -->
+                <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+                    <div class="p-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Employee Information</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full compact-table">
+                            <thead>
+                                <tr class="bg-table-blue text-white">
+                                    <th
+                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Employee ID</th>
+                                    <th
+                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Employee Name</th>
+                                    <th
+                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Category</th>
+                                    <th
+                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Department</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td
+                                        class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                        710003896</td>
+                                    <td
+                                        class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
+                                        Fazlul Alam</td>
+                                    <td
+                                        class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                        Admin</td>
+                                    <td
+                                        class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                        Software Section</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- KPI Content -->
+                <div id="kpisContent" class="tab-content">
+                    <!-- Table -->
+                    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-800">Key Performance Indicator</h3>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="min-w-full compact-table" id="kpiTable">
+                                <thead>
+                                    <tr class="bg-table-blue text-white">
+                                        <th rowspan="2" width="3%"
+                                            class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                            SL</th>
+                                        <th rowspan="2" width="10%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                            KRA</th>
+                                        <th width="15%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            KPI</th>
+                                        <th width="6%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Weightage</th>
+                                        <th width="8%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Target Description</th>
+                                        <th width="8%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Target</th>
+                                        <th width="8%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Achievement</th>
+                                        <th width="8%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Achievement (%)</th>
+                                        <th width="8%"
+                                            class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            Score</th>
+                                        <th width="5%"
+                                            class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                            ⋮</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200" id="kpiTableBody">
+                                    <!-- Performance KRA -->
+                                    <tr class="kpi-row saved" data-kra-id="1">
+                                        <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
+                                            <div class="flex items-center justify-center h-full">
+                                                1
+                                            </div>
+                                        </td>
+                                        <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
+                                            <div class="h-full">
+                                                Performance
+                                            </div>
+                                        </td>
+                                        <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                            Revenue Growth
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            30</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            Increase revenue by 15%</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            15</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <input type="text" class="score-input" value="14">
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="progress-bar w-full">
+                                                    <div class="progress-fill bg-green-600" style="width: 93%"></div>
+                                                </div>
+                                                <span class="ml-1 text-xs">93%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            27.9
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                            <button class="action-btn details-btn" data-kpi-id="1">
+                                                Details
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="kpi-row saved" data-kra-id="1">
+                                        <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                            Cost Reduction
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            25</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            Reduce operational costs by 10%</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            10</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <input type="text" class="score-input" value="9">
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="progress-bar w-full">
+                                                    <div class="progress-fill bg-green-600" style="width: 90%"></div>
+                                                </div>
+                                                <span class="ml-1 text-xs">90%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            22.5
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                            <button class="action-btn details-btn" data-kpi-id="2">
+                                                Details
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="kpi-row saved" data-kra-id="1">
+                                        <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                            Profit Margin
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            20</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            Achieve 22% profit margin</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            22</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <input type="text" class="score-input" value="21">
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="progress-bar w-full">
+                                                    <div class="progress-fill bg-green-600" style="width: 95%"></div>
+                                                </div>
+                                                <span class="ml-1 text-xs">95%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            19
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                            <button class="action-btn details-btn" data-kpi-id="3">
+                                                 Details
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Customer Satisfaction KRA -->
+                                    <tr class="kpi-row saved" data-kra-id="2">
+                                        <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
+                                            <div class="flex items-center justify-center h-full">
+                                                2
+                                            </div>
+                                        </td>
+                                        <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
+                                            <div class="h-full">
+                                                Customer Satisfaction
+                                            </div>
+                                        </td>
+                                        <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                            NPS Score
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            15</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            Financial reporting process documentation</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            N/A</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <select class="score-input">
+                                                <option value="5">Excellent</option>
+                                                <option value="4" selected>Very Good</option>
+                                                <option value="3">Good</option>
+                                                <option value="2">Average</option>
+                                            </select>
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="progress-bar w-full">
+                                                    <div class="progress-fill bg-green-600" style="width: 100%"></div>
+                                                </div>
+                                                <span class="ml-1 text-xs">100%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            15
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                            <button class="action-btn details-btn" data-kpi-id="4">
+                                                 Details
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="kpi-row saved" data-kra-id="2">
+                                        <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                            Customer Retention
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            10</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            Maintain customer retention rate of 85%</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            85</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <input type="text" class="score-input" value="82">
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            <div class="flex items-center">
+                                                <div class="progress-bar w-full">
+                                                    <div class="progress-fill bg-green-600" style="width: 96%"></div>
+                                                </div>
+                                                <span class="ml-1 text-xs">96%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                            9.6
+                                        </td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                            <button class="action-btn details-btn" data-kpi-id="5">
+                                                 Details
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="weightage-total">
+                                        <td colspan="3" class="px-2 py-2 text-right font-medium">Total Weightage:</td>
+                                        <td id="totalWeightage" class="px-2 py-2 text-center font-medium">100</td>
+                                        <td colspan="4" class="px-2 py-2 text-center">
+                                            <span id="weightageStatus" class="text-sm text-green-600"></span>
+                                        </td>
+                                        <td class="px-2 py-2 text-center font-medium">94</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- KPI Review Modal -->
+    <div id="kpiReviewModal" class="modal">
+        <div class="modal-content">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-800">KPI Review</h3>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <!-- KPI Details Table -->
+                <div class="mb-6">
+                    <h4 class="text-md font-semibold text-gray-700 mb-2">KPI Details</h4>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full compact-table">
+                            <thead>
+                                <tr class="bg-table-blue text-white">
+                                    <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        KRA/KPI</th>
+                                    <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Weightage</th>
+                                    <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Target Details</th>
+                                    <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Target</th>
+                                    <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Achievement</th>
+                                    <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Achievement (%)</th>
+                                    <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Score</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="modalKpiDetails">
+                                <!-- KPI details will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Evidence URL -->
+                <div class="mb-6">
+                    <h4 class="text-md font-semibold text-gray-700 mb-2">Evidence URL</h4>
+                    <input type="text" id="evidenceUrl" class="w-full p-2 border border-gray-300 rounded-md" value="https://company.com/evidence/kpi-1" readonly>
+                </div>
+
+                <!-- Comment History -->
+                <div class="mb-6">
+                    <h4 class="text-md font-semibold text-gray-700 mb-2">Comment History</h4>
+                    <div class="bg-gray-50 p-4 rounded-md max-h-40 overflow-y-auto">
+                        <div class="comment-item mb-3 pb-3 border-b border-gray-200">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium text-sm">John Smith (EMP-001)</span>
+                                <span class="text-xs text-gray-500">2023-10-15 14:30</span>
+                            </div>
+                            <p class="text-sm">I've completed the initial analysis and documentation for this KPI. The results are promising.</p>
+                        </div>
+                        <div class="comment-item mb-3 pb-3 border-b border-gray-200">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium text-sm">Sarah Johnson (Supervisor)</span>
+                                <span class="text-xs text-gray-500">2023-10-16 09:15</span>
+                            </div>
+                            <p class="text-sm">Good progress. Please ensure the final report includes comparative analysis with last quarter.</p>
+                        </div>
+                        <div class="comment-item">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium text-sm">John Smith (EMP-001)</span>
+                                <span class="text-xs text-gray-500">2023-10-17 11:45</span>
+                            </div>
+                            <p class="text-sm">The comparative analysis has been added to the final report. All data is now up to date.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Comment -->
+                <div>
+                    <h4 class="text-md font-semibold text-gray-700 mb-2">Add Comment</h4>
+                    <textarea id="commentInput" class="w-full p-2 border border-gray-300 rounded-md comment-input" placeholder="Enter your comment here..."></textarea>
+                    <div class="w-full flex justify-end">
+                    <button id="sendComment" class="send-btn ">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay for mobile menu -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        mobileMenuBtn.addEventListener('click', function () {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay.addEventListener('click', function () {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // Modal functionality
+        const modal = document.getElementById('kpiReviewModal');
+        const closeModal = document.getElementById('closeModal');
+        const detailsButtons = document.querySelectorAll('.details-btn');
+        const modalKpiDetails = document.getElementById('modalKpiDetails');
+        const sendCommentBtn = document.getElementById('sendComment');
+
+        // KPI data for the modal
+        const kpiData = {
+            1: {
+                kra: "Performance",
+                kpi: "Revenue Growth",
+                weightage: "30",
+                targetDetails: "Increase revenue by 15%",
+                target: "15",
+                achievement: "14",
+                achievementPercent: "93%",
+                score: "27.9"
+            },
+            2: {
+                kra: "Performance",
+                kpi: "Cost Reduction",
+                weightage: "25",
+                targetDetails: "Reduce operational costs by 10%",
+                target: "10",
+                achievement: "9",
+                achievementPercent: "90%",
+                score: "22.5"
+            },
+            3: {
+                kra: "Performance",
+                kpi: "Profit Margin",
+                weightage: "20",
+                targetDetails: "Achieve 22% profit margin",
+                target: "22",
+                achievement: "21",
+                achievementPercent: "95%",
+                score: "19"
+            },
+            4: {
+                kra: "Customer Satisfaction",
+                kpi: "NPS Score",
+                weightage: "15",
+                targetDetails: "Financial reporting process documentation",
+                target: "N/A",
+                achievement: "Very Good",
+                achievementPercent: "100%",
+                score: "15"
+            },
+            5: {
+                kra: "Customer Satisfaction",
+                kpi: "Customer Retention",
+                weightage: "10",
+                targetDetails: "Maintain customer retention rate of 85%",
+                target: "85",
+                achievement: "82",
+                achievementPercent: "96%",
+                score: "9.6"
+            }
+        };
+
+        // Open modal when details button is clicked
+        detailsButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const kpiId = this.getAttribute('data-kpi-id');
+                const kpi = kpiData[kpiId];
+                
+                // Populate modal with KPI details
+                modalKpiDetails.innerHTML = `
+                    <tr>
+                        <td class="px-2 py-2 text-sm text-gray-500 border-r border-gray-200">
+                            <div>${kpi.kra}</div>
+                            <div class="font-medium">${kpi.kpi}</div>
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.weightage}
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.targetDetails}
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.target}
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.achievement}
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.achievementPercent}
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.score}
+                        </td>
+                    </tr>
+                `;
+                
+                // Show modal
+                modal.style.display = 'flex';
+            });
+        });
+
+        // Close modal
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Send comment functionality
+        sendCommentBtn.addEventListener('click', function() {
+            const commentInput = document.getElementById('commentInput');
+            const comment = commentInput.value.trim();
+            
+            if (comment) {
+                // In a real application, you would send this to the server
+                alert('Comment sent: ' + comment);
+                commentInput.value = ''; // Clear the input after sending
+            } else {
+                alert('Please enter a comment before sending.');
+            }
+        });
+
+        // Create KRA button functionality
+        document.getElementById('createKraBtn').addEventListener('click', function() {
+            alert('Create KRA functionality would open a form here');
+            // In a real application, you would open a modal or form to create a new KRA
+        });
+    </script>
+</body>
+
+</html>
