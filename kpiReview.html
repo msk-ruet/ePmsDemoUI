@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"
-      x-data="{
-        sidebarOpen: false,
+      x-data="{ 
+        sidebarOpen: false, 
         darkMode: localStorage.getItem('darkMode') === 'true',
         sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
         activeMenu: null
@@ -15,7 +15,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIU Sun Light Admin Console</title>
 
     <!-- Tailwind & Alpine.js -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,10 +23,159 @@
     <!-- Google Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>-->
+    <!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">-->
+   <!-- <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">-->
+
+    <title>KPI PMS - Supervisor Screen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sidebar-blue': '#034ea2',
+                        'table-blue': '#2E3094',
+                        'table-bg': '#F7F9FB',
+                        'edit-green': '#39b54a',
+                        'delete-red': '#c9252c',
+                    },
+                    fontFamily: {
+                        'roboto': ['Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .comment-section {
+            position: relative;
+        }
+
+        .comment-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 6px;
+            font-size: 0.75rem;
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .send-btn {
+            background-color: #2E3094;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .send-btn:hover {
+            background-color: #1e2074;
+        }
+
+        .score-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 3px;
+            font-size: 0.75rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .compact-table th,
+        .compact-table td {
+            padding: 6px 8px !important;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-right: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .details-btn {
+            background-color: #2E3094;
+            color: white;
+            border: none;
+        }
+
+        .details-btn:hover {
+            background-color: #1e2074;
+        }
+
+        .kra-cell {
+            background-color: #F7F9FB;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            /*max-width: 1000px;
+            max-height: 90vh;*/
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .table-container table {
+                font-size: 0.7rem;
+            }
+
+            .compact-table th,
+            .compact-table td {
+                padding: 4px 6px !important;
+            }
+
+            .action-btn {
+                display: block;
+                width: 100%;
+                margin-bottom: 4px;
+            }
+        }
+    </style>
     <style>
         .hidden {
             display: none;
@@ -178,8 +326,8 @@
         .modal-content {
             background-color: white;
             border-radius: 0.5rem;
-            width: 90%;
-            max-width: 600px;
+            width: 80%;
+            /*max-width: 600px;*/
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             max-height: 90vh;
             overflow-y: auto;
@@ -435,8 +583,8 @@
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'user-management' ? null : 'user-management';
-            } else {
-              open = !open;
+            } else { 
+              open = !open; 
             }"
                         class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'user-management' }">
@@ -501,8 +649,8 @@
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'hr-attendance' ? null : 'hr-attendance';
-            } else {
-              open = !open;
+            } else { 
+              open = !open; 
             }"
                         class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'hr-attendance' }">
@@ -567,8 +715,8 @@
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'epms' ? null : 'epms';
-            } else {
-              open = !open;
+            } else { 
+              open = !open; 
             }"
                         class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'epms' }">
@@ -637,8 +785,8 @@
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'payroll' ? null : 'payroll';
-            } else {
-              open = !open;
+            } else { 
+              open = !open; 
             }"
                         class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'payroll' }">
@@ -702,8 +850,8 @@
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'leave' ? null : 'leave';
-            } else {
-              open = !open;
+            } else { 
+              open = !open; 
             }"
                         class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'leave' }">
@@ -768,8 +916,8 @@
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'visit' ? null : 'visit';
-            } else {
-              open = !open;
+            } else { 
+              open = !open; 
             }"
                         class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'visit' }">
@@ -915,174 +1063,285 @@
             </div>
         </header>
 
-
-        <main class="flex-1 overflow-y-auto p-6">
-            <!-- Tabs -->
-            <div class="mb-6">
-                <div class="border-b border-gray-200">
-                    <nav class="-mb-px flex space-x-8">
-                        <button id="assessments-tab" class="tab-button py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600">Assessments</button>
-                        <button id="templates-tab" class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">Templates</button>
-                    </nav>
+        <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
+            <!-- Employee Information Table -->
+            <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+                <div class="p-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800">Employee Information</h3>
                 </div>
-            </div>
-
-            <!-- Assessments Section -->
-            <div id="assessments-section" class="tab-content">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">Assessments</h3>
-                    <button id="create-assessment-btn" class="sidebar text-white px-4 py-2 rounded-lg flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        Create Assessment
-                    </button>
-                </div>
-
-                <!-- Assessments Table -->
-                <div class="bg-white rounded-lg shadow overflow-hidden">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="sidebar text-white">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Assessment Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Start Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">End Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full compact-table">
+                        <thead>
+                        <tr class="bg-table-blue text-white">
+                            <th
+                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                Employee ID</th>
+                            <th
+                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                Employee Name</th>
+                            <th
+                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                Category</th>
+                            <th
+                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                Department</th>
                         </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2023</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">01/01/2023</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">31/12/2023</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button class="text-[#39b54a] hover:text-green-700 mr-3">Edit</button>
-                                <button class="text-[#c9252c] hover:text-red-700">Delete</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2023 Mid-Year</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">01/06/2023</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">30/06/2023</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button class="text-[#39b54a] hover:text-green-700 mr-3">Edit</button>
-                                <button class="text-[#c9252c] hover:text-red-700">Delete</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2023 Q1</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">01/03/2023</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">31/03/2023</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Completed</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button class="text-[#39b54a] hover:text-green-700 mr-3">Edit</button>
-                                <button class="text-[#c9252c] hover:text-red-700">Delete</button>
-                            </td>
+                            <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                710003896</td>
+                            <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
+                                Fazlul Alam</td>
+                            <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                Admin</td>
+                            <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                                Software Section</td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Templates Section -->
-            <div id="templates-section" class="tab-content hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">Templates</h3>
-                    <button id="create-template-btn" class="sidebar text-white px-4 py-2 rounded-lg flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        Create Template
-                    </button>
-                </div>
-
-                <!-- Templates Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Template Card 1 -->
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <h4 class="text-lg font-semibold">Annual Performance Template</h4>
-                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Active</span>
-                        </div>
-                        <div class="space-y-2 text-sm text-gray-600">
-                            <div class="flex justify-between">
-                                <span>Assessment Year:</span>
-                                <span class="font-medium">2023</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>KPI Period:</span>
-                                <span class="font-medium">Jan 1 - Dec 31</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Review Period:</span>
-                                <span class="font-medium">Jan 15 - Feb 15</span>
-                            </div>
-                        </div>
-                        <div class="mt-4 flex justify-end space-x-2">
-                            <button class="text-[#39b54a] hover:text-green-700 text-sm">Edit</button>
-                            <button class="text-[#c9252c] hover:text-red-700 text-sm">Delete</button>
-                        </div>
+            <!-- KPI Content -->
+            <div id="kpisContent" class="tab-content">
+                <!-- Table -->
+                <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-800">Key Performance Indicator</h3>
                     </div>
 
-                    <!-- Template Card 2 -->
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <h4 class="text-lg font-semibold">Mid-Year Review Template</h4>
-                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Draft</span>
-                        </div>
-                        <div class="space-y-2 text-sm text-gray-600">
-                            <div class="flex justify-between">
-                                <span>Assessment Year:</span>
-                                <span class="font-medium">2023</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>KPI Period:</span>
-                                <span class="font-medium">Jun 1 - Jun 30</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Review Period:</span>
-                                <span class="font-medium">Jul 1 - Jul 15</span>
-                            </div>
-                        </div>
-                        <div class="mt-4 flex justify-end space-x-2">
-                            <button class="text-[#39b54a] hover:text-green-700 text-sm">Edit</button>
-                            <button class="text-[#c9252c] hover:text-red-700 text-sm">Delete</button>
-                        </div>
-                    </div>
+                    <div class="table-container">
+                        <table class="min-w-full compact-table" id="kpiTable">
+                            <thead>
+                            <tr class="bg-table-blue text-white">
+                                <th rowspan="2" width="3%"
+                                    class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                    SL</th>
+                                <th rowspan="2" width="10%"
+                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                    KRA</th>
+                                <th width="15%"
+                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    KPI</th>
+                                <th width="6%"
+                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    Weightage</th>
+                                <th width="8%"
+                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    Target Description</th>
+                                <th width="8%"
+                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    Target</th>
+                                <th width="8%"
+                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    Achievement</th>
+                                <th width="8%"
+                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    Achievement (%)</th>
+                                <th width="8%"
+                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    Score</th>
+                                <th width="5%"
+                                    class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    ⋮</th>
+                            </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="kpiTableBody">
+                            <!-- Performance KRA -->
+                            <tr class="kpi-row saved" data-kra-id="1">
+                                <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
+                                    <div class="flex items-center justify-center h-full">
+                                        1
+                                    </div>
+                                </td>
+                                <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
+                                    <div class="h-full">
+                                        Performance
+                                    </div>
+                                </td>
+                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                    Revenue Growth
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    30</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    Increase revenue by 15%</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    15</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    <input type="text" class="score-input" value="14">
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    <div class="flex items-center">
+                                        <div class="progress-bar w-full">
+                                            <div class="progress-fill bg-green-600" style="width: 93%"></div>
+                                        </div>
+                                        <span class="ml-1 text-xs">93%</span>
+                                    </div>
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    27.9
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                    <button class="action-btn details-btn" data-kpi-id="1">
+                                        Details
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="kpi-row saved" data-kra-id="1">
+                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                    Cost Reduction
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    25</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    Reduce operational costs by 10%</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    10</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    <input type="text" class="score-input" value="9">
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    <div class="flex items-center">
+                                        <div class="progress-bar w-full">
+                                            <div class="progress-fill bg-green-600" style="width: 90%"></div>
+                                        </div>
+                                        <span class="ml-1 text-xs">90%</span>
+                                    </div>
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    22.5
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                    <button class="action-btn details-btn" data-kpi-id="2">
+                                        Details
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="kpi-row saved" data-kra-id="1">
+                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                    Profit Margin
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    20</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    Achieve 22% profit margin</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    22</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    <input type="text" class="score-input" value="21">
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    <div class="flex items-center">
+                                        <div class="progress-bar w-full">
+                                            <div class="progress-fill bg-green-600" style="width: 95%"></div>
+                                        </div>
+                                        <span class="ml-1 text-xs">95%</span>
+                                    </div>
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    19
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                    <button class="action-btn details-btn" data-kpi-id="3">
+                                        Details
+                                    </button>
+                                </td>
+                            </tr>
 
-                    <!-- Template Card 3 -->
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <h4 class="text-lg font-semibold">Quarterly Review Template</h4>
-                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Active</span>
-                        </div>
-                        <div class="space-y-2 text-sm text-gray-600">
-                            <div class="flex justify-between">
-                                <span>Assessment Year:</span>
-                                <span class="font-medium">2023</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>KPI Period:</span>
-                                <span class="font-medium">Quarterly</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Review Period:</span>
-                                <span class="font-medium">15 days after quarter</span>
-                            </div>
-                        </div>
-                        <div class="mt-4 flex justify-end space-x-2">
-                            <button class="text-[#39b54a] hover:text-green-700 text-sm">Edit</button>
-                            <button class="text-[#c9252c] hover:text-red-700 text-sm">Delete</button>
-                        </div>
+                            <!-- Customer Satisfaction KRA -->
+                            <tr class="kpi-row saved" data-kra-id="2">
+                                <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
+                                    <div class="flex items-center justify-center h-full">
+                                        2
+                                    </div>
+                                </td>
+                                <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
+                                    <div class="h-full">
+                                        Customer Satisfaction
+                                    </div>
+                                </td>
+                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                    NPS Score
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    15</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    Financial reporting process documentation</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    N/A</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    <select class="score-input">
+                                        <option value="5">Excellent</option>
+                                        <option value="4" selected>Very Good</option>
+                                        <option value="3">Good</option>
+                                        <option value="2">Average</option>
+                                    </select>
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    <div class="flex items-center">
+                                        <div class="progress-bar w-full">
+                                            <div class="progress-fill bg-green-600" style="width: 100%"></div>
+                                        </div>
+                                        <span class="ml-1 text-xs">100%</span>
+                                    </div>
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    15
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                    <button class="action-btn details-btn" data-kpi-id="4">
+                                        Details
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="kpi-row saved" data-kra-id="2">
+                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                    Customer Retention
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    10</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    Maintain customer retention rate of 85%</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    85</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    <input type="text" class="score-input" value="82">
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    <div class="flex items-center">
+                                        <div class="progress-bar w-full">
+                                            <div class="progress-fill bg-green-600" style="width: 96%"></div>
+                                        </div>
+                                        <span class="ml-1 text-xs">96%</span>
+                                    </div>
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                    9.6
+                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                    <button class="action-btn details-btn" data-kpi-id="5">
+                                        Details
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr class="weightage-total">
+                                <td colspan="3" class="px-2 py-2 text-right font-medium">Total Weightage:</td>
+                                <td id="totalWeightage" class="px-2 py-2 text-center font-medium">100</td>
+                                <td colspan="4" class="px-2 py-2 text-center">
+                                    <span id="weightageStatus" class="text-sm text-green-600"></span>
+                                </td>
+                                <td class="px-2 py-2 text-center font-medium">94</td>
+                            </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -1090,366 +1349,242 @@
     </div>
 </div>
 
-
-<div id="template-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <div class="flex justify-between items-center pb-3 border-b">
-                <h3 class="text-xl font-semibold">Create Template</h3>
-                <button id="close-template-modal" class="text-gray-400 hover:text-gray-500">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+<!-- KPI Review Modal -->
+<div id="kpiReviewModal" class="modal">
+    <div class="modal-content">
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-800">KPI Review</h3>
+            <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-4">
+            <!-- KPI Details Table -->
+            <div class="mb-6">
+                <h4 class="text-md font-semibold text-gray-700 mb-2">KPI Details</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full compact-table">
+                        <thead>
+                        <tr class="bg-table-blue text-white">
+                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                KRA/KPI</th>
+                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                Weightage</th>
+                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                Target Details</th>
+                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                Target</th>
+                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                Achievement</th>
+                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                Achievement (%)</th>
+                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                Score</th>
+                        </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="modalKpiDetails">
+                        <!-- KPI details will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <form class="mt-4 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Assessment Year</label>
-                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter assessment year">
-                </div>
+            <!-- Evidence URL -->
+            <div class="mb-6">
+                <h4 class="text-md font-semibold text-gray-700 mb-2">Evidence URL</h4>
+                <input type="text" id="evidenceUrl" class="w-full p-2 border border-gray-300 rounded-md" value="https://company.com/evidence/kpi-1" readonly>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">KPI Start Date</label>
-                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <!-- Comment History -->
+            <div class="mb-6">
+                <h4 class="text-md font-semibold text-gray-700 mb-2">Comment History</h4>
+                <div class="bg-gray-50 p-4 rounded-md max-h-40 overflow-y-auto">
+                    <div class="comment-item mb-3 pb-3 border-b border-gray-200">
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-sm">John Smith (EMP-001)</span>
+                            <span class="text-xs text-gray-500">2023-10-15 14:30</span>
+                        </div>
+                        <p class="text-sm">I've completed the initial analysis and documentation for this KPI. The results are promising.</p>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">KPI End Date</label>
-                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <div class="comment-item mb-3 pb-3 border-b border-gray-200">
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-sm">Sarah Johnson (Supervisor)</span>
+                            <span class="text-xs text-gray-500">2023-10-16 09:15</span>
+                        </div>
+                        <p class="text-sm">Good progress. Please ensure the final report includes comparative analysis with last quarter.</p>
+                    </div>
+                    <div class="comment-item">
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-sm">John Smith (EMP-001)</span>
+                            <span class="text-xs text-gray-500">2023-10-17 11:45</span>
+                        </div>
+                        <p class="text-sm">The comparative analysis has been added to the final report. All data is now up to date.</p>
                     </div>
                 </div>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">KPI Review Start Date</label>
-                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">KPI Review End Date</label>
-                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
+            <!-- Add Comment -->
+            <div>
+                <h4 class="text-md font-semibold text-gray-700 mb-2">Add Comment</h4>
+                <textarea id="commentInput" class="w-full p-2 border border-gray-300 rounded-md comment-input" placeholder="Enter your comment here..."></textarea>
+                <div class="w-full flex justify-end">
+                    <button id="sendComment" class="send-btn ">Send</button>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">360 Degree Start Date</label>
-                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">360 Degree End Date</label>
-                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter description"></textarea>
-                </div>
-
-                <div class="flex justify-end space-x-3 pt-4 border-t">
-                    <button type="button" id="cancel-template" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
-                    <button type="button" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Create Template</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Create Assessment Modal -->
-<div id="assessment-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <div class="flex justify-between items-center pb-3 border-b">
-                <h3 class="text-xl font-semibold">Create Assessment</h3>
-                <button id="close-assessment-modal" class="text-gray-400 hover:text-gray-500">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <form class="mt-4 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Template</label>
-                    <select id="template-select" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select a template</option>
-                        <option value="1">Annual Performance Template</option>
-                        <option value="2">Mid-Year Review Template</option>
-                        <option value="3">Quarterly Review Template</option>
-                    </select>
-                </div>
-
-                <!-- Template Details (Read-only) -->
-                <div id="template-details" class="hidden bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <h4 class="text-lg font-semibold mb-3">Template Details</h4>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Assessment Year</label>
-                            <input type="text" id="assessment-year" class="w-full px-3 py-2 readonly-field rounded-md" readonly>
-                        </div>
-                        <div></div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">KPI Start Date</label>
-                            <input type="text" id="kpi-start-date" class="w-full px-3 py-2 readonly-field rounded-md" readonly>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">KPI End Date</label>
-                            <input type="text" id="kpi-end-date" class="w-full px-3 py-2 readonly-field rounded-md" readonly>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">KPI Review Start Date</label>
-                            <input type="text" id="kpi-review-start-date" class="w-full px-3 py-2 readonly-field rounded-md" readonly>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">KPI Review End Date</label>
-                            <input type="text" id="kpi-review-end-date" class="w-full px-3 py-2 readonly-field rounded-md" readonly>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">360 Degree Start Date</label>
-                            <input type="text" id="degree-start-date" class="w-full px-3 py-2 readonly-field rounded-md" readonly>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">360 Degree End Date</label>
-                            <input type="text" id="degree-end-date" class="w-full px-3 py-2 readonly-field rounded-md" readonly>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Assessment Start Date</label>
-                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Assessment End Date</label>
-                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">KPI Distribution Type</label>
-                    <select id="kpi-distribution-type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select distribution type</option>
-                        <option value="employee_type">Employee Type</option>
-                        <option value="designation">Designation</option>
-                        <option value="faculty">Faculty</option>
-                        <option value="department">Department</option>
-                        <option value="employee">Employee</option>
-                    </select>
-                </div>
-
-                <!-- Employee Type Options -->
-                <div id="employee-type-options" class="hidden">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Applicable Employee Type</label>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">Academic</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">Admin</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">Below Officer</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Designation Options -->
-                <div id="designation-options" class="hidden">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Applicable Designation</label>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">Manager</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">Supervisor</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">Officer</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Faculty Options -->
-                <div id="faculty-options" class="hidden">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Applicable Faculty</label>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">Engineering</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">Science</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">Arts</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Department Options -->
-                <div id="department-options" class="hidden">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Applicable Department</label>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">HR</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">Finance</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label class="ml-2 block text-sm text-gray-700">IT</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Employee Options -->
-                <div id="employee-options" class="hidden">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Applicable Employee IDs</label>
-                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter employee IDs separated by commas">
-                </div>
-
-                <div class="flex justify-end space-x-3 pt-4 border-t">
-                    <button type="button" id="cancel-assessment" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
-                    <button type="button" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Create Assessment</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- Overlay for mobile menu -->
+<div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
 
 <script>
-    // Tab switching functionality
-    document.getElementById('assessments-tab').addEventListener('click', function() {
-        document.getElementById('assessments-section').classList.remove('hidden');
-        document.getElementById('templates-section').classList.add('hidden');
-        document.getElementById('assessments-tab').classList.add('border-blue-500', 'text-blue-600');
-        document.getElementById('assessments-tab').classList.remove('border-transparent', 'text-gray-500');
-        document.getElementById('templates-tab').classList.remove('border-blue-500', 'text-blue-600');
-        document.getElementById('templates-tab').classList.add('border-transparent', 'text-gray-500');
+    // Mobile menu functionality
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    /*mobileMenuBtn.addEventListener('click', function () {
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    });*/
+
+    overlay.addEventListener('click', function () {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
     });
 
-    document.getElementById('templates-tab').addEventListener('click', function() {
-        document.getElementById('templates-section').classList.remove('hidden');
-        document.getElementById('assessments-section').classList.add('hidden');
-        document.getElementById('templates-tab').classList.add('border-blue-500', 'text-blue-600');
-        document.getElementById('templates-tab').classList.remove('border-transparent', 'text-gray-500');
-        document.getElementById('assessments-tab').classList.remove('border-blue-500', 'text-blue-600');
-        document.getElementById('assessments-tab').classList.add('border-transparent', 'text-gray-500');
+    // Modal functionality
+    const modal = document.getElementById('kpiReviewModal');
+    const closeModal = document.getElementById('closeModal');
+    const detailsButtons = document.querySelectorAll('.details-btn');
+    const modalKpiDetails = document.getElementById('modalKpiDetails');
+    const sendCommentBtn = document.getElementById('sendComment');
+
+    // KPI data for the modal
+    const kpiData = {
+        1: {
+            kra: "Performance",
+            kpi: "Revenue Growth",
+            weightage: "30",
+            targetDetails: "Increase revenue by 15%",
+            target: "15",
+            achievement: "14",
+            achievementPercent: "93%",
+            score: "27.9"
+        },
+        2: {
+            kra: "Performance",
+            kpi: "Cost Reduction",
+            weightage: "25",
+            targetDetails: "Reduce operational costs by 10%",
+            target: "10",
+            achievement: "9",
+            achievementPercent: "90%",
+            score: "22.5"
+        },
+        3: {
+            kra: "Performance",
+            kpi: "Profit Margin",
+            weightage: "20",
+            targetDetails: "Achieve 22% profit margin",
+            target: "22",
+            achievement: "21",
+            achievementPercent: "95%",
+            score: "19"
+        },
+        4: {
+            kra: "Customer Satisfaction",
+            kpi: "NPS Score",
+            weightage: "15",
+            targetDetails: "Financial reporting process documentation",
+            target: "N/A",
+            achievement: "Very Good",
+            achievementPercent: "100%",
+            score: "15"
+        },
+        5: {
+            kra: "Customer Satisfaction",
+            kpi: "Customer Retention",
+            weightage: "10",
+            targetDetails: "Maintain customer retention rate of 85%",
+            target: "85",
+            achievement: "82",
+            achievementPercent: "96%",
+            score: "9.6"
+        }
+    };
+
+    // Open modal when details button is clicked
+    detailsButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const kpiId = this.getAttribute('data-kpi-id');
+            const kpi = kpiData[kpiId];
+
+            // Populate modal with KPI details
+            modalKpiDetails.innerHTML = `
+                    <tr>
+                        <td class="px-2 py-2 text-sm text-gray-500 border-r border-gray-200">
+                            <div>${kpi.kra}</div>
+                            <div class="font-medium">${kpi.kpi}</div>
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.weightage}
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.targetDetails}
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.target}
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.achievement}
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.achievementPercent}
+                        </td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
+                            ${kpi.score}
+                        </td>
+                    </tr>
+                `;
+
+            // Show modal
+            modal.style.display = 'flex';
+        });
     });
 
-    // Template modal functionality
-    document.getElementById('create-template-btn').addEventListener('click', function() {
-        document.getElementById('template-modal').classList.remove('hidden');
+    // Close modal
+    closeModal.addEventListener('click', function() {
+        modal.style.display = 'none';
     });
 
-    document.getElementById('close-template-modal').addEventListener('click', function() {
-        document.getElementById('template-modal').classList.add('hidden');
-    });
-
-    document.getElementById('cancel-template').addEventListener('click', function() {
-        document.getElementById('template-modal').classList.add('hidden');
-    });
-
-    // Assessment modal functionality
-    document.getElementById('create-assessment-btn').addEventListener('click', function() {
-        document.getElementById('assessment-modal').classList.remove('hidden');
-    });
-
-    document.getElementById('close-assessment-modal').addEventListener('click', function() {
-        document.getElementById('assessment-modal').classList.add('hidden');
-    });
-
-    document.getElementById('cancel-assessment').addEventListener('click', function() {
-        document.getElementById('assessment-modal').classList.add('hidden');
-    });
-
-    // KPI Distribution Type functionality
-    document.getElementById('kpi-distribution-type').addEventListener('change', function() {
-        // Hide all options first
-        document.getElementById('employee-type-options').classList.add('hidden');
-        document.getElementById('designation-options').classList.add('hidden');
-        document.getElementById('faculty-options').classList.add('hidden');
-        document.getElementById('department-options').classList.add('hidden');
-        document.getElementById('employee-options').classList.add('hidden');
-
-        // Show selected option
-        const selectedValue = this.value;
-        if (selectedValue === 'employee_type') {
-            document.getElementById('employee-type-options').classList.remove('hidden');
-        } else if (selectedValue === 'designation') {
-            document.getElementById('designation-options').classList.remove('hidden');
-        } else if (selectedValue === 'faculty') {
-            document.getElementById('faculty-options').classList.remove('hidden');
-        } else if (selectedValue === 'department') {
-            document.getElementById('department-options').classList.remove('hidden');
-        } else if (selectedValue === 'employee') {
-            document.getElementById('employee-options').classList.remove('hidden');
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
         }
     });
 
-    // Template selection functionality
-    document.getElementById('template-select').addEventListener('change', function() {
-        const templateDetails = document.getElementById('template-details');
+    // Send comment functionality
+    sendCommentBtn.addEventListener('click', function() {
+        const commentInput = document.getElementById('commentInput');
+        const comment = commentInput.value.trim();
 
-        if (this.value) {
-            templateDetails.classList.remove('hidden');
-
-            // Populate template details based on selection
-            if (this.value === '1') {
-                // Annual Performance Template
-                document.getElementById('assessment-year').value = '2023';
-                document.getElementById('kpi-start-date').value = '2023-01-01';
-                document.getElementById('kpi-end-date').value = '2023-12-31';
-                document.getElementById('kpi-review-start-date').value = '2024-01-15';
-                document.getElementById('kpi-review-end-date').value = '2024-02-15';
-                document.getElementById('degree-start-date').value = '2024-01-20';
-                document.getElementById('degree-end-date').value = '2024-02-28';
-            } else if (this.value === '2') {
-                // Mid-Year Review Template
-                document.getElementById('assessment-year').value = '2023';
-                document.getElementById('kpi-start-date').value = '2023-06-01';
-                document.getElementById('kpi-end-date').value = '2023-06-30';
-                document.getElementById('kpi-review-start-date').value = '2023-07-01';
-                document.getElementById('kpi-review-end-date').value = '2023-07-15';
-                document.getElementById('degree-start-date').value = '2023-07-05';
-                document.getElementById('degree-end-date').value = '2023-07-25';
-            } else if (this.value === '3') {
-                // Quarterly Review Template
-                document.getElementById('assessment-year').value = '2023';
-                document.getElementById('kpi-start-date').value = '2023-03-01';
-                document.getElementById('kpi-end-date').value = '2023-03-31';
-                document.getElementById('kpi-review-start-date').value = '2023-04-01';
-                document.getElementById('kpi-review-end-date').value = '2023-04-15';
-                document.getElementById('degree-start-date').value = '2023-04-05';
-                document.getElementById('degree-end-date').value = '2023-04-20';
-            }
+        if (comment) {
+            // In a real application, you would send this to the server
+            alert('Comment sent: ' + comment);
+            commentInput.value = ''; // Clear the input after sending
         } else {
-            templateDetails.classList.add('hidden');
+            alert('Please enter a comment before sending.');
         }
     });
+
+    // Create KRA button functionality
+    /*document.getElementById('createKraBtn').addEventListener('click', function() {
+        alert('Create KRA functionality would open a form here');
+        // In a real application, you would open a modal or form to create a new KRA
+    });*/
 </script>
 </body>
 </html>

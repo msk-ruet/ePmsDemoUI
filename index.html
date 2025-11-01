@@ -1,10 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      x-data="{ 
+        sidebarOpen: false, 
+        darkMode: localStorage.getItem('darkMode') === 'true',
+        sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+        activeMenu: null
+      }"
+      x-init="
+        $watch('darkMode', val => localStorage.setItem('darkMode', val));
+        $watch('sidebarCollapsed', val => localStorage.setItem('sidebarCollapsed', val));
+      "
+      :class="darkMode ? 'dark' : ''">
 
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>ePMS Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIU Sun Light Admin Console</title>
+
+    <!-- Tailwind & Alpine.js -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -187,115 +205,756 @@
             background-color: #b01e24;
         }
     </style>
+
+    <style>
+        /* Custom Dark Theme Override - Only for sidebar and header */
+        .dark .dark\:bg-gray-800 {
+            background-color: #22246f !important;
+        }
+
+        .dark .dark\:bg-gray-900 {
+            background-color: #22246f !important;
+        }
+
+        .dark .dark\:border-gray-700 {
+            border-color: #3a3ccf !important;
+        }
+
+        .dark .dark\:text-gray-200 {
+            color: #e4e6ff !important;
+        }
+
+        .dark .dark\:hover\:bg-indigo-900\/40:hover {
+            background-color: #2c2ea3 !important;
+        }
+
+        .dark .dark\:bg-gray-700 {
+            background-color: #2c2ea3 !important;
+        }
+
+        .dark .dark\:hover\:bg-gray-700:hover {
+            background-color: #2c2ea3 !important;
+        }
+
+        /* Sidebar collapse transitions */
+        .sidebar-transition {
+            transition: width 0.3s ease;
+        }
+
+        .text-transition {
+            transition: opacity 0.2s ease;
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: max-content;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 1;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Submenu styling for collapsed mode */
+        .menu-item-wrapper {
+            position: relative;
+        }
+
+        .submenu-collapsed {
+            position: fixed;
+            left: 64px; /* Match collapsed sidebar width */
+            background: white;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 45;
+            min-width: 200px;
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-left: none;
+        }
+
+        .dark .submenu-collapsed {
+            background: #2c2ea3;
+            border-color: #3a3ccf;
+        }
+
+        /* Custom scrollbar for submenus */
+        .submenu-collapsed::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .submenu-collapsed::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .submenu-collapsed::-webkit-scrollbar-thumb {
+            background: #c5c5c5;
+            border-radius: 3px;
+        }
+
+        .submenu-collapsed::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        .dark .submenu-collapsed::-webkit-scrollbar-track {
+            background: #1e1e6f;
+        }
+
+        .dark .submenu-collapsed::-webkit-scrollbar-thumb {
+            background: #4f52cc;
+        }
+
+        .dark .submenu-collapsed::-webkit-scrollbar-thumb:hover {
+            background: #6366f1;
+        }
+
+        .submenu-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+            white-space: nowrap;
+        }
+
+        .dark .submenu-item {
+            border-bottom-color: #3a3ccf;
+            color: #e4e6ff;
+        }
+
+        .submenu-item:last-child {
+            border-bottom: none;
+        }
+
+        .submenu-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .dark .submenu-item:hover {
+            background-color: #3a3ccf;
+        }
+
+        .submenu-item .material-symbols-outlined {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        /* Hide scrollbar but allow scrolling for main sidebar */
+        .no-scrollbar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+        /* Active menu indicator */
+        .active-menu-indicator {
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 20px;
+            background-color: #6366f1;
+            border-radius: 2px;
+        }
+
+
+        .bg_header {
+            background-color: #3a3ccf;
+        }
+    </style>
 </head>
 
-<body class="bg-diu-100 text-gray-800">
-<div class="flex h-screen">
+<body class="bg-gray-50 text-gray-800 transition-colors duration-300"
+      x-data="{}"
+      @click="activeMenu = null">
+
+<div class="flex h-screen overflow-hidden">
+
     <!-- Sidebar -->
-    <div class="sidebar w-64 flex flex-col">
-        <div class="p-4 flex items-center justify-center border-b border-blue-700">
-            <h1 class="text-xl font-bold">Logo</h1>
+    <aside
+            class="fixed inset-y-0 left-0 z-40 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 sidebar-transition
+             md:translate-x-0"
+            :class="sidebarCollapsed ? 'w-16' : 'w-64'"
+            :class="{ '-translate-x-full': !sidebarOpen && window.innerWidth < 768 }"
+            @click.stop>
+
+        <!-- Logo -->
+        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between">
+                <h1 class="text-lg font-bold text-indigo-600 dark:text-gray-200"
+                    :class="sidebarCollapsed ? 'hidden' : 'block'">DIU Sun Light</h1>
+                <button
+                        @click="sidebarCollapsed = !sidebarCollapsed; activeMenu = null;"
+                        class="ml-2 text-indigo-600 dark:text-gray-200 hover:text-indigo-500 p-1 rounded"
+                        :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+                    <span class="material-symbols-outlined"
+                          x-text="sidebarCollapsed ? 'chevron_right' : 'chevron_left'"></span>
+                </button>
+            </div>
+            <button class="md:hidden text-gray-600 dark:text-gray-300" @click="sidebarOpen = false">✕</button>
         </div>
-        <nav class="flex-1 p-4">
-            <ul class="space-y-2">
-                <li>
-                    <a href="index.html" class="flex items-center p-3 rounded-lg active-nav-item">
-                        <i class="fas fa-tachometer-alt mr-3"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center p-3 rounded-lg" id="kraNavBtn">
-                        <i class="fas fa-user-clock mr-3"></i>
-                        <span>Attendance</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center p-3 rounded-lg">
-                        <i class="fas fa-calendar-alt mr-3"></i>
-                        <span>Leave</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center p-3 rounded-lg">
-                        <i class="fas fa-user-check mr-3"></i>
-                        <span>Employee Visit</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="index.html" class="flex items-center p-3 rounded-lg">
-                        <i class="fas fa-chart-line mr-3"></i>
-                        <span>ePMS</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center p-3 rounded-lg">
-                        <i class="fas fa-address-book mr-3"></i>
-                        <span>Employee Contact</span>
-                    </a>
-                </li>
 
-                <li>
-                    <a href="0.0.dashboard.html" class="flex items-center p-3 rounded-lg">
-                        <i class="fas fa-address-book mr-3"></i>
-                        <span>Dashboard Previous</span>
-                    </a>
-                </li>
+        <!-- Navigation -->
+        <nav class="overflow-y-auto p-4 space-y-2 no-scrollbar">
 
-                <!--<li>
-                    <a href="0.0.dashboard-1.html" class="flex items-center p-3 rounded-lg">
-                        <i class="fas fa-address-book mr-3"></i>
-                        <span>Dashboard -1</span>
+            <!-- Dashboard -->
+            <div class="menu-item-wrapper">
+                <a href="index.html"
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'dashboard' }">
+                    <span class="material-symbols-outlined mr-3">dashboard</span>
+                    <span class="text-transition"
+                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Dashboard</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Dashboard</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'dashboard'"></div>
+                </a>
+            </div>
+
+            <!-- User Management -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'user-management' ? null : 'user-management';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'user-management' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">group</span>
+                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">User Management</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">User Management</span>
+                    <div class="active-menu-indicator"
+                         x-show="sidebarCollapsed && activeMenu === 'user-management'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">person</span> Users
                     </a>
-                </li>
-                <li>
-                    <a href="0.0.dashboard-2.html" class="flex items-center p-3 rounded-lg">
-                        <i class="fas fa-address-book mr-3"></i>
-                        <span>Dashboard -2</span>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">admin_panel_settings</span> Roles
                     </a>
-                </li>-->
-            </ul>
-        </nav>
-        <div class="p-4 border-t border-blue-700">
-            <div class="flex items-center">
-                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span class="font-bold">AD</span>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">history</span> Audit Logs
+                    </a>
                 </div>
-                <div class="ml-3">
-                    <p class="text-sm font-medium">Admin User</p>
-                    <p class="text-xs text-blue-200">admin@company.com</p>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'user-management'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">person</span>
+                        Users
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">admin_panel_settings</span>
+                        Roles
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">history</span>
+                        Audit Logs
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">security</span>
+                        Permissions
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">groups</span>
+                        User Groups
+                    </div>
                 </div>
             </div>
+
+            <!-- HR & Attendance -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'hr-attendance' ? null : 'hr-attendance';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'hr-attendance' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">calendar_month</span>
+                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">HR & Attendance</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">HR & Attendance</span>
+                    <div class="active-menu-indicator"
+                         x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">badge</span> Employees
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">schedule</span> Attendance
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">timer</span> Overtime
+                    </a>
+                </div>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">badge</span>
+                        Employees
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">schedule</span>
+                        Attendance
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">timer</span>
+                        Overtime
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">work_history</span>
+                        Shift Management
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">event_available</span>
+                        Holidays
+                    </div>
+                </div>
+            </div>
+
+            <!-- ePMS -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'epms' ? null : 'epms';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'epms' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">assignment</span>
+                        <span class="text-transition"
+                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">ePMS</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">ePMS</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'epms'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                    <a href="kpiAssign.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
+                    </a>
+                    <a href="myKpi.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI
+                    </a>
+                    <a href="kpiReview.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
+                    </a>
+                    <a href="kpiReports.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Reports
+                    </a>
+                </div>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'epms'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">task</span>
+                        Performance Reviews
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">trending_up</span>
+                        KPIs
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">target</span>
+                        Goals
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">assessment</span>
+                        Appraisals
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">emoji_events</span>
+                        Rewards
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payroll -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'payroll' ? null : 'payroll';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'payroll' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">payments</span>
+                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Payroll</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Payroll</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'payroll'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">receipt</span> Salary Processing
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">request_quote</span> Payslips
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">savings</span> Tax Management
+                    </a>
+                </div>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'payroll'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">receipt</span>
+                        Salary Processing
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">request_quote</span>
+                        Payslips
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">savings</span>
+                        Tax Management
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">account_balance</span>
+                        Bank Transfers
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">receipt_long</span>
+                        Payroll Reports
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leave -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'leave' ? null : 'leave';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'leave' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">beach_access</span>
+                        <span class="text-transition"
+                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Leave</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Leave</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'leave'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">event_available</span> Apply Leave
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">pending_actions</span> Leave Requests
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">calendar_today</span> Leave Calendar
+                    </a>
+                </div>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'leave'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">event_available</span>
+                        Apply Leave
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">pending_actions</span>
+                        Leave Requests
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">calendar_today</span>
+                        Leave Calendar
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">airline_seat_recline_extra</span>
+                        Sick Leave
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">flight_takeoff</span>
+                        Vacation
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visit -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'visit' ? null : 'visit';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'visit' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">travel_explore</span>
+                        <span class="text-transition"
+                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Visit</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Visit</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'visit'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">person_search</span> Visitor Registration
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">meeting_room</span> Meeting Rooms
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">schedule</span> Visit Schedule
+                    </a>
+                </div>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'visit'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">person_search</span>
+                        Visitor Registration
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">meeting_room</span>
+                        Meeting Rooms
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">schedule</span>
+                        Visit Schedule
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">badge</span>
+                        Visitor Pass
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">history</span>
+                        Visit History
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports -->
+            <div class="menu-item-wrapper">
+                <a href="#"
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'reports' }">
+                    <span class="material-symbols-outlined mr-3">bar_chart</span>
+                    <span class="text-transition"
+                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Reports</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Reports</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'reports'"></div>
+                </a>
+            </div>
+
+            <!-- Settings -->
+            <div class="menu-item-wrapper">
+                <a href="#"
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'settings' }">
+                    <span class="material-symbols-outlined mr-3">settings</span>
+                    <span class="text-transition"
+                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Settings</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Settings</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'settings'"></div>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Footer -->
+        <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+            <button class="flex items-center w-full text-gray-700  text-gray-700 dark:text-gray-200 tooltip">
+                <span class="material-symbols-outlined mr-2">logout</span>
+                <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Logout</span>
+                <span class="tooltip-text" x-show="sidebarCollapsed">Logout</span>
+            </button>
         </div>
-    </div>
+    </aside>
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div class="flex-1 flex flex-col sidebar-transition" :class="sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'">
+
         <!-- Top Navbar -->
-        <header class="bg-white shadow-sm hidden lg:block">
-            <div class="flex items-center justify-between px-4 lg:px-6 py-4">
-                <div class="flex items-center">
-                    <h2 class="text-lg lg:text-xl font-semibold text-gray-800">Welcome to ESS</h2>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <button class="p-2 text-gray-500 hover:text-gray-700">
-                            <i class="fas fa-bell text-xl"></i>
-                            <span
-                                    class="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">5</span>
-                        </button>
-                    </div>
-                    <div class="flex items-center">
-                        <img class="h-8 w-8 rounded-full object-cover"
-                             src="https://ui-avatars.com/api/?name=Supervisor+User&background=0D8ABC&color=fff"
-                             alt="Supervisor User">
-                        <span class="ml-2 text-sm font-medium text-gray-700 hidden md:block">Admin User</span>
+        <header
+                class="flex items-center justify-between bg-white dark:bg-gray-800 shadow-sm px-4 py-3 sticky top-0 z-30 border-b border-gray-100 dark:border-gray-700">
+            <div class="flex items-center gap-2">
+                <button @click="sidebarOpen = !sidebarOpen" class="md:hidden text-gray-600 dark:text-gray-300">
+                    ☰
+                </button>
+                <input type="text" placeholder="Search..."
+                       class="hidden md:block px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-sm outline-none"/>
+            </div>
+
+            <!-- Right Actions -->
+            <div class="flex items-center gap-4">
+                <!-- Dark Mode Toggle -->
+                <button @click="darkMode = !darkMode" class="text-gray-600 hover:text-indigo-500">
+                    <span x-show="!darkMode" class="material-symbols-outlined">light_mode</span>
+                    <span x-show="darkMode" class="material-symbols-outlined">dark_mode</span>
+                </button>
+
+                <!-- Notifications -->
+                <button class="text-gray-600 hover:text-indigo-500">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+
+                <!-- Admin Dropdown -->
+                <div x-data="{ open: false, role: 'Admin' }" class="relative">
+                    <button @click="open = !open" @mouseenter="open = true" @mouseleave="open = false"
+                            class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-500">
+                        👤 <span>Admin</span>
+                    </button>
+
+                    <!-- Dropdown -->
+                    <div x-show="open" x-transition @mouseenter="open = true" @mouseleave="open = false"
+                         class="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
+                        <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-300">
+                            Role: <span class="font-medium text-indigo-500" x-text="role"></span>
+                        </div>
+                        <a href="#" class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
+                        <a href="#"
+                           class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Settings</a>
+                        <a href="#" class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Logout</a>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Content -->
+        <!-- Main Page -->
+        <!--<main class="p-6 bg-gray-50">
+          <h2 class="text-2xl font-semibold mb-2">Welcome to DIU Sun Light Admin Console</h2>
+          <p class="text-gray-600">
+            You are logged in as <span class="font-semibold text-indigo-600">Admin</span>.
+          </p>
+
+          &lt;!&ndash; Sample content to demonstrate light theme in main area &ndash;&gt;
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              <h3 class="font-medium text-gray-800">Dashboard Stats</h3>
+              <p class="text-gray-600 mt-2">This content remains in light mode even when dark mode is activated.</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              <h3 class="font-medium text-gray-800">Recent Activity</h3>
+              <p class="text-gray-600 mt-2">All main content areas maintain their light theme appearance.</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              <h3 class="font-medium text-gray-800">Quick Actions</h3>
+              <p class="text-gray-600 mt-2">Only the sidebar and header change with dark mode.</p>
+            </div>
+          </div>
+
+          <div class="mt-8">
+            <h3 class="text-lg font-medium text-gray-800 mb-4">Sidebar State</h3>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              <p class="text-gray-600">The sidebar is currently <span class="font-semibold" x-text="sidebarCollapsed ? 'collapsed' : 'expanded'"></span>.</p>
+              <p class="text-gray-600 mt-2">Use the toggle button next to the logo to collapse/expand the sidebar.</p>
+              <p class="text-gray-600 mt-2">When collapsed, click on menu items to see submenus appear beside them with scrollable content.</p>
+              <p class="text-gray-600 mt-2">Only one submenu can be open at a time for better usability.</p>
+            </div>
+          </div>
+        </main>-->
+
+
         <main class="p-6 space-y-6" style="overflow-y: scroll;">
 
             <!-- Header Section -->
@@ -336,7 +995,7 @@
             <!-- Main Cards Section -->
             <section class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <!-- Assign KPI -->
-                <div onclick="onClickFn('1.KPI_Assign_Screen_v1.html')" class="relative w-full">
+                <div onclick="onClickFn('kpiAssign.html')" class="relative w-full">
                     <div class="card cursor-pointer bg-white p-4 h-32 flex flex-col items-center justify-center rounded-2xl text-center shadow-card hover-lift transition-all duration-300 border border-diu-200">
                         <h3 class="font-bold text-diu-900 text-sm lg:text-base mb-1">KPI Assign</h3>
                         <div class="flex items-center gap-2 mt-1">
@@ -354,8 +1013,10 @@
                                     <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
 
                                     <!-- small plus badge -->
-                                    <circle cx="19" cy="19" r="2.2" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                                    <path d="M19 17.9v2.2M17.9 19h2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    <circle cx="19" cy="19" r="2.2" stroke="currentColor" stroke-width="1.5"
+                                            fill="none"/>
+                                    <path d="M19 17.9v2.2M17.9 19h2.2" stroke="currentColor" stroke-width="1.5"
+                                          stroke-linecap="round"/>
                                 </svg>
 
 
@@ -384,7 +1045,7 @@
                 </div>
 
                 <!-- My KPI -->
-                <div onclick="onClickFn('3.KPI_Employee_Screen_v1.html')" class="relative w-full">
+                <div onclick="onClickFn('myKpi.html')" class="relative w-full">
                     <div class="card cursor-pointer bg-white p-4 h-32 flex flex-col items-center justify-center rounded-2xl text-center shadow-card hover-lift transition-all duration-300 border border-diu-200">
                         <h3 class="font-bold text-diu-900 text-sm lg:text-base mb-1">My KPI</h3>
                         <div class="flex items-center gap-2 mt-1">
@@ -418,7 +1079,7 @@
                 </div>
 
                 <!-- Review -->
-                <div onclick="onClickFn('2. KPI_Supervisor_Screen_v1.html')" class="relative w-full">
+                <div onclick="onClickFn('kpiReview.html')" class="relative w-full">
                     <div class="card cursor-pointer bg-white p-4 h-32 flex flex-col items-center justify-center rounded-2xl text-center shadow-card hover-lift transition-all duration-300 border border-diu-200">
                         <h3 class="font-bold text-diu-900 text-sm lg:text-base mb-1">KPI Review</h3>
                         <div class="flex items-center gap-2 mt-1">
@@ -454,7 +1115,7 @@
                 </div>
 
                 <!-- Report -->
-                <div onclick="onClickFn('4.Performance_Table_v1.html')" class="relative w-full">
+                <div onclick="onClickFn('kpiReports.html')" class="relative w-full">
                     <div class="card cursor-pointer bg-white p-4 h-32 flex flex-col items-center justify-center rounded-2xl text-center shadow-card hover-lift transition-all duration-300 border border-diu-200">
                         <h3 class="font-bold text-diu-900 text-sm lg:text-base mb-1">KPI Reports</h3>
                         <div class="flex items-center gap-2 mt-1">
@@ -471,7 +1132,7 @@
                                     <!-- Report details: 3 bars -->
                                     <rect x="9" y="13" width="1.5" height="4" rx="0.2"/>
                                     <rect x="12" y="11" width="1.5" height="6" rx="0.2"/>
-                                    <rect x="15" y="9"  width="1.5" height="8" rx="0.2"/>
+                                    <rect x="15" y="9" width="1.5" height="8" rx="0.2"/>
                                 </svg>
 
                             </div>
@@ -575,7 +1236,7 @@
                                 onclick="onClickFn('7. Assment Setup Screen.html')"> Assessment Year
                             </li>
                             <li class="px-6 py-3 hover:bg-diu-100 cursor-pointer text-diu-900"
-                                > Others
+                            > Others
                             </li>
                             <!--<li class="px-6 py-3 hover:bg-diu-100 cursor-pointer text-diu-900"
                                 onclick="onClickFn('1.KRA Setup Screen.html')"> KRA
@@ -605,8 +1266,8 @@
                 </div>
 
                 <!-- Timeline Table -->
-                <div class="bg-white shadow-card rounded-2xl overflow-hidden hover-lift">
-                    <div class="bg-diu-900 text-white font-bold text-center py-4 text-lg">Timeline Overview</div>
+                <div class=" shadow-card rounded-2xl overflow-hidden hover-lift">
+                    <div class="bg_header text-white font-bold text-center py-4 text-lg">Timeline Overview</div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
                             <thead class="bg-diu-100">
@@ -652,7 +1313,7 @@
             <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Status Table -->
                 <div class="bg-white shadow-card rounded-2xl overflow-hidden hover-lift">
-                    <div class="bg-diu-900 text-white font-bold text-center py-4 text-lg">Progress Overview</div>
+                    <div class="bg_header text-white font-bold text-center py-4 text-lg">Progress Overview</div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-center">
                             <thead class="bg-diu-100">
@@ -1052,5 +1713,4 @@
     });
 </script>
 </body>
-
 </html>
