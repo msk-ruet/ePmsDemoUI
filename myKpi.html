@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-<html lang="en"
-      x-data="{ 
+<html lang="en" x-data="{ 
         sidebarOpen: false, 
         darkMode: localStorage.getItem('darkMode') === 'true',
         sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
         activeMenu: null
-      }"
-      x-init="
+      }" x-init="
         $watch('darkMode', val => localStorage.setItem('darkMode', val));
         $watch('sidebarCollapsed', val => localStorage.setItem('sidebarCollapsed', val));
-      "
-      :class="darkMode ? 'dark' : ''">
+      " :class="darkMode ? 'dark' : ''">
 
 <head>
     <meta charset="UTF-8">
@@ -20,7 +17,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
     <script>
         tailwind.config = {
@@ -418,7 +415,8 @@
 
         .submenu-collapsed {
             position: fixed;
-            left: 64px; /* Match collapsed sidebar width */
+            left: 64px;
+            /* Match collapsed sidebar width */
             background: white;
             border-radius: 0 8px 8px 0;
             box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
@@ -500,12 +498,15 @@
 
         /* Hide scrollbar but allow scrolling for main sidebar */
         .no-scrollbar {
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
         }
 
         .no-scrollbar::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
+            display: none;
+            /* Chrome, Safari and Opera */
         }
 
         /* Active menu indicator */
@@ -520,544 +521,773 @@
             border-radius: 2px;
         }
     </style>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .comment-section {
+            position: relative;
+        }
+
+        .comment-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 6px;
+            font-size: 0.75rem;
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .send-btn {
+            background-color: #2E3094;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .send-btn:hover {
+            background-color: #1e2074;
+        }
+
+        .score-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 3px;
+            font-size: 0.75rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .compact-table th,
+        .compact-table td {
+            padding: 6px 8px !important;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-right: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .details-btn {
+            background-color: #2E3094;
+            color: white;
+            border: none;
+        }
+
+        .details-btn:hover {
+            background-color: #1e2074;
+        }
+
+        .kra-cell {
+            background-color: #F7F9FB;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .status-approved {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-sent-back {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-submit {
+            background-color: #2E3094;
+            color: white;
+            border: none;
+        }
+
+        .modal-submit:hover {
+            background-color: #1e2074;
+        }
+
+        .modal-cancel {
+            background-color: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .modal-cancel:hover {
+            background-color: #e5e7eb;
+        }
+
+        @media (max-width: 768px) {
+            .table-container table {
+                font-size: 0.7rem;
+            }
+
+            .compact-table th,
+            .compact-table td {
+                padding: 4px 6px !important;
+            }
+
+            .action-btn {
+                display: block;
+                width: 100%;
+                margin-bottom: 4px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-gray-50 text-gray-800 transition-colors duration-300"
-      x-data="{}"
-      @click="activeMenu = null">
+<body class="bg-gray-50 text-gray-800 transition-colors duration-300" x-data="{}" @click="activeMenu = null">
 
-<div class="flex h-screen overflow-hidden">
+    <div class="flex h-screen overflow-hidden">
 
-    <!-- Sidebar -->
-    <aside
-            class="fixed inset-y-0 left-0 z-40 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 sidebar-transition
-             md:translate-x-0"
-            :class="sidebarCollapsed ? 'w-16' : 'w-64'"
-            :class="{ '-translate-x-full': !sidebarOpen && window.innerWidth < 768 }"
-            @click.stop>
+        <!-- Sidebar -->
+        <aside class="fixed inset-y-0 left-0 z-40 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 sidebar-transition
+             md:translate-x-0" :class="sidebarCollapsed ? 'w-16' : 'w-64'"
+            :class="{ '-translate-x-full': !sidebarOpen && window.innerWidth < 768 }" @click.stop>
 
-        <!-- Logo -->
-        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <div class="flex items-center">
-                <h1 class="text-lg font-bold text-indigo-600 dark:text-indigo-300"
-                    :class="sidebarCollapsed ? 'hidden' : 'block'">DIU Sun Light</h1>
-                <button
-                        @click="sidebarCollapsed = !sidebarCollapsed; activeMenu = null;"
+            <!-- Logo -->
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center">
+                    <h1 class="text-lg font-bold text-indigo-600 dark:text-indigo-300"
+                        :class="sidebarCollapsed ? 'hidden' : 'block'">DIU Sun Light</h1>
+                    <button @click="sidebarCollapsed = !sidebarCollapsed; activeMenu = null;"
                         class="ml-2 text-gray-600 dark:text-gray-300 hover:text-indigo-500 p-1 rounded"
                         :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-                    <span class="material-symbols-outlined"
-                          x-text="sidebarCollapsed ? 'chevron_right' : 'chevron_left'"></span>
-                </button>
-            </div>
-            <button class="md:hidden text-gray-600 dark:text-gray-300" @click="sidebarOpen = false">✕</button>
-        </div>
-
-        <!-- Navigation -->
-        <nav class="overflow-y-auto p-4 space-y-2 no-scrollbar">
-
-            <!-- Dashboard -->
-            <div class="menu-item-wrapper">
-                <a href="index.html"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'dashboard' }">
-                    <span class="material-symbols-outlined mr-3">dashboard</span>
-                    <span class="text-transition"
-                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Dashboard</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Dashboard</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'dashboard'"></div>
-                </a>
+                        <span class="material-symbols-outlined"
+                            x-text="sidebarCollapsed ? 'chevron_right' : 'chevron_left'"></span>
+                    </button>
+                </div>
+                <button class="md:hidden text-gray-600 dark:text-gray-300" @click="sidebarOpen = false">✕</button>
             </div>
 
-            <!-- User Management -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
+            <!-- Navigation -->
+            <nav class="overflow-y-auto p-4 space-y-2 no-scrollbar">
+
+                <!-- Dashboard -->
+                <div class="menu-item-wrapper">
+                    <a href="index.html"
+                        class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'dashboard' }">
+                        <span class="material-symbols-outlined mr-3">dashboard</span>
+                        <span class="text-transition"
+                            :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Dashboard</span>
+                        <span class="tooltip-text" x-show="sidebarCollapsed">Dashboard</span>
+                        <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'dashboard'">
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User Management -->
+                <div x-data="{ open: false }" class="menu-item-wrapper">
+                    <button @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'user-management' ? null : 'user-management';
             } else { 
               open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+            }" class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'user-management' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">group</span>
-                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">User Management</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">User Management</span>
-                    <div class="active-menu-indicator"
-                         x-show="sidebarCollapsed && activeMenu === 'user-management'"></div>
-                </button>
+                        <div class="flex items-center">
+                            <span class="material-symbols-outlined mr-3">group</span>
+                            <span class="text-transition"
+                                :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">User Management</span>
+                        </div>
+                        <span class="material-symbols-outlined text-sm transition-transform"
+                            :class="open ? 'rotate-180' : ''" x-show="!sidebarCollapsed">expand_more</span>
+                        <span class="tooltip-text" x-show="sidebarCollapsed">User Management</span>
+                        <div class="active-menu-indicator"
+                            x-show="sidebarCollapsed && activeMenu === 'user-management'"></div>
+                    </button>
 
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">person</span> Users
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">admin_panel_settings</span> Roles
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">history</span> Audit Logs
-                    </a>
+                    <!-- Expanded Mode Submenu -->
+                    <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">person</span> Users
+                        </a>
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">admin_panel_settings</span> Roles
+                        </a>
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">history</span> Audit Logs
+                        </a>
+                    </div>
+
+                    <!-- Collapsed Mode Submenu -->
+                    <div x-show="sidebarCollapsed && activeMenu === 'user-management'" class="submenu-collapsed"
+                        :style="`top: ${$el.parentElement.offsetTop}px;`" @click.stop>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">person</span>
+                            Users
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">admin_panel_settings</span>
+                            Roles
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">history</span>
+                            Audit Logs
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">security</span>
+                            Permissions
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">groups</span>
+                            User Groups
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'user-management'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">person</span>
-                        Users
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">admin_panel_settings</span>
-                        Roles
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">history</span>
-                        Audit Logs
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">security</span>
-                        Permissions
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">groups</span>
-                        User Groups
-                    </div>
-                </div>
-            </div>
-
-            <!-- HR & Attendance -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
+                <!-- HR & Attendance -->
+                <div x-data="{ open: false }" class="menu-item-wrapper">
+                    <button @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'hr-attendance' ? null : 'hr-attendance';
             } else { 
               open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+            }" class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'hr-attendance' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">calendar_month</span>
-                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">HR & Attendance</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">HR & Attendance</span>
-                    <div class="active-menu-indicator"
-                         x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"></div>
-                </button>
+                        <div class="flex items-center">
+                            <span class="material-symbols-outlined mr-3">calendar_month</span>
+                            <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">HR
+                                & Attendance</span>
+                        </div>
+                        <span class="material-symbols-outlined text-sm transition-transform"
+                            :class="open ? 'rotate-180' : ''" x-show="!sidebarCollapsed">expand_more</span>
+                        <span class="tooltip-text" x-show="sidebarCollapsed">HR & Attendance</span>
+                        <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'hr-attendance'">
+                        </div>
+                    </button>
 
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">badge</span> Employees
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">schedule</span> Attendance
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">timer</span> Overtime
-                    </a>
+                    <!-- Expanded Mode Submenu -->
+                    <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">badge</span> Employees
+                        </a>
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">schedule</span> Attendance
+                        </a>
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">timer</span> Overtime
+                        </a>
+                    </div>
+
+                    <!-- Collapsed Mode Submenu -->
+                    <div x-show="sidebarCollapsed && activeMenu === 'hr-attendance'" class="submenu-collapsed"
+                        :style="`top: ${$el.parentElement.offsetTop}px;`" @click.stop>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">badge</span>
+                            Employees
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">schedule</span>
+                            Attendance
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">timer</span>
+                            Overtime
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">work_history</span>
+                            Shift Management
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">event_available</span>
+                            Holidays
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">badge</span>
-                        Employees
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">schedule</span>
-                        Attendance
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">timer</span>
-                        Overtime
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">work_history</span>
-                        Shift Management
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">event_available</span>
-                        Holidays
-                    </div>
-                </div>
-            </div>
-
-            <!-- ePMS -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
+                <!-- ePMS -->
+                <div x-data="{ open: false }" class="menu-item-wrapper">
+                    <button @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'epms' ? null : 'epms';
             } else { 
               open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+            }" class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'epms' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">assignment</span>
-                        <span class="text-transition"
-                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">ePMS</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">ePMS</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'epms'"></div>
-                </button>
+                        <div class="flex items-center">
+                            <span class="material-symbols-outlined mr-3">assignment</span>
+                            <span class="text-transition"
+                                :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">ePMS</span>
+                        </div>
+                        <span class="material-symbols-outlined text-sm transition-transform"
+                            :class="open ? 'rotate-180' : ''" x-show="!sidebarCollapsed">expand_more</span>
+                        <span class="tooltip-text" x-show="sidebarCollapsed">ePMS</span>
+                        <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'epms'"></div>
+                    </button>
 
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="kpiAssign.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
-                    </a>
-                    <a href="myKpi.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI
-                    </a>
-                    <a href="kpiReview.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
-                    </a>
-                    <a href="kpiReports.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Reports
-                    </a>
+                    <!-- Expanded Mode Submenu -->
+                    <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                        <a href="kpiAssign.html"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
+                        </a>
+                        <a href="myKpi.html"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI
+                        </a>
+                        <a href="kpiReview.html"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
+                        </a>
+                        <a href="kpiReports.html"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Reports
+                        </a>
+                    </div>
+
+                    <!-- Collapsed Mode Submenu -->
+                    <div x-show="sidebarCollapsed && activeMenu === 'epms'" class="submenu-collapsed"
+                        :style="`top: ${$el.parentElement.offsetTop}px;`" @click.stop>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">task</span>
+                            Performance Reviews
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">trending_up</span>
+                            KPIs
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">target</span>
+                            Goals
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">assessment</span>
+                            Appraisals
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">emoji_events</span>
+                            Rewards
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'epms'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">task</span>
-                        Performance Reviews
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">trending_up</span>
-                        KPIs
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">target</span>
-                        Goals
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">assessment</span>
-                        Appraisals
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">emoji_events</span>
-                        Rewards
-                    </div>
-                </div>
-            </div>
-
-            <!-- Payroll -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
+                <!-- Payroll -->
+                <div x-data="{ open: false }" class="menu-item-wrapper">
+                    <button @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'payroll' ? null : 'payroll';
             } else { 
               open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+            }" class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'payroll' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">payments</span>
-                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Payroll</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Payroll</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'payroll'"></div>
-                </button>
+                        <div class="flex items-center">
+                            <span class="material-symbols-outlined mr-3">payments</span>
+                            <span class="text-transition"
+                                :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Payroll</span>
+                        </div>
+                        <span class="material-symbols-outlined text-sm transition-transform"
+                            :class="open ? 'rotate-180' : ''" x-show="!sidebarCollapsed">expand_more</span>
+                        <span class="tooltip-text" x-show="sidebarCollapsed">Payroll</span>
+                        <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'payroll'"></div>
+                    </button>
 
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">receipt</span> Salary Processing
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">request_quote</span> Payslips
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">savings</span> Tax Management
-                    </a>
+                    <!-- Expanded Mode Submenu -->
+                    <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">receipt</span> Salary Processing
+                        </a>
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">request_quote</span> Payslips
+                        </a>
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">savings</span> Tax Management
+                        </a>
+                    </div>
+
+                    <!-- Collapsed Mode Submenu -->
+                    <div x-show="sidebarCollapsed && activeMenu === 'payroll'" class="submenu-collapsed"
+                        :style="`top: ${$el.parentElement.offsetTop}px;`" @click.stop>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">receipt</span>
+                            Salary Processing
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">request_quote</span>
+                            Payslips
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">savings</span>
+                            Tax Management
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">account_balance</span>
+                            Bank Transfers
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">receipt_long</span>
+                            Payroll Reports
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'payroll'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">receipt</span>
-                        Salary Processing
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">request_quote</span>
-                        Payslips
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">savings</span>
-                        Tax Management
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">account_balance</span>
-                        Bank Transfers
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">receipt_long</span>
-                        Payroll Reports
-                    </div>
-                </div>
-            </div>
-
-            <!-- Leave -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
+                <!-- Leave -->
+                <div x-data="{ open: false }" class="menu-item-wrapper">
+                    <button @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'leave' ? null : 'leave';
             } else { 
               open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+            }" class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'leave' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">beach_access</span>
-                        <span class="text-transition"
-                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Leave</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Leave</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'leave'"></div>
-                </button>
+                        <div class="flex items-center">
+                            <span class="material-symbols-outlined mr-3">beach_access</span>
+                            <span class="text-transition"
+                                :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Leave</span>
+                        </div>
+                        <span class="material-symbols-outlined text-sm transition-transform"
+                            :class="open ? 'rotate-180' : ''" x-show="!sidebarCollapsed">expand_more</span>
+                        <span class="tooltip-text" x-show="sidebarCollapsed">Leave</span>
+                        <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'leave'"></div>
+                    </button>
 
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">event_available</span> Apply Leave
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">pending_actions</span> Leave Requests
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">calendar_today</span> Leave Calendar
-                    </a>
+                    <!-- Expanded Mode Submenu -->
+                    <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">event_available</span> Apply Leave
+                        </a>
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">pending_actions</span> Leave Requests
+                        </a>
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">calendar_today</span> Leave Calendar
+                        </a>
+                    </div>
+
+                    <!-- Collapsed Mode Submenu -->
+                    <div x-show="sidebarCollapsed && activeMenu === 'leave'" class="submenu-collapsed"
+                        :style="`top: ${$el.parentElement.offsetTop}px;`" @click.stop>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">event_available</span>
+                            Apply Leave
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">pending_actions</span>
+                            Leave Requests
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">calendar_today</span>
+                            Leave Calendar
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">airline_seat_recline_extra</span>
+                            Sick Leave
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">flight_takeoff</span>
+                            Vacation
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'leave'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">event_available</span>
-                        Apply Leave
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">pending_actions</span>
-                        Leave Requests
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">calendar_today</span>
-                        Leave Calendar
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">airline_seat_recline_extra</span>
-                        Sick Leave
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">flight_takeoff</span>
-                        Vacation
-                    </div>
-                </div>
-            </div>
-
-            <!-- Visit -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
+                <!-- Visit -->
+                <div x-data="{ open: false }" class="menu-item-wrapper">
+                    <button @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'visit' ? null : 'visit';
             } else { 
               open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+            }" class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'visit' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">travel_explore</span>
-                        <span class="text-transition"
-                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Visit</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Visit</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'visit'"></div>
-                </button>
-
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">person_search</span> Visitor Registration
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">meeting_room</span> Meeting Rooms
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">schedule</span> Visit Schedule
-                    </a>
-                </div>
-
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'visit'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">person_search</span>
-                        Visitor Registration
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">meeting_room</span>
-                        Meeting Rooms
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">schedule</span>
-                        Visit Schedule
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">badge</span>
-                        Visitor Pass
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">history</span>
-                        Visit History
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reports -->
-            <div class="menu-item-wrapper">
-                <a href="#"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'reports' }">
-                    <span class="material-symbols-outlined mr-3">bar_chart</span>
-                    <span class="text-transition"
-                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Reports</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Reports</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'reports'"></div>
-                </a>
-            </div>
-
-            <!-- Settings -->
-            <div class="menu-item-wrapper">
-                <a href="#"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'settings' }">
-                    <span class="material-symbols-outlined mr-3">settings</span>
-                    <span class="text-transition"
-                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Settings</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Settings</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'settings'"></div>
-                </a>
-            </div>
-        </nav>
-
-        <!-- Footer -->
-        <div class="border-t border-gray-200 dark:border-gray-700 p-4">
-            <button class="flex items-center w-full text-gray-700  text-gray-700 dark:text-gray-200 tooltip">
-                <span class="material-symbols-outlined mr-2">logout</span>
-                <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Logout</span>
-                <span class="tooltip-text" x-show="sidebarCollapsed">Logout</span>
-            </button>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col sidebar-transition" :class="sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'">
-
-        <!-- Top Navbar -->
-        <header
-                class="flex items-center justify-between bg-white dark:bg-gray-800 shadow-sm px-4 py-3 sticky top-0 z-30 border-b border-gray-100 dark:border-gray-700">
-            <div class="flex items-center gap-2">
-                <button @click="sidebarOpen = !sidebarOpen" class="md:hidden text-gray-600 dark:text-gray-300">
-                    ☰
-                </button>
-                <input type="text" placeholder="Search..."
-                       class="hidden md:block px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-sm outline-none"/>
-            </div>
-
-            <!-- Right Actions -->
-            <div class="flex items-center gap-4">
-                <!-- Dark Mode Toggle -->
-                <button @click="darkMode = !darkMode" class="text-gray-600 hover:text-indigo-500">
-                    <span x-show="!darkMode" class="material-symbols-outlined">light_mode</span>
-                    <span x-show="darkMode" class="material-symbols-outlined">dark_mode</span>
-                </button>
-
-                <!-- Notifications -->
-                <button class="text-gray-600 hover:text-indigo-500">
-                    <span class="material-symbols-outlined">notifications</span>
-                </button>
-
-                <!-- Admin Dropdown -->
-                <div x-data="{ open: false, role: 'Admin' }" class="relative">
-                    <button @click="open = !open" @mouseenter="open = true" @mouseleave="open = false"
-                            class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-500">
-                        👤 <span>Admin</span>
+                        <div class="flex items-center">
+                            <span class="material-symbols-outlined mr-3">travel_explore</span>
+                            <span class="text-transition"
+                                :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Visit</span>
+                        </div>
+                        <span class="material-symbols-outlined text-sm transition-transform"
+                            :class="open ? 'rotate-180' : ''" x-show="!sidebarCollapsed">expand_more</span>
+                        <span class="tooltip-text" x-show="sidebarCollapsed">Visit</span>
+                        <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'visit'"></div>
                     </button>
 
-                    <!-- Dropdown -->
-                    <div x-show="open" x-transition @mouseenter="open = true" @mouseleave="open = false"
-                         class="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
-                        <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-300">
-                            Role: <span class="font-medium text-indigo-500" x-text="role"></span>
-                        </div>
-                        <a href="#" class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
+                    <!-- Expanded Mode Submenu -->
+                    <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
                         <a href="#"
-                           class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Settings</a>
-                        <a href="#" class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Logout</a>
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">person_search</span> Visitor
+                            Registration
+                        </a>
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">meeting_room</span> Meeting Rooms
+                        </a>
+                        <a href="#"
+                            class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined mr-2 text-base">schedule</span> Visit Schedule
+                        </a>
+                    </div>
+
+                    <!-- Collapsed Mode Submenu -->
+                    <div x-show="sidebarCollapsed && activeMenu === 'visit'" class="submenu-collapsed"
+                        :style="`top: ${$el.parentElement.offsetTop}px;`" @click.stop>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">person_search</span>
+                            Visitor Registration
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">meeting_room</span>
+                            Meeting Rooms
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">schedule</span>
+                            Visit Schedule
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">badge</span>
+                            Visitor Pass
+                        </div>
+                        <div class="submenu-item" @click="activeMenu = null">
+                            <span class="material-symbols-outlined">history</span>
+                            Visit History
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports -->
+                <div class="menu-item-wrapper">
+                    <a href="#"
+                        class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'reports' }">
+                        <span class="material-symbols-outlined mr-3">bar_chart</span>
+                        <span class="text-transition"
+                            :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Reports</span>
+                        <span class="tooltip-text" x-show="sidebarCollapsed">Reports</span>
+                        <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'reports'"></div>
+                    </a>
+                </div>
+
+                <!-- Settings -->
+                <div class="menu-item-wrapper">
+                    <a href="#"
+                        class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'settings' }">
+                        <span class="material-symbols-outlined mr-3">settings</span>
+                        <span class="text-transition"
+                            :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Settings</span>
+                        <span class="tooltip-text" x-show="sidebarCollapsed">Settings</span>
+                        <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'settings'"></div>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Footer -->
+            <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+                <button class="flex items-center w-full text-gray-700  text-gray-700 dark:text-gray-200 tooltip">
+                    <span class="material-symbols-outlined mr-2">logout</span>
+                    <span class="text-transition"
+                        :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Logout</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col sidebar-transition" :class="sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'">
+
+            <!-- Top Navbar -->
+            <header
+                class="flex items-center justify-between bg-white dark:bg-gray-800 shadow-sm px-4 py-3 sticky top-0 z-30 border-b border-gray-100 dark:border-gray-700">
+                <div class="flex items-center gap-2">
+                    <button @click="sidebarOpen = !sidebarOpen" class="md:hidden text-gray-600 dark:text-gray-300">
+                        ☰
+                    </button>
+                    <input type="text" placeholder="Search..."
+                        class="hidden md:block px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-sm outline-none" />
+                </div>
+
+                <!-- Right Actions -->
+                <div class="flex items-center gap-4">
+                    <!-- Dark Mode Toggle -->
+                    <button @click="darkMode = !darkMode" class="text-gray-600 hover:text-indigo-500">
+                        <span x-show="!darkMode" class="material-symbols-outlined">light_mode</span>
+                        <span x-show="darkMode" class="material-symbols-outlined">dark_mode</span>
+                    </button>
+
+                    <!-- Notifications -->
+                    <button class="text-gray-600 hover:text-indigo-500">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+
+                    <!-- Admin Dropdown -->
+                    <div x-data="{ open: false, role: 'Admin' }" class="relative">
+                        <button @click="open = !open" @mouseenter="open = true" @mouseleave="open = false"
+                            class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-500">
+                            👤 <span>Admin</span>
+                        </button>
+
+                        <!-- Dropdown -->
+                        <div x-show="open" x-transition @mouseenter="open = true" @mouseleave="open = false"
+                            class="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
+                            <div
+                                class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-300">
+                                Role: <span class="font-medium text-indigo-500" x-text="role"></span>
+                            </div>
+                            <a href="#"
+                                class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
+                            <a href="#"
+                                class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Settings</a>
+                            <a href="#"
+                                class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <body class="bg-gray-100 font-roboto">
+                <!-- Mobile Menu Button -->
+                <div
+                    class="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md p-4 flex justify-between items-center">
+                    <h1 class="text-xl font-bold text-gray-800">Welcome to ESS</h1>
+                    <button id="mobileMenuBtn" class="text-gray-600">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+
+                <div class="flex h-screen pt-16 lg:pt-0">
+                    <!-- Sidebar -->
+                    <!-- <div id="sidebar"
+            class="sidebar w-64 flex flex-col bg-sidebar-blue text-white -translate-x-full lg:translate-x-0 fixed lg:relative top-0 bottom-0 z-40 transition-transform duration-300">
+            <div class="p-4 flex items-center justify-center border-b border-blue-700">
+                <h1 class="text-xl font-bold">Logo</h1>
+            </div>
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg active-nav-item">
+                            <i class="fas fa-tachometer-alt mr-3"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg" id="kraNavBtn">
+                            <i class="fas fa-user-clock mr-3"></i>
+                            <span>Attendance</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-calendar-alt mr-3"></i>
+                            <span>Leave</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-user-check mr-3"></i>
+                            <span>Employee Visit</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.html" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-chart-line mr-3"></i>
+                            <span>ePMS</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg">
+                            <i class="fas fa-address-book mr-3"></i>
+                            <span>Employee Contact</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="p-4 border-t border-blue-700">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                        <span class="font-bold">AD</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">Admin User</p>
+                        <p class="text-xs text-blue-200">admin@company.com</p>
                     </div>
                 </div>
             </div>
-        </header>
+        </div> -->
 
-
-        <div class="flex-1 flex flex-col overflow-hidden w-full">
-            <!-- Top Navbar -->
-            <header class="bg-white shadow-sm hidden lg:block">
-                <div class="flex items-center justify-between px-4 lg:px-6 py-4">
+                    <!-- Main Content -->
+                    <div class="flex-1 flex flex-col overflow-hidden w-full">
+                        <!-- Top Navbar -->
+                        <header class="bg-white shadow-sm hidden lg:block">
+                            <!-- <div class="flex items-center justify-between px-4 lg:px-6 py-4">
                     <div class="flex items-center">
                         <h2 class="text-lg lg:text-xl font-semibold text-gray-800">Welcome to ESS</h2>
                     </div>
@@ -1066,436 +1296,512 @@
                             <button class="p-2 text-gray-500 hover:text-gray-700">
                                 <i class="fas fa-bell text-xl"></i>
                                 <span
-                                        class="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">5</span>
+                                    class="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">5</span>
                             </button>
                         </div>
                         <div class="flex items-center">
                             <img class="h-8 w-8 rounded-full object-cover"
-                                 src="https://ui-avatars.com/api/?name=Supervisor+User&background=0D8ABC&color=fff"
-                                 alt="Supervisor User">
+                                src="https://ui-avatars.com/api/?name=Supervisor+User&background=0D8ABC&color=fff"
+                                alt="Supervisor User">
                             <span class="ml-2 text-sm font-medium text-gray-700 hidden md:block">Admin User</span>
                         </div>
                     </div>
-                </div>
-            </header>
+                </div> -->
+                        </header>
 
-            <!-- Main Content Area -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
-                <!-- KPI Content -->
-                <div id="kpisContent" class="tab-content">
-                    <!-- Table -->
-                    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                        <!-- Main Content Area -->
+                        <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
+                            <!-- KPI Content -->
+                            <div id="kpisContent" class="tab-content">
+                                <!-- Table -->
+                                <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                                    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                                        <h3 class="text-lg font-semibold text-gray-800">Key Performance Indicator</h3>
+                                    </div>
+
+                                    <div class="table-container">
+                                        <table class="min-w-full compact-table" id="kpiTable">
+                                            <thead>
+                                                <tr class="bg-table-blue text-white">
+                                                    <th rowspan="2" width="3%"
+                                                        class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                                        SL</th>
+                                                    <th rowspan="2" width="10%"
+                                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                                        KRA</th>
+                                                    <th width="15%"
+                                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                        KPI</th>
+                                                    <th width="6%"
+                                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                        Weightage</th>
+                                                    <th width="8%"
+                                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                        Target Description</th>
+                                                    <th width="8%"
+                                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                        Target</th>
+                                                    <th width="8%"
+                                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                        Achievement</th>
+                                                    <th width="8%"
+                                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                        Achievement (%)</th>
+                                                    <th width="8%"
+                                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                        Score</th>
+                                                    <th width="5%"
+                                                        class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                        ⋮</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white divide-y divide-gray-200" id="kpiTableBody">
+                                                <!-- Performance KRA -->
+                                                <tr class="kpi-row saved" data-kra-id="1">
+                                                    <td rowspan="3"
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
+                                                        <div class="flex items-center justify-center h-full">
+                                                            1
+                                                        </div>
+                                                    </td>
+                                                    <td rowspan="3"
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
+                                                        <div class="h-full">
+                                                            Performance
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                                        Revenue Growth
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        30</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        Increase revenue by 15%</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        15</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        <input type="text" class="score-input" value="14">
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        <div class="flex items-center">
+                                                            <div class="progress-bar w-full">
+                                                                <div class="progress-fill bg-green-600"
+                                                                    style="width: 93%"></div>
+                                                            </div>
+                                                            <span class="ml-1 text-xs">93%</span>
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        27.9
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                                        <button class="action-btn details-btn" data-kpi-id="1">
+                                                            Details
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr class="kpi-row saved" data-kra-id="1">
+                                                    <td
+                                                        class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                                        Cost Reduction
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        25</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        Reduce operational costs by 10%</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        10</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        <input type="text" class="score-input" value="9">
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        <div class="flex items-center">
+                                                            <div class="progress-bar w-full">
+                                                                <div class="progress-fill bg-green-600"
+                                                                    style="width: 90%"></div>
+                                                            </div>
+                                                            <span class="ml-1 text-xs">90%</span>
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        22.5
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                                        <button class="action-btn details-btn" data-kpi-id="2">
+                                                            Details
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr class="kpi-row saved" data-kra-id="1">
+                                                    <td
+                                                        class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                                        Profit Margin
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        20</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        Achieve 22% profit margin</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        22</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        <input type="text" class="score-input" value="21">
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        <div class="flex items-center">
+                                                            <div class="progress-bar w-full">
+                                                                <div class="progress-fill bg-green-600"
+                                                                    style="width: 95%"></div>
+                                                            </div>
+                                                            <span class="ml-1 text-xs">95%</span>
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        19
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                                        <button class="action-btn details-btn" data-kpi-id="3">
+                                                            Details
+                                                        </button>
+                                                    </td>
+                                                </tr>
+
+                                                <!-- Customer Satisfaction KRA -->
+                                                <tr class="kpi-row saved" data-kra-id="2">
+                                                    <td rowspan="2"
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
+                                                        <div class="flex items-center justify-center h-full">
+                                                            2
+                                                        </div>
+                                                    </td>
+                                                    <td rowspan="2"
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
+                                                        <div class="h-full">
+                                                            Customer Satisfaction
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                                        NPS Score
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        15</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        Financial reporting process documentation</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        N/A</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        <input type="text" class="score-input" value="Exclent">
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        <div class="flex items-center">
+                                                            <div class="progress-bar w-full">
+                                                                <div class="progress-fill bg-green-600"
+                                                                    style="width: 100%"></div>
+                                                            </div>
+                                                            <span class="ml-1 text-xs">100%</span>
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        15
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                                        <button class="action-btn details-btn" data-kpi-id="4">
+                                                            Details
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr class="kpi-row saved" data-kra-id="2">
+                                                    <td
+                                                        class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
+                                                        Customer Retention
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        10</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        Maintain customer retention rate of 85%</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        85</td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        <input type="text" class="score-input" value="82">
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        <div class="flex items-center">
+                                                            <div class="progress-bar w-full">
+                                                                <div class="progress-fill bg-green-600"
+                                                                    style="width: 96%"></div>
+                                                            </div>
+                                                            <span class="ml-1 text-xs">96%</span>
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+                                                        9.6
+                                                    </td>
+                                                    <td
+                                                        class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
+                                                        <button class="action-btn details-btn" data-kpi-id="5">
+                                                            Details
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="weightage-total">
+                                                    <td colspan="3" class="px-2 py-2 text-right font-medium">Total
+                                                        Weightage:</td>
+                                                    <td id="totalWeightage" class="px-2 py-2 text-center font-medium">
+                                                        100</td>
+                                                    <td colspan="4" class="px-2 py-2 text-center">
+                                                        <span id="weightageStatus"
+                                                            class="text-sm text-green-600"></span>
+                                                    </td>
+                                                    <td class="px-2 py-2 text-center font-medium">94</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+
+                <!-- KPI Review Modal -->
+                <div id="kpiReviewModal" class="modal">
+                    <div class="modal-content">
                         <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-                            <h3 class="text-lg font-semibold text-gray-800">Key Performance Indicator</h3>
+                            <h3 class="text-lg font-semibold text-gray-800">KPI Review</h3>
+                            <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
                         </div>
-
-                        <div class="table-container">
-                            <table class="min-w-full compact-table" id="kpiTable">
-                                <thead>
-                                <tr class="bg-table-blue text-white">
-                                    <th rowspan="2" width="3%"
-                                        class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
-                                        SL</th>
-                                    <th rowspan="2" width="10%"
-                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
-                                        KRA</th>
-                                    <th width="15%"
-                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                        KPI</th>
-                                    <th width="6%"
-                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                        Weightage</th>
-                                    <th width="8%"
-                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                        Target Description</th>
-                                    <th width="8%"
-                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                        Target</th>
-                                    <th width="8%"
-                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                        Achievement</th>
-                                    <th width="8%"
-                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                        Achievement (%)</th>
-                                    <th width="8%"
-                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                        Score</th>
-                                    <th width="5%"
-                                        class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                        ⋮</th>
-                                </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200" id="kpiTableBody">
-                                <!-- Performance KRA -->
-                                <tr class="kpi-row saved" data-kra-id="1">
-                                    <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
-                                        <div class="flex items-center justify-center h-full">
-                                            1
-                                        </div>
-                                    </td>
-                                    <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
-                                        <div class="h-full">
-                                            Performance
-                                        </div>
-                                    </td>
-                                    <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                        Revenue Growth
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        30</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        Increase revenue by 15%</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        15</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        <input type="text" class="score-input" value="14" readonly>
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        <div class="flex items-center">
-                                            <div class="progress-bar w-full">
-                                                <div class="progress-fill bg-green-600" style="width: 93%"></div>
-                                            </div>
-                                            <span class="ml-1 text-xs">93%</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        27.9
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
-                                        <button class="action-btn details-btn" data-kpi-id="1">
-                                            Details
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="kpi-row saved" data-kra-id="1">
-                                    <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                        Cost Reduction
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        25</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        Reduce operational costs by 10%</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        10</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        <input type="text" class="score-input" value="9" readonly>
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        <div class="flex items-center">
-                                            <div class="progress-bar w-full">
-                                                <div class="progress-fill bg-green-600" style="width: 90%"></div>
-                                            </div>
-                                            <span class="ml-1 text-xs">90%</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        22.5
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
-                                        <button class="action-btn details-btn" data-kpi-id="2">
-                                            Details
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="kpi-row saved" data-kra-id="1">
-                                    <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                        Profit Margin
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        20</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        Achieve 22% profit margin</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        22</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        <input type="text" class="score-input" value="21" readonly>
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        <div class="flex items-center">
-                                            <div class="progress-bar w-full">
-                                                <div class="progress-fill bg-green-600" style="width: 95%"></div>
-                                            </div>
-                                            <span class="ml-1 text-xs">95%</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        19
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
-                                        <button class="action-btn details-btn" data-kpi-id="3">
-                                            Details
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Customer Satisfaction KRA -->
-                                <tr class="kpi-row saved" data-kra-id="2">
-                                    <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
-                                        <div class="flex items-center justify-center h-full">
-                                            2
-                                        </div>
-                                    </td>
-                                    <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
-                                        <div class="h-full">
-                                            Customer Satisfaction
-                                        </div>
-                                    </td>
-                                    <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                        NPS Score
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        15</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        Financial reporting process documentation</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        N/A</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        <input type="text" class="score-input" value="Exclent" readonly>
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        <div class="flex items-center">
-                                            <div class="progress-bar w-full">
-                                                <div class="progress-fill bg-green-600" style="width: 100%"></div>
-                                            </div>
-                                            <span class="ml-1 text-xs">100%</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        15
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
-                                        <button class="action-btn details-btn" data-kpi-id="4">
-                                            Details
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="kpi-row saved" data-kra-id="2">
-                                    <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                        Customer Retention
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        10</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        Maintain customer retention rate of 85%</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        85</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        <input type="text" class="score-input" value="82" readonly>
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        <div class="flex items-center">
-                                            <div class="progress-bar w-full">
-                                                <div class="progress-fill bg-green-600" style="width: 96%"></div>
-                                            </div>
-                                            <span class="ml-1 text-xs">96%</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                        9.6
-                                    </td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
-                                        <button class="action-btn details-btn" data-kpi-id="5">
-                                            Details
-                                        </button>
-                                    </td>
-                                </tr>
-                                </tbody>
-                                <tfoot>
-                                <tr class="weightage-total">
-                                    <td colspan="3" class="px-2 py-2 text-right font-medium">Total Weightage:</td>
-                                    <td id="totalWeightage" class="px-2 py-2 text-center font-medium">100</td>
-                                    <td colspan="4" class="px-2 py-2 text-center">
-                                        <span id="weightageStatus" class="text-sm text-green-600"></span>
-                                    </td>
-                                    <td class="px-2 py-2 text-center font-medium">94</td>
-                                </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-
-
-
-    </div>
-
-
-    <div id="kpiReviewModal" class="modal">
-        <div class="modal-content">
-            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-gray-800">KPI Review</h3>
-                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            <div class="p-4">
-                <!-- KPI Details Table -->
-                <div class="mb-6">
-                    <h4 class="text-md font-semibold text-gray-700 mb-2">KPI Details</h4>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full compact-table">
-                            <thead>
-                            <tr class="bg-table-blue text-white">
-                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    KRA/KPI</th>
-                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Weightage</th>
-                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Target Details</th>
-                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Target</th>
-                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Achievement</th>
-                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Achievement (%)</th>
-                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Score</th>
-                            </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200" id="modalKpiDetails">
-                            <!-- KPI details will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Evidence URL -->
-                <div class="mb-6">
-                    <h4 class="text-md font-semibold text-gray-700 mb-2">Evidence URL</h4>
-                    <input type="text" id="evidenceUrl" class="w-full p-2 border border-gray-300 rounded-md" value="https://company.com/evidence/kpi-1">
-                </div>
-
-                <!-- Comment History -->
-                <div class="mb-6">
-                    <h4 class="text-md font-semibold text-gray-700 mb-2">Comment History</h4>
-                    <div class="bg-gray-50 p-4 rounded-md max-h-40 overflow-y-auto">
-                        <div class="comment-item mb-3 pb-3 border-b border-gray-200">
-                            <div class="flex justify-between mb-1">
-                                <span class="font-medium text-sm">John Smith (EMP-001)</span>
-                                <span class="text-xs text-gray-500">2023-10-15 14:30</span>
+                        <div class="p-4">
+                            <!-- KPI Details Table -->
+                            <div class="mb-6">
+                                <h4 class="text-md font-semibold text-gray-700 mb-2">KPI Details</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full compact-table">
+                                        <thead>
+                                            <tr class="bg-table-blue text-white">
+                                                <th
+                                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                    KRA/KPI</th>
+                                                <th
+                                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                    Weightage</th>
+                                                <th
+                                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                    Target Details</th>
+                                                <th
+                                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                    Target</th>
+                                                <th
+                                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                    Achievement</th>
+                                                <th
+                                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                    Achievement (%)</th>
+                                                <th
+                                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                                    Score</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200" id="modalKpiDetails">
+                                            <!-- KPI details will be populated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                            <p class="text-sm">I've completed the initial analysis and documentation for this KPI. The results are promising.</p>
-                        </div>
-                        <div class="comment-item mb-3 pb-3 border-b border-gray-200">
-                            <div class="flex justify-between mb-1">
-                                <span class="font-medium text-sm">Sarah Johnson (Supervisor)</span>
-                                <span class="text-xs text-gray-500">2023-10-16 09:15</span>
+
+                            <!-- Evidence URL -->
+                            <div class="mb-6">
+                                <h4 class="text-md font-semibold text-gray-700 mb-2">Evidence URL</h4>
+                                <input type="text" id="evidenceUrl" class="w-full p-2 border border-gray-300 rounded-md"
+                                    value="https://company.com/evidence/kpi-1">
                             </div>
-                            <p class="text-sm">Good progress. Please ensure the final report includes comparative analysis with last quarter.</p>
-                        </div>
-                        <div class="comment-item">
-                            <div class="flex justify-between mb-1">
-                                <span class="font-medium text-sm">John Smith (EMP-001)</span>
-                                <span class="text-xs text-gray-500">2023-10-17 11:45</span>
+
+                            <!-- Comment History -->
+                            <div class="mb-6">
+                                <h4 class="text-md font-semibold text-gray-700 mb-2">Comment History</h4>
+                                <div class="bg-gray-50 p-4 rounded-md max-h-40 overflow-y-auto" id="commentHistory">
+                                    <div class="comment-item mb-3 pb-3 border-b border-gray-200">
+                                        <div class="flex justify-between mb-1">
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-sm">John Smith (EMP-001)</span>
+                                                <span class="status-badge status-approved">Approved</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">2023-10-15 14:30</span>
+                                        </div>
+                                        <p class="text-sm">I've completed the initial analysis and documentation for
+                                            this KPI. The results are promising.</p>
+                                    </div>
+                                    <div class="comment-item mb-3 pb-3 border-b border-gray-200">
+                                        <div class="flex justify-between mb-1">
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-sm">Sarah Johnson (Supervisor)</span>
+                                                <span class="status-badge status-sent-back">Sent Back</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">2023-10-16 09:15</span>
+                                        </div>
+                                        <p class="text-sm">Good progress. Please ensure the final report includes
+                                            comparative analysis with last quarter.</p>
+                                    </div>
+                                    <div class="comment-item">
+                                        <div class="flex justify-between mb-1">
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-sm">John Smith (EMP-001)</span>
+                                                <span class="status-badge status-approved">Approved</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">2023-10-17 11:45</span>
+                                        </div>
+                                        <p class="text-sm">The comparative analysis has been added to the final report.
+                                            All data is now up to date.</p>
+                                    </div>
+                                </div>
                             </div>
-                            <p class="text-sm">The comparative analysis has been added to the final report. All data is now up to date.</p>
+
+                            <!-- Add Comment -->
+                            <div>
+                                <h4 class="text-md font-semibold text-gray-700 mb-2">Add Comment</h4>
+                                <textarea id="commentInput"
+                                    class="w-full p-2 border border-gray-300 rounded-md comment-input"
+                                    placeholder="Enter your comment here..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Modal Actions -->
+                        <div class="modal-actions">
+                            <button id="cancelBtn" class="modal-btn modal-cancel">Cancel</button>
+                            <button id="submitBtn" class="modal-btn modal-submit">Submit</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Add Comment -->
-                <div>
-                    <h4 class="text-md font-semibold text-gray-700 mb-2">Add Comment</h4>
-                    <textarea id="commentInput" class="w-full p-2 border border-gray-300 rounded-md comment-input" placeholder="Enter your comment here..."></textarea>
-                    <div class="w-full flex justify-end">
-                        <button id="sendComment" class="send-btn ">Send</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                <!-- Overlay for mobile menu -->
+                <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
 
-    <!-- Overlay for mobile menu -->
-    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
-</div>
+                <script>
+                    // Mobile menu functionality
+                    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                    const sidebar = document.getElementById('sidebar');
+                    const overlay = document.getElementById('overlay');
 
-<script>
-    // Mobile menu functionality
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
+                    mobileMenuBtn.addEventListener('click', function () {
+                        sidebar.classList.toggle('-translate-x-full');
+                        overlay.classList.toggle('hidden');
+                    });
 
-    /*mobileMenuBtn.addEventListener('click', function () {
-        sidebar.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
-    });*/
+                    overlay.addEventListener('click', function () {
+                        sidebar.classList.add('-translate-x-full');
+                        overlay.classList.add('hidden');
+                    });
 
-    overlay.addEventListener('click', function () {
-        //sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-    });
+                    // Modal functionality
+                    const modal = document.getElementById('kpiReviewModal');
+                    const closeModal = document.getElementById('closeModal');
+                    const detailsButtons = document.querySelectorAll('.details-btn');
+                    const modalKpiDetails = document.getElementById('modalKpiDetails');
+                    const sendCommentBtn = document.getElementById('sendComment');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const cancelBtn = document.getElementById('cancelBtn');
+                    const commentHistory = document.getElementById('commentHistory');
 
-    // Modal functionality
-    const modal = document.getElementById('kpiReviewModal');
-    const closeModal = document.getElementById('closeModal');
-    const detailsButtons = document.querySelectorAll('.details-btn');
-    const modalKpiDetails = document.getElementById('modalKpiDetails');
-    const sendCommentBtn = document.getElementById('sendComment');
+                    // KPI data for the modal
+                    const kpiData = {
+                        1: {
+                            kra: "Performance",
+                            kpi: "Revenue Growth",
+                            weightage: "30",
+                            targetDetails: "Increase revenue by 15%",
+                            target: "15",
+                            achievement: "14",
+                            achievementPercent: "93%",
+                            score: "27.9"
+                        },
+                        2: {
+                            kra: "Performance",
+                            kpi: "Cost Reduction",
+                            weightage: "25",
+                            targetDetails: "Reduce operational costs by 10%",
+                            target: "10",
+                            achievement: "9",
+                            achievementPercent: "90%",
+                            score: "22.5"
+                        },
+                        3: {
+                            kra: "Performance",
+                            kpi: "Profit Margin",
+                            weightage: "20",
+                            targetDetails: "Achieve 22% profit margin",
+                            target: "22",
+                            achievement: "21",
+                            achievementPercent: "95%",
+                            score: "19"
+                        },
+                        4: {
+                            kra: "Customer Satisfaction",
+                            kpi: "NPS Score",
+                            weightage: "15",
+                            targetDetails: "Financial reporting process documentation",
+                            target: "N/A",
+                            achievement: "Very Good",
+                            achievementPercent: "100%",
+                            score: "15"
+                        },
+                        5: {
+                            kra: "Customer Satisfaction",
+                            kpi: "Customer Retention",
+                            weightage: "10",
+                            targetDetails: "Maintain customer retention rate of 85%",
+                            target: "85",
+                            achievement: "82",
+                            achievementPercent: "96%",
+                            score: "9.6"
+                        }
+                    };
 
-    // KPI data for the modal
-    const kpiData = {
-        1: {
-            kra: "Performance",
-            kpi: "Revenue Growth",
-            weightage: "30",
-            targetDetails: "Increase revenue by 15%",
-            target: "15",
-            achievement: "14",
-            achievementPercent: "93%",
-            score: "27.9"
-        },
-        2: {
-            kra: "Performance",
-            kpi: "Cost Reduction",
-            weightage: "25",
-            targetDetails: "Reduce operational costs by 10%",
-            target: "10",
-            achievement: "9",
-            achievementPercent: "90%",
-            score: "22.5"
-        },
-        3: {
-            kra: "Performance",
-            kpi: "Profit Margin",
-            weightage: "20",
-            targetDetails: "Achieve 22% profit margin",
-            target: "22",
-            achievement: "21",
-            achievementPercent: "95%",
-            score: "19"
-        },
-        4: {
-            kra: "Customer Satisfaction",
-            kpi: "NPS Score",
-            weightage: "15",
-            targetDetails: "Financial reporting process documentation",
-            target: "N/A",
-            achievement: "Very Good",
-            achievementPercent: "100%",
-            score: "15"
-        },
-        5: {
-            kra: "Customer Satisfaction",
-            kpi: "Customer Retention",
-            weightage: "10",
-            targetDetails: "Maintain customer retention rate of 85%",
-            target: "85",
-            achievement: "82",
-            achievementPercent: "96%",
-            score: "9.6"
-        }
-    };
+                    // Open modal when details button is clicked
+                    detailsButtons.forEach(button => {
+                        button.addEventListener('click', function () {
+                            const kpiId = this.getAttribute('data-kpi-id');
+                            const kpi = kpiData[kpiId];
 
-    // Open modal when details button is clicked
-    detailsButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const kpiId = this.getAttribute('data-kpi-id');
-            const kpi = kpiData[kpiId];
-
-            // Populate modal with KPI details
-            modalKpiDetails.innerHTML = `
+                            // Populate modal with KPI details
+                            modalKpiDetails.innerHTML = `
                     <tr>
                         <td class="px-2 py-2 text-sm text-gray-500 border-r border-gray-200">
                             <div>${kpi.kra}</div>
@@ -1511,7 +1817,7 @@
                             ${kpi.target}
                         </td>
                         <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                            ${kpi.achievement}
+                            <input type="text" class="score-input" value="${kpi.achievement}" id="modalAchievement">
                         </td>
                         <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
                             ${kpi.achievementPercent}
@@ -1522,43 +1828,74 @@
                     </tr>
                 `;
 
-            // Show modal
-            modal.style.display = 'flex';
-        });
-    });
+                            // Show modal
+                            modal.style.display = 'flex';
+                        });
+                    });
 
-    // Close modal
-    closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
+                    // Close modal
+                    closeModal.addEventListener('click', function () {
+                        modal.style.display = 'none';
+                    });
 
-    // Close modal when clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
+                    // Cancel button
+                    cancelBtn.addEventListener('click', function () {
+                        modal.style.display = 'none';
+                    });
 
-    // Send comment functionality
-    sendCommentBtn.addEventListener('click', function() {
-        const commentInput = document.getElementById('commentInput');
-        const comment = commentInput.value.trim();
+                    // Submit button
+                    submitBtn.addEventListener('click', function () {
+                        const achievementValue = document.getElementById('modalAchievement').value;
+                        modal.style.display = 'none';
+                    });
 
-        if (comment) {
-            // In a real application, you would send this to the server
-            alert('Comment sent: ' + comment);
-            commentInput.value = ''; // Clear the input after sending
-        } else {
-            alert('Please enter a comment before sending.');
-        }
-    });
+                    // Close modal when clicking outside
+                    window.addEventListener('click', function (event) {
+                        if (event.target === modal) {
+                            modal.style.display = 'none';
+                        }
+                    });
 
-    // Create KRA button functionality
-    /*document.getElementById('createKraBtn').addEventListener('click', function() {
-        alert('Create KRA functionality would open a form here');
-        // In a real application, you would open a modal or form to create a new KRA
-    });*/
-</script>
+                    // Send comment functionality
+                    sendCommentBtn.addEventListener('click', function () {
+                        const commentInput = document.getElementById('commentInput');
+                        const comment = commentInput.value.trim();
 
+                        if (comment) {
+                            // Create new comment element
+                            const newComment = document.createElement('div');
+                            newComment.className = 'comment-item mb-3 pb-3 border-b border-gray-200';
+
+                            // Get current date and time
+                            const now = new Date();
+                            const dateString = now.toISOString().split('T')[0];
+                            const timeString = now.toTimeString().split(' ')[0].substring(0, 5);
+
+                            newComment.innerHTML = `
+                    <div class="flex justify-between mb-1">
+                        <div class="flex items-center">
+                            <span class="font-medium text-sm">Admin User</span>
+                            <span class="status-badge status-approved">Approved</span>
+                        </div>
+                        <span class="text-xs text-gray-500">${dateString} ${timeString}</span>
+                    </div>
+                    <p class="text-sm">${comment}</p>
+                `;
+
+                            // Add new comment to the top of the comment history
+                            commentHistory.insertBefore(newComment, commentHistory.firstChild);
+
+                            // Clear the input
+                            commentInput.value = '';
+                        }
+                    });
+
+                    // Create KRA button functionality
+                    document.getElementById('createKraBtn').addEventListener('click', function () {
+                        // In a real application, you would open a modal or form to create a new KRA
+                    });
+                </script>
+            </body>
 </body>
+
 </html>
