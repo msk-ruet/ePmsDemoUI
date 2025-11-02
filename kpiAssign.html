@@ -7,33 +7,33 @@
         activeMenu: null
       }"
       x-init="
-        $watch('darkMode', val => localStorage.setItem('darkMode', val));
+        $watch('darkMode', val => {
+          localStorage.setItem('darkMode', val);
+          document.documentElement.classList.toggle('dark', val);
+        });
         $watch('sidebarCollapsed', val => localStorage.setItem('sidebarCollapsed', val));
+        // Initialize dark mode on page load
+        if (darkMode) {
+          document.documentElement.classList.add('dark');
+        }
       "
-      :class="darkMode ? 'dark' : ''">
+      :class="{ 'dark': darkMode }">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DIU Sun Light Admin Console</title>
 
-    <!-- Tailwind & Alpine.js -->
+    <!-- Essential CSS & JS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
-    <!-- Google Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <title>KPI PMS - Assign Screen</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -41,6 +41,9 @@
                         'table-blue': '#2E3094',
                         'edit-green': '#39b54a',
                         'delete-red': '#c9252c',
+                        'dark-primary': '#22246f',
+                        'dark-secondary': '#2c2ea3',
+                        'dark-accent': '#3a3ccf',
                     },
                     fontFamily: {
                         'roboto': ['Roboto', 'sans-serif'],
@@ -49,11 +52,129 @@
             }
         }
     </script>
+    
     <style>
         body {
             font-family: 'Roboto', sans-serif;
         }
+        
+        /* Sidebar collapse transitions */
+        .sidebar-transition {
+            transition: width 0.3s ease;
+        }
+        
+        .text-transition {
+            transition: opacity 0.2s ease;
+        }
+        
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: max-content;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 1;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Submenu styling for collapsed mode */
+        .menu-item-wrapper {
+            position: relative;
+        }
+        
+        .submenu-collapsed {
+            position: fixed;
+            left: 64px; /* Match collapsed sidebar width */
+            background: white;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 45;
+            min-width: 200px;
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-left: none;
+        }
+        
+        .dark .submenu-collapsed {
+            background: #2c2ea3;
+            border-color: #3a3ccf;
+            color: #e4e6ff;
+        }
+        
+        .submenu-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+            white-space: nowrap;
+        }
+        
+        .dark .submenu-item {
+            border-bottom-color: #3a3ccf;
+            color: #e4e6ff;
+        }
+        
+        .submenu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .submenu-item:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .dark .submenu-item:hover {
+            background-color: #3a3ccf;
+        }
+        
+        .submenu-item .material-symbols-outlined {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        /* Hide scrollbar but allow scrolling for main sidebar */
+        .no-scrollbar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+        
+        /* Active menu indicator */
+        .active-menu-indicator {
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 20px;
+            background-color: #6366f1;
+            border-radius: 2px;
+        }
 
+        /* KPI Table Styles */
         .progress-bar {
             height: 6px;
             border-radius: 3px;
@@ -196,369 +317,138 @@
             color: #c9252c;
             font-weight: bold;
         }
-
+        
         .kra-cell {
             vertical-align: top;
         }
-
+        
         .target-type-container {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
-    </style>
-    <style>
-        .hidden {
-            display: none;
-        }
-
-        /* Enhanced DIU Color Palette */
-        .bg-diu-900 {
-            background-color: #034ea2;
-        }
-
-        .bg-diu-800 {
-            background-color: #0072BC;
-        }
-
-        .bg-diu-700 {
-            background-color: #0089CF;
-        }
-
-        .bg-diu-600 {
-            background-color: #00A1E4;
-        }
-
-        .bg-diu-500 {
-            background-color: #53B7E8;
-        }
-
-        .bg-diu-400 {
-            background-color: #9AC8EC;
-        }
-
-        .bg-diu-300 {
-            background-color: #D4E7F7;
-        }
-
-        .bg-diu-200 {
-            background-color: #E8F2FC;
-        }
-
-        .bg-diu-100 {
-            background-color: #F5FAFF;
-        }
-
-        /* Text colors */
-        .text-diu-900 {
-            color: #034ea2;
-        }
-
-        .text-diu-800 {
-            color: #0072BC;
-        }
-
-        .text-diu-700 {
-            color: #0089CF;
-        }
-
-        /* Border colors */
-        .border-diu-900 {
-            border-color: #034ea2;
-        }
-
-        .border-diu-600 {
-            border-color: #00A1E4;
-        }
-
-        .border-diu-300 {
-            border-color: #D4E7F7;
-        }
-
-        .border-diu-200 {
-            border-color: #E8F2FC;
-        }
-
-        /* Enhanced shadows */
-        .shadow-soft {
-            box-shadow: 0 4px 6px -1px rgba(3, 78, 162, 0.1), 0 2px 4px -1px rgba(3, 78, 162, 0.06);
-        }
-
-        .shadow-card {
-            box-shadow: 0 10px 15px -3px rgba(3, 78, 162, 0.1), 0 4px 6px -2px rgba(3, 78, 162, 0.05);
-        }
-
-        /* Hover effects */
-        .hover-lift {
-            transition: all 0.3s ease;
-        }
-
-        .hover-lift:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(3, 78, 162, 0.1), 0 10px 10px -5px rgba(3, 78, 162, 0.04);
-        }
-
-        /* Large icon styles */
-        .icon-large {
-            width: 60px;
-            height: 60px;
+        
+        .kpi-checkbox-container {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
         }
-    </style>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
+        
+        .kpi-checkbox {
+            width: 16px;
+            height: 16px;
         }
-
-        .sidebar {
-            background-color: #034ea2;
-            color: white;
-            transition: all 0.3s;
+        
+        .kpi-text {
+            flex: 1;
         }
 
-        .sidebar a:hover {
-            background-color: #1e40af;
+        /* Dark mode specific styles with #22246f color */
+        .dark {
+            color-scheme: dark;
         }
-
-        .header {
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        
+        .dark .bg-gray-50 {
+            background-color: #111827;
         }
-
-        .status-badge {
-            background-color: #e0f2fe;
-            color: #0369a1;
-        }
-
-        .btn-primary {
-            background-color: #2563eb;
-        }
-
-        .btn-primary:hover {
-            background-color: #1d4ed8;
-        }
-
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            border-radius: 0.5rem;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .table-header {
-            background-color: #0089CF;
-        }
-
-        .edit-btn {
-            background-color: #39b54a;
-        }
-
-        .edit-btn:hover {
-            background-color: #2e9c3e;
-        }
-
-        .delete-btn {
-            background-color: #c9252c;
-        }
-
-        .delete-btn:hover {
-            background-color: #b01e24;
-        }
-    </style>
-
-    <style>
-        /* Custom Dark Theme Override - Only for sidebar and header */
-        .dark .dark\:bg-gray-800 {
+        
+        .dark .bg-white {
             background-color: #22246f !important;
         }
-
-        .dark .dark\:bg-gray-900 {
+        
+        .dark .bg-gray-800 {
             background-color: #22246f !important;
         }
-
-        .dark .dark\:border-gray-700 {
-            border-color: #3a3ccf !important;
-        }
-
-        .dark .dark\:text-gray-200 {
-            color: #e4e6ff !important;
-        }
-
-        .dark .dark\:hover\:bg-indigo-900\/40:hover {
+        
+        .dark .bg-gray-700 {
             background-color: #2c2ea3 !important;
         }
-
-        .dark .dark\:bg-gray-700 {
-            background-color: #2c2ea3 !important;
+        
+        .dark .text-gray-800 {
+            color: #f9fafb;
         }
-
-        .dark .dark\:hover\:bg-gray-700:hover {
-            background-color: #2c2ea3 !important;
-        }
-
-        /* Sidebar collapse transitions */
-        .sidebar-transition {
-            transition: width 0.3s ease;
-        }
-
-        .text-transition {
-            transition: opacity 0.2s ease;
-        }
-
-        .tooltip {
-            position: relative;
-        }
-
-        .tooltip .tooltip-text {
-            visibility: hidden;
-            width: max-content;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 4px;
-            padding: 5px 10px;
-            position: absolute;
-            z-index: 1;
-            left: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-left: 8px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            white-space: nowrap;
-        }
-
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        /* Submenu styling for collapsed mode */
-        .menu-item-wrapper {
-            position: relative;
-        }
-
-        .submenu-collapsed {
-            position: fixed;
-            left: 64px; /* Match collapsed sidebar width */
-            background: white;
-            border-radius: 0 8px 8px 0;
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
-            z-index: 45;
-            min-width: 200px;
-            max-height: 70vh;
-            overflow-y: auto;
-            border: 1px solid #e5e7eb;
-            border-left: none;
-        }
-
-        .dark .submenu-collapsed {
-            background: #2c2ea3;
+        
+        .dark .border-gray-200 {
             border-color: #3a3ccf;
         }
-
-        /* Custom scrollbar for submenus */
-        .submenu-collapsed::-webkit-scrollbar {
-            width: 6px;
+        
+        .dark .border-gray-700 {
+            border-color: #3a3ccf;
         }
-
-        .submenu-collapsed::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
+        
+        .dark .border-gray-100 {
+            border-color: #3a3ccf;
         }
-
-        .submenu-collapsed::-webkit-scrollbar-thumb {
-            background: #c5c5c5;
-            border-radius: 3px;
+        
+        .dark .bg-gray-100 {
+            background-color: #2c2ea3;
         }
-
-        .submenu-collapsed::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-
-        .dark .submenu-collapsed::-webkit-scrollbar-track {
-            background: #1e1e6f;
-        }
-
-        .dark .submenu-collapsed::-webkit-scrollbar-thumb {
-            background: #4f52cc;
-        }
-
-        .dark .submenu-collapsed::-webkit-scrollbar-thumb:hover {
-            background: #6366f1;
-        }
-
-        .submenu-item {
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            border-bottom: 1px solid #f3f4f6;
-            white-space: nowrap;
-        }
-
-        .dark .submenu-item {
-            border-bottom-color: #3a3ccf;
+        
+        .dark .text-gray-600 {
             color: #e4e6ff;
         }
-
-        .submenu-item:last-child {
-            border-bottom: none;
+        
+        .dark .text-gray-700 {
+            color: #e4e6ff;
         }
-
-        .submenu-item:hover {
-            background-color: #f3f4f6;
+        
+        .dark .text-gray-200 {
+            color: #e4e6ff;
         }
-
-        .dark .submenu-item:hover {
-            background-color: #3a3ccf;
+        
+        .dark .text-gray-300 {
+            color: #e4e6ff;
         }
-
-        .submenu-item .material-symbols-outlined {
-            margin-right: 12px;
-            font-size: 18px;
+        
+        .dark .text-gray-400 {
+            color: #c7c9ff;
         }
-
-        /* Hide scrollbar but allow scrolling for main sidebar */
-        .no-scrollbar {
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
+        
+        .dark .hover\:text-indigo-500:hover {
+            color: #a5b4fc;
         }
-
-        .no-scrollbar::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
+        
+        .dark .hover\:bg-indigo-900\/40:hover {
+            background-color: #2c2ea3 !important;
         }
-
-        /* Active menu indicator */
-        .active-menu-indicator {
-            position: absolute;
-            right: -8px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 20px;
-            background-color: #6366f1;
-            border-radius: 2px;
+        
+        .dark .hover\:bg-gray-700:hover {
+            background-color: #2c2ea3 !important;
+        }
+        
+        /* Custom hover effects for dark mode */
+        .dark .hover\:bg-indigo-50:hover {
+            background-color: #2c2ea3 !important;
+        }
+        
+        /* Dark mode for KPI table */
+        .dark .kpi-row.saved {
+            background-color: #2c2ea3;
+        }
+        
+        .dark .kpi-row.editing {
+            background-color: #1a1c6e;
+        }
+        
+        .dark .bg-table-blue {
+            background-color: #2c2ea3;
+        }
+        
+        .dark .border-blue-500 {
+            border-color: #3a3ccf;
+        }
+        
+        .dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+            border-color: #3a3ccf;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: #3a3ccf;
+        }
+        
+        .dark .weightage-total {
+            background-color: #22246f;
+            color: #e4e6ff;
         }
     </style>
 </head>
@@ -599,8 +489,8 @@
             <!-- Dashboard -->
             <div class="menu-item-wrapper">
                 <a href="index.html"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'dashboard' }">
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'dashboard' }">
                     <span class="material-symbols-outlined mr-3">dashboard</span>
                     <span class="text-transition"
                           :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Dashboard</span>
@@ -617,8 +507,8 @@
             } else { 
               open = !open; 
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'user-management' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'user-management' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">group</span>
                         <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">User Management</span>
@@ -664,14 +554,6 @@
                         <span class="material-symbols-outlined">history</span>
                         Audit Logs
                     </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">security</span>
-                        Permissions
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">groups</span>
-                        User Groups
-                    </div>
                 </div>
             </div>
 
@@ -683,8 +565,8 @@
             } else { 
               open = !open; 
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'hr-attendance' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'hr-attendance' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">calendar_month</span>
                         <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">HR & Attendance</span>
@@ -730,14 +612,6 @@
                         <span class="material-symbols-outlined">timer</span>
                         Overtime
                     </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">work_history</span>
-                        Shift Management
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">event_available</span>
-                        Holidays
-                    </div>
                 </div>
             </div>
 
@@ -749,8 +623,8 @@
             } else { 
               open = !open; 
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'epms' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'epms' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">assignment</span>
                         <span class="text-transition"
@@ -777,10 +651,6 @@
                        class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
                         <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
                     </a>
-                    <a href="kpiReports.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Reports
-                    </a>
                 </div>
 
                 <!-- Collapsed Mode Submenu -->
@@ -790,23 +660,15 @@
                      @click.stop>
                     <div class="submenu-item" @click="activeMenu = null">
                         <span class="material-symbols-outlined">task</span>
-                        Performance Reviews
+                        KPI Assign
                     </div>
                     <div class="submenu-item" @click="activeMenu = null">
                         <span class="material-symbols-outlined">trending_up</span>
-                        KPIs
+                        My KPI
                     </div>
                     <div class="submenu-item" @click="activeMenu = null">
                         <span class="material-symbols-outlined">target</span>
-                        Goals
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">assessment</span>
-                        Appraisals
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">emoji_events</span>
-                        Rewards
+                        KPI Review
                     </div>
                 </div>
             </div>
@@ -819,8 +681,8 @@
             } else { 
               open = !open; 
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'payroll' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'payroll' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">payments</span>
                         <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Payroll</span>
@@ -865,14 +727,6 @@
                         <span class="material-symbols-outlined">savings</span>
                         Tax Management
                     </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">account_balance</span>
-                        Bank Transfers
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">receipt_long</span>
-                        Payroll Reports
-                    </div>
                 </div>
             </div>
 
@@ -884,8 +738,8 @@
             } else { 
               open = !open; 
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'leave' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'leave' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">beach_access</span>
                         <span class="text-transition"
@@ -931,14 +785,6 @@
                         <span class="material-symbols-outlined">calendar_today</span>
                         Leave Calendar
                     </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">airline_seat_recline_extra</span>
-                        Sick Leave
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">flight_takeoff</span>
-                        Vacation
-                    </div>
                 </div>
             </div>
 
@@ -950,8 +796,8 @@
             } else { 
               open = !open; 
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'visit' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'visit' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">travel_explore</span>
                         <span class="text-transition"
@@ -997,22 +843,14 @@
                         <span class="material-symbols-outlined">schedule</span>
                         Visit Schedule
                     </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">badge</span>
-                        Visitor Pass
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">history</span>
-                        Visit History
-                    </div>
                 </div>
             </div>
 
             <!-- Reports -->
             <div class="menu-item-wrapper">
                 <a href="#"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'reports' }">
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'reports' }">
                     <span class="material-symbols-outlined mr-3">bar_chart</span>
                     <span class="text-transition"
                           :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Reports</span>
@@ -1024,8 +862,8 @@
             <!-- Settings -->
             <div class="menu-item-wrapper">
                 <a href="#"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'settings' }">
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'settings' }">
                     <span class="material-symbols-outlined mr-3">settings</span>
                     <span class="text-transition"
                           :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Settings</span>
@@ -1037,7 +875,7 @@
 
         <!-- Footer -->
         <div class="border-t border-gray-200 dark:border-gray-700 p-4">
-            <button class="flex items-center w-full text-gray-700  text-gray-700 dark:text-gray-200 tooltip">
+            <button class="flex items-center w-full text-gray-700 dark:text-gray-200 tooltip">
                 <span class="material-symbols-outlined mr-2">logout</span>
                 <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Logout</span>
                 <span class="tooltip-text" x-show="sidebarCollapsed">Logout</span>
@@ -1056,19 +894,19 @@
                     ☰
                 </button>
                 <input type="text" placeholder="Search..."
-                       class="hidden md:block px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-sm outline-none"/>
+                       class="hidden md:block px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm outline-none"/>
             </div>
 
             <!-- Right Actions -->
             <div class="flex items-center gap-4">
                 <!-- Dark Mode Toggle -->
-                <button @click="darkMode = !darkMode" class="text-gray-600 hover:text-indigo-500">
+                <button @click="darkMode = !darkMode" class="text-gray-600 dark:text-gray-300 hover:text-indigo-500">
                     <span x-show="!darkMode" class="material-symbols-outlined">light_mode</span>
                     <span x-show="darkMode" class="material-symbols-outlined">dark_mode</span>
                 </button>
 
                 <!-- Notifications -->
-                <button class="text-gray-600 hover:text-indigo-500">
+                <button class="text-gray-600 dark:text-gray-300 hover:text-indigo-500">
                     <span class="material-symbols-outlined">notifications</span>
                 </button>
 
@@ -1082,102 +920,69 @@
                     <!-- Dropdown -->
                     <div x-show="open" x-transition @mouseenter="open = true" @mouseleave="open = false"
                          class="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
-                        <div class="px-3 py-2 border-b border-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200">
+                        <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200">
                             Role: <span class="font-medium text-indigo-500" x-text="role"></span>
                         </div>
-                        <a href="#" class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200">Profile</a>
+                        <a href="#" class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Profile</a>
                         <a href="#"
-                           class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200">Settings</a>
-                        <a href="#" class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200">Logout</a>
+                           class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Settings</a>
+                        <a href="#" class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Logout</a>
                     </div>
                 </div>
             </div>
         </header>
-
-        <!-- Main Page -->
-        <!--<main class="p-6 bg-gray-50">
-          <h2 class="text-2xl font-semibold mb-2">Welcome to DIU Sun Light Admin Console</h2>
-          <p class="text-gray-600">
-            You are logged in as <span class="font-semibold text-indigo-600">Admin</span>.
-          </p>
-
-          &lt;!&ndash; Sample content to demonstrate light theme in main area &ndash;&gt;
-          <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-              <h3 class="font-medium text-gray-800">Dashboard Stats</h3>
-              <p class="text-gray-600 mt-2">This content remains in light mode even when dark mode is activated.</p>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-              <h3 class="font-medium text-gray-800">Recent Activity</h3>
-              <p class="text-gray-600 mt-2">All main content areas maintain their light theme appearance.</p>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-              <h3 class="font-medium text-gray-800">Quick Actions</h3>
-              <p class="text-gray-600 mt-2">Only the sidebar and header change with dark mode.</p>
-            </div>
-          </div>
-
-          <div class="mt-8">
-            <h3 class="text-lg font-medium text-gray-800 mb-4">Sidebar State</h3>
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-              <p class="text-gray-600">The sidebar is currently <span class="font-semibold" x-text="sidebarCollapsed ? 'collapsed' : 'expanded'"></span>.</p>
-              <p class="text-gray-600 mt-2">Use the toggle button next to the logo to collapse/expand the sidebar.</p>
-              <p class="text-gray-600 mt-2">When collapsed, click on menu items to see submenus appear beside them with scrollable content.</p>
-              <p class="text-gray-600 mt-2">Only one submenu can be open at a time for better usability.</p>
-            </div>
-          </div>
-        </main>-->
-
-
+        
+        <!-- Main Content Area -->
         <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
             <!-- Employee Information Table -->
-            <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
-                <div class="p-4 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800">Employee Information</h3>
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-6">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Employee Information</h3>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full compact-table">
                         <thead>
-                        <tr class="bg-table-blue text-white">
-                            <th
+                            <tr class="bg-table-blue text-white">
+                                <th
                                     class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Employee ID</th>
-                            <th
+                                    Employee ID</th>
+                                <th
                                     class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Employee Name</th>
-                            <th
+                                    Employee Name</th>
+                                <th
                                     class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Category</th>
-                            <th
+                                    Category</th>
+                                <th
                                     class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Department</th>
-                        </tr>
+                                    Department</th>
+                            </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                        <tr>
-                            <td
-                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                                710003896</td>
-                            <td
-                                    class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
-                                Fazlul Alam</td>
-                            <td
-                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                                Admin</td>
-                            <td
-                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                                Software Section</td>
-                        </tr>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <tr>
+                                <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                                    710003896</td>
+                                <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200 border-r border-gray-200 dark:border-gray-700">
+                                    Fazlul Alam</td>
+                                <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                                    Admin</td>
+                                <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                                    Software Section</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+            
             <!-- KPI Content -->
             <div id="kpisContent" class="tab-content">
                 <!-- Table -->
-                <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="text-lg font-semibold text-gray-800">Key Performance Indicator</h3>
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Key Performance Indicator</h3>
                         <button id="createKraBtn" class="bg-table-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
                             <i class="fas fa-plus mr-2"></i>Create KRA
                         </button>
@@ -1186,171 +991,173 @@
                     <div class="table-container">
                         <table class="min-w-full compact-table" id="kpiTable">
                             <thead>
-                            <tr class="bg-table-blue text-white">
-                                <th rowspan="2" width="3%"
-                                    class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
-                                    SL</th>
-                                <th rowspan="2" width="10%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
-                                    KRA</th>
-                                <th width="15%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    KPI</th>
-                                <th width="6%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Weightage</th>
-                                <th width="8%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    KPI Type</th>
-                                <th width="8%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Target Description</th>
-                                <th width="8%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Target</th>
-                                <th width="10%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Actions</th>
-                            </tr>
+                                <tr class="bg-table-blue text-white">
+                                    <th rowspan="2" width="3%"
+                                        class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                        SL</th>
+                                    <th rowspan="2" width="10%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                        KRA</th>
+                                    <th width="15%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        KPI</th>
+                                    <th width="6%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Weightage</th>
+                                    <th width="8%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Target Description</th>
+                                    <th width="8%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Target</th>
+                                    <th width="10%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Actions</th>
+                                </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200" id="kpiTableBody">
-                            <!-- Performance KRA -->
-                            <tr class="kpi-row saved" data-kra-id="1">
-                                <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
-                                    <div class="flex items-center justify-center h-full">
-                                        1
-                                    </div>
-                                </td>
-                                <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
-                                    <div class="h-full">
-                                        Performance
-                                    </div>
-                                </td>
-                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                    Revenue Growth
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    30</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Targeted KPI</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Increase revenue by 15%</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    15</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <button class="action-btn edit-btn" data-kpi-id="1">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                    <button class="action-btn delete-btn" data-kpi-id="1">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr class="kpi-row saved" data-kra-id="1">
-                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                    Cost Reduction
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    25</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Targeted KPI</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Reduce operational costs by 10%</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    10</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <button class="action-btn edit-btn" data-kpi-id="2">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                    <button class="action-btn delete-btn" data-kpi-id="2">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr class="kpi-row saved" data-kra-id="1">
-                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                    Profit Margin
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    20</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Targeted KPI</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Achieve 22% profit margin</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    22</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <button class="action-btn edit-btn" data-kpi-id="3">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                    <button class="action-btn delete-btn" data-kpi-id="3">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <!-- Customer Satisfaction KRA -->
-                            <tr class="kpi-row saved" data-kra-id="2">
-                                <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
-                                    <div class="flex items-center justify-center h-full">
-                                        2
-                                    </div>
-                                </td>
-                                <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
-                                    <div class="h-full">
-                                        Customer Satisfaction
-                                    </div>
-                                </td>
-                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                    NPS Score
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    15</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Non Targeted KPI</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Financial reporting process documentation</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    N/A</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <button class="action-btn edit-btn" data-kpi-id="4">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                    <button class="action-btn delete-btn" data-kpi-id="4">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr class="kpi-row saved" data-kra-id="2">
-                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                    Customer Retention
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    10</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Targeted KPI</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Maintain customer retention rate of 85%</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    85</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <button class="action-btn edit-btn" data-kpi-id="5">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                    <button class="action-btn delete-btn" data-kpi-id="5">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                </td>
-                            </tr>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="kpiTableBody">
+                                <!-- Performance KRA -->
+                                <tr class="kpi-row saved" data-kra-id="1">
+                                    <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-center kra-cell">
+                                        <div class="flex items-center justify-center h-full">
+                                            1
+                                        </div>
+                                    </td>
+                                    <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-left kra-cell">
+                                        <div class="h-full">
+                                            Performance
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <div class="kpi-checkbox-container">
+                                            <input type="checkbox" class="kpi-checkbox" checked disabled>
+                                            <span class="kpi-text">Revenue Growth</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        30</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        Increase revenue by 15%</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        15</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <button class="action-btn edit-btn" data-kpi-id="1">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="action-btn delete-btn" data-kpi-id="1">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="kpi-row saved" data-kra-id="1">
+                                    <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <div class="kpi-checkbox-container">
+                                            <input type="checkbox" class="kpi-checkbox" checked disabled>
+                                            <span class="kpi-text">Cost Reduction</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        25</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        Reduce operational costs by 10%</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        10</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <button class="action-btn edit-btn" data-kpi-id="2">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="action-btn delete-btn" data-kpi-id="2">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="kpi-row saved" data-kra-id="1">
+                                    <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <div class="kpi-checkbox-container">
+                                            <input type="checkbox" class="kpi-checkbox" checked disabled>
+                                            <span class="kpi-text">Profit Margin</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        20</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        Achieve 22% profit margin</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        22</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <button class="action-btn edit-btn" data-kpi-id="3">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="action-btn delete-btn" data-kpi-id="3">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Customer Satisfaction KRA -->
+                                <tr class="kpi-row saved" data-kra-id="2">
+                                    <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-center kra-cell">
+                                        <div class="flex items-center justify-center h-full">
+                                            2
+                                        </div>
+                                    </td>
+                                    <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-left kra-cell">
+                                        <div class="h-full">
+                                            Customer Satisfaction
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <div class="kpi-checkbox-container">
+                                            <input type="checkbox" class="kpi-checkbox" disabled>
+                                            <span class="kpi-text">NPS Score</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        15</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        Financial reporting process documentation</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        N/A</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <button class="action-btn edit-btn" data-kpi-id="4">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="action-btn delete-btn" data-kpi-id="4">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="kpi-row saved" data-kra-id="2">
+                                    <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <div class="kpi-checkbox-container">
+                                            <input type="checkbox" class="kpi-checkbox" checked disabled>
+                                            <span class="kpi-text">Customer Retention</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        10</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        Maintain customer retention rate of 85%</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        85</td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <button class="action-btn edit-btn" data-kpi-id="5">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="action-btn delete-btn" data-kpi-id="5">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
                             </tbody>
                             <tfoot>
-                            <tr class="weightage-total">
-                                <td colspan="3" class="px-2 py-2 text-right font-medium">Total Weightage:</td>
-                                <td id="totalWeightage" class="px-2 py-2 text-center font-medium">100</td>
-                                <td colspan="4" class="px-2 py-2 text-center">
-                                    <span id="weightageStatus" class="text-sm text-green-600">Weightage is perfectly allocated</span>
-                                </td>
-                            </tr>
+                                <tr class="weightage-total">
+                                    <td colspan="3" class="px-2 py-2 text-right font-medium">Total Weightage:</td>
+                                    <td id="totalWeightage" class="px-2 py-2 text-center font-medium">100</td>
+                                    <td colspan="3" class="px-2 py-2 text-center">
+                                        <span id="weightageStatus" class="text-sm text-green-600">Weightage is perfectly allocated</span>
+                                    </td>
+                                </tr>
                             </tfoot>
                         </table>
                     </div>
@@ -1360,23 +1167,7 @@
     </div>
 </div>
 
-
 <script>
-    // Mobile menu functionality
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-
-    /*mobileMenuBtn.addEventListener('click', function () {
-        sidebar.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
-    });*/
-
-    /*overlay.addEventListener('click', function () {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-    });*/
-
     // KPI Management Functionality
     let kraCounter = 2; // Starting from 2 as we have 2 existing KRAs
     let kpiCounter = 5; // Starting from 5 as we have 5 existing KPIs
@@ -1389,40 +1180,396 @@
     createKraBtn.addEventListener('click', function() {
         kraCounter++;
         const kraId = kraCounter;
-
+        
         // Create a new KRA row
         const kraRow = document.createElement('tr');
         kraRow.className = 'kpi-row editing';
         kraRow.setAttribute('data-kra-id', kraId);
-
+        
         kraRow.innerHTML = `
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-center kra-cell">
+                <div class="flex items-center justify-center h-full">
+                    ${kraCounter}
+                </div>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-left kra-cell">
+                <input type="text" class="editable-input" value="New KRA" data-field="kra">
+            </td>
+            <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                <div class="kpi-checkbox-container">
+                    <input type="checkbox" class="kpi-checkbox" checked>
+                    <input type="text" class="editable-input kpi-text" placeholder="Enter KPI" data-field="kpi">
+                </div>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="number" class="editable-input" placeholder="Weightage" data-field="weightage" min="0" max="100">
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="text" class="editable-input" placeholder="Target description" data-field="target-word">
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="text" class="editable-input" placeholder="Target value" data-field="target">
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <button class="action-btn add-btn" data-kra-id="${kraId}">
+                    <i class="fas fa-plus"></i> Add KPI
+                </button>
+                <button class="action-btn save-btn" data-kra-id="${kraId}">
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <button class="action-btn cancel-btn" data-kra-id="${kraId}">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </td>
+        `;
+        
+        kpiTableBody.appendChild(kraRow);
+        
+        // Add event listener for checkbox change
+        const kpiCheckbox = kraRow.querySelector('.kpi-checkbox');
+        const targetInput = kraRow.querySelector('input[data-field="target"]');
+        
+        kpiCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                targetInput.disabled = false;
+                targetInput.placeholder = 'Target value';
+                targetInput.value = '';
+            } else {
+                targetInput.disabled = true;
+                targetInput.value = 'N/A';
+            }
+        });
+        
+        // Add event listener for save button
+        const saveBtn = kraRow.querySelector('.save-btn');
+        saveBtn.addEventListener('click', function() {
+            saveKpiRow(kraRow, kraId);
+        });
+        
+        // Add event listener for cancel button
+        const cancelBtn = kraRow.querySelector('.cancel-btn');
+        cancelBtn.addEventListener('click', function() {
+            kraRow.remove();
+            updateWeightageTotal();
+        });
+        
+        // Add event listener for add button
+        const addBtn = kraRow.querySelector('.add-btn');
+        addBtn.addEventListener('click', function() {
+            addKpiToKra(kraId);
+        });
+        
+        updateWeightageTotal();
+    });
+
+    // Add KPI to existing KRA
+    function addKpiToKra(kraId) {
+        kpiCounter++;
+        const kraRows = document.querySelectorAll(`tr[data-kra-id="${kraId}"]`);
+        const kraRow = kraRows[0]; // First row of this KRA
+        
+        const kpiRow = document.createElement('tr');
+        kpiRow.className = 'kpi-row editing';
+        kpiRow.setAttribute('data-kra-id', kraId);
+        kpiRow.setAttribute('data-kpi-id', kpiCounter);
+        
+        // Get the KRA name from the first row of this KRA
+        const kraName = kraRow.querySelector('input[data-field="kra"]') ? 
+                       kraRow.querySelector('input[data-field="kra"]').value : 
+                       kraRow.querySelector('td:nth-child(2)').textContent;
+        
+        kpiRow.innerHTML = `
+            <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                <div class="kpi-checkbox-container">
+                    <input type="checkbox" class="kpi-checkbox" checked>
+                    <input type="text" class="editable-input kpi-text" placeholder="Enter KPI" data-field="kpi">
+                </div>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="number" class="editable-input" placeholder="Weightage" data-field="weightage" min="0" max="100">
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="text" class="editable-input" placeholder="Target description" data-field="target-word">
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="text" class="editable-input" placeholder="Target value" data-field="target">
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <button class="action-btn save-btn" data-kpi-id="${kpiCounter}">
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <button class="action-btn cancel-btn" data-kpi-id="${kpiCounter}">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </td>
+        `;
+        
+        // Insert after the last row of this KRA
+        const lastKraRow = kraRows[kraRows.length - 1];
+        lastKraRow.parentNode.insertBefore(kpiRow, lastKraRow.nextSibling);
+        
+        // Update rowspan for the KRA
+        updateKraRowspan(kraId);
+        
+        // Add event listener for checkbox change
+        const kpiCheckbox = kpiRow.querySelector('.kpi-checkbox');
+        const targetInput = kpiRow.querySelector('input[data-field="target"]');
+        
+        kpiCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                targetInput.disabled = false;
+                targetInput.placeholder = 'Target value';
+                targetInput.value = '';
+            } else {
+                targetInput.disabled = true;
+                targetInput.value = 'N/A';
+            }
+        });
+        
+        // Add event listener for save button
+        const saveBtn = kpiRow.querySelector('.save-btn');
+        saveBtn.addEventListener('click', function() {
+            saveKpiRow(kpiRow, kraId, kpiCounter);
+        });
+        
+        // Add event listener for cancel button
+        const cancelBtn = kpiRow.querySelector('.cancel-btn');
+        cancelBtn.addEventListener('click', function() {
+            kpiRow.remove();
+            updateKraRowspan(kraId);
+            updateWeightageTotal();
+        });
+        
+        updateWeightageTotal();
+    }
+
+    // Update rowspan for KRA
+    function updateKraRowspan(kraId) {
+        const kraRows = document.querySelectorAll(`tr[data-kra-id="${kraId}"]`);
+        const firstRow = kraRows[0];
+        
+        if (firstRow) {
+            const slCell = firstRow.querySelector('td:nth-child(1)');
+            const kraCell = firstRow.querySelector('td:nth-child(2)');
+            
+            slCell.setAttribute('rowspan', kraRows.length);
+            kraCell.setAttribute('rowspan', kraRows.length);
+        }
+    }
+
+    // Save KPI row
+    function saveKpiRow(row, kraId, kpiId = null) {
+        const isNewKra = !kpiId;
+        const inputs = row.querySelectorAll('input[data-field], select[data-field]');
+        let hasErrors = false;
+        
+        // Validate inputs
+        inputs.forEach(input => {
+            if (input.hasAttribute('required') && !input.value.trim() && !input.disabled) {
+                input.style.borderColor = '#c9252c';
+                hasErrors = true;
+            } else {
+                input.style.borderColor = '#d1d5db';
+            }
+        });
+        
+        // Validate weightage
+        const weightageInput = row.querySelector('input[data-field="weightage"]');
+        if (weightageInput) {
+            const weightage = parseInt(weightageInput.value) || 0;
+            if (weightage <= 0 || weightage > 100) {
+                weightageInput.style.borderColor = '#c9252c';
+                hasErrors = true;
+            }
+        }
+        
+        if (hasErrors) return;
+        
+        // Get values
+        const kraValue = row.querySelector('input[data-field="kra"]') ? 
+                        row.querySelector('input[data-field="kra"]').value : 
+                        row.querySelector('td:nth-child(2)').textContent;
+        
+        const kpiValue = row.querySelector('input[data-field="kpi"]').value;
+        const weightageValue = row.querySelector('input[data-field="weightage"]').value;
+        const targetWordValue = row.querySelector('input[data-field="target-word"]').value;
+        const targetValue = row.querySelector('input[data-field="target"]').value;
+        const isChecked = row.querySelector('.kpi-checkbox').checked;
+        
+        // Update row with saved values
+        row.className = 'kpi-row saved';
+        
+        if (isNewKra) {
+            row.innerHTML = `
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-center kra-cell">
                     <div class="flex items-center justify-center h-full">
                         ${kraCounter}
                     </div>
                 </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
-                    <input type="text" class="editable-input" value="New KRA" data-field="kra">
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-left kra-cell">
+                    <div class="h-full">
+                        ${kraValue}
+                    </div>
                 </td>
-                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                    <input type="text" class="editable-input" placeholder="Enter KPI" data-field="kpi">
+                <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                    <div class="kpi-checkbox-container">
+                        <input type="checkbox" class="kpi-checkbox" ${isChecked ? 'checked' : ''}>
+                        <span class="kpi-text">${kpiValue}</span>
+                    </div>
                 </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                    <input type="number" class="editable-input" placeholder="Weightage" data-field="weightage" min="0" max="100">
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    ${weightageValue}
                 </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                    <select class="editable-select" data-field="kpi-type">
-                        <option value="targeted">Targeted KPI</option>
-                        <option value="non-targeted">Non Targeted KPI</option>
-                    </select>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    ${targetWordValue}
                 </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                    <input type="text" class="editable-input" placeholder="Target description" data-field="target-word">
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    ${targetValue}
                 </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                    <input type="text" class="editable-input" placeholder="Target value" data-field="target">
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <button class="action-btn edit-btn" data-kra-id="${kraId}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="action-btn add-btn" data-kra-id="${kraId}">
+                        <i class="fas fa-plus"></i> Add KPI
+                    </button>
+                    <button class="action-btn delete-btn" data-kra-id="${kraId}">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
                 </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
+            `;
+            
+            // Add event listeners for the new buttons
+            const editBtn = row.querySelector('.edit-btn');
+            editBtn.addEventListener('click', function() {
+                editKpiRow(row, kraId);
+            });
+            
+            const addBtn = row.querySelector('.add-btn');
+            addBtn.addEventListener('click', function() {
+                addKpiToKra(kraId);
+            });
+            
+            const deleteBtn = row.querySelector('.delete-btn');
+            deleteBtn.addEventListener('click', function() {
+                // Remove all rows with this KRA ID
+                const kraRows = document.querySelectorAll(`tr[data-kra-id="${kraId}"]`);
+                kraRows.forEach(row => row.remove());
+                updateWeightageTotal();
+            });
+            
+            // Add event listener for checkbox
+            const kpiCheckbox = row.querySelector('.kpi-checkbox');
+            kpiCheckbox.addEventListener('change', function() {
+                const targetCell = row.querySelector('td:nth-child(6)');
+                if (this.checked) {
+                    targetCell.textContent = '';
+                    targetCell.innerHTML = '<input type="text" class="editable-input" value="">';
+                } else {
+                    targetCell.textContent = 'N/A';
+                }
+            });
+        } else {
+            row.innerHTML = `
+                <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                    <div class="kpi-checkbox-container">
+                        <input type="checkbox" class="kpi-checkbox" ${isChecked ? 'checked' : ''}>
+                        <span class="kpi-text">${kpiValue}</span>
+                    </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    ${weightageValue}
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    ${targetWordValue}
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    ${targetValue}
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <button class="action-btn edit-btn" data-kpi-id="${kpiId}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="action-btn delete-btn" data-kpi-id="${kpiId}">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </td>
+            `;
+            
+            // Add event listeners for the new buttons
+            const editBtn = row.querySelector('.edit-btn');
+            editBtn.addEventListener('click', function() {
+                editKpiRow(row, kraId, kpiId);
+            });
+            
+            const deleteBtn = row.querySelector('.delete-btn');
+            deleteBtn.addEventListener('click', function() {
+                row.remove();
+                updateKraRowspan(kraId);
+                updateWeightageTotal();
+            });
+            
+            // Add event listener for checkbox
+            const kpiCheckbox = row.querySelector('.kpi-checkbox');
+            kpiCheckbox.addEventListener('change', function() {
+                const targetCell = row.querySelector('td:nth-child(4)');
+                if (this.checked) {
+                    targetCell.textContent = '';
+                    targetCell.innerHTML = '<input type="text" class="editable-input" value="">';
+                } else {
+                    targetCell.textContent = 'N/A';
+                }
+            });
+        }
+        
+        updateWeightageTotal();
+    }
+
+    // Edit KPI row
+    function editKpiRow(row, kraId, kpiId = null) {
+        const isKraRow = !kpiId;
+        const cells = row.cells;
+        
+        // Get current values
+        const kraValue = isKraRow ? cells[1].textContent.trim() : 
+                       document.querySelector(`tr[data-kra-id="${kraId}"] td:nth-child(2)`).textContent.trim();
+        
+        const kpiCheckboxContainer = cells[2].querySelector('.kpi-checkbox-container');
+        const isChecked = kpiCheckboxContainer.querySelector('.kpi-checkbox').checked;
+        const kpiValue = kpiCheckboxContainer.querySelector('.kpi-text').textContent.trim();
+        
+        const weightageValue = cells[3].textContent.trim();
+        const targetWordValue = cells[4].textContent.trim();
+        const targetValue = cells[5].textContent.trim();
+        
+        row.className = 'kpi-row editing';
+        
+        if (isKraRow) {
+            row.innerHTML = `
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-center kra-cell">
+                    <div class="flex items-center justify-center h-full">
+                        ${kraCounter}
+                    </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-left kra-cell">
+                    <input type="text" class="editable-input" value="${kraValue}" data-field="kra">
+                </td>
+                <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                    <div class="kpi-checkbox-container">
+                        <input type="checkbox" class="kpi-checkbox" ${isChecked ? 'checked' : ''}>
+                        <input type="text" class="editable-input kpi-text" value="${kpiValue}" data-field="kpi">
+                    </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="number" class="editable-input" value="${weightageValue}" data-field="weightage" min="0" max="100">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="text" class="editable-input" value="${targetWordValue}" data-field="target-word">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="text" class="editable-input" value="${targetValue}" data-field="target" ${!isChecked ? 'disabled' : ''}>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                     <button class="action-btn add-btn" data-kra-id="${kraId}">
                         <i class="fas fa-plus"></i> Add KPI
                     </button>
@@ -1434,366 +1581,13 @@
                     </button>
                 </td>
             `;
-
-        kpiTableBody.appendChild(kraRow);
-
-        // Add event listener for KPI type change
-        const kpiTypeSelect = kraRow.querySelector('select[data-field="kpi-type"]');
-        const targetWordInput = kraRow.querySelector('input[data-field="target-word"]');
-        const targetInput = kraRow.querySelector('input[data-field="target"]');
-
-        kpiTypeSelect.addEventListener('change', function() {
-            if (this.value === 'targeted') {
-                targetWordInput.disabled = false;
-                targetInput.disabled = false;
-                targetInput.placeholder = 'Target value';
-            } else {
-                targetWordInput.disabled = false;
-                targetInput.value = 'N/A';
-                targetInput.disabled = true;
-            }
-        });
-
-        // Add event listener for save button
-        const saveBtn = kraRow.querySelector('.save-btn');
-        saveBtn.addEventListener('click', function() {
-            saveKpiRow(kraRow, kraId);
-        });
-
-        // Add event listener for cancel button
-        const cancelBtn = kraRow.querySelector('.cancel-btn');
-        cancelBtn.addEventListener('click', function() {
-            if (confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
-                kraRow.remove();
-                updateWeightageTotal();
-            }
-        });
-
-        // Add event listener for add button
-        const addBtn = kraRow.querySelector('.add-btn');
-        addBtn.addEventListener('click', function() {
-            addKpiToKra(kraId);
-        });
-
-        updateWeightageTotal();
-    });
-
-    // Add KPI to existing KRA
-    function addKpiToKra(kraId) {
-        kpiCounter++;
-        const kraRows = document.querySelectorAll(`tr[data-kra-id="${kraId}"]`);
-        const kraRow = kraRows[0]; // First row of this KRA
-
-        const kpiRow = document.createElement('tr');
-        kpiRow.className = 'kpi-row editing';
-        kpiRow.setAttribute('data-kra-id', kraId);
-        kpiRow.setAttribute('data-kpi-id', kpiCounter);
-
-        // Get the KRA name from the first row of this KRA
-        const kraName = kraRow.querySelector('input[data-field="kra"]') ?
-            kraRow.querySelector('input[data-field="kra"]').value :
-            kraRow.querySelector('td:nth-child(2)').textContent;
-
-        kpiRow.innerHTML = `
-                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                    <input type="text" class="editable-input" placeholder="Enter KPI" data-field="kpi">
-                </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                    <input type="number" class="editable-input" placeholder="Weightage" data-field="weightage" min="0" max="100">
-                </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                    <select class="editable-select" data-field="kpi-type">
-                        <option value="targeted">Targeted KPI</option>
-                        <option value="non-targeted">Non Targeted KPI</option>
-                    </select>
-                </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                    <input type="text" class="editable-input" placeholder="Target description" data-field="target-word">
-                </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                    <input type="text" class="editable-input" placeholder="Target value" data-field="target">
-                </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                    <button class="action-btn save-btn" data-kpi-id="${kpiCounter}">
-                        <i class="fas fa-save"></i> Save
-                    </button>
-                    <button class="action-btn cancel-btn" data-kpi-id="${kpiCounter}">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                </td>
-            `;
-
-        // Insert after the last row of this KRA
-        const lastKraRow = kraRows[kraRows.length - 1];
-        lastKraRow.parentNode.insertBefore(kpiRow, lastKraRow.nextSibling);
-
-        // Update rowspan for the KRA
-        updateKraRowspan(kraId);
-
-        // Add event listener for KPI type change
-        const kpiTypeSelect = kpiRow.querySelector('select[data-field="kpi-type"]');
-        const targetWordInput = kpiRow.querySelector('input[data-field="target-word"]');
-        const targetInput = kpiRow.querySelector('input[data-field="target"]');
-
-        kpiTypeSelect.addEventListener('change', function() {
-            if (this.value === 'targeted') {
-                targetWordInput.disabled = false;
-                targetInput.disabled = false;
-                targetInput.placeholder = 'Target value';
-                targetInput.value = '';
-            } else {
-                targetWordInput.disabled = false;
-                targetInput.value = 'N/A';
-                targetInput.disabled = true;
-            }
-        });
-
-        // Add event listener for save button
-        const saveBtn = kpiRow.querySelector('.save-btn');
-        saveBtn.addEventListener('click', function() {
-            saveKpiRow(kpiRow, kraId, kpiCounter);
-        });
-
-        // Add event listener for cancel button
-        const cancelBtn = kpiRow.querySelector('.cancel-btn');
-        cancelBtn.addEventListener('click', function() {
-            if (confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
-                kpiRow.remove();
-                updateKraRowspan(kraId);
-                updateWeightageTotal();
-            }
-        });
-
-        updateWeightageTotal();
-    }
-
-    // Update rowspan for KRA
-    function updateKraRowspan(kraId) {
-        const kraRows = document.querySelectorAll(`tr[data-kra-id="${kraId}"]`);
-        const firstRow = kraRows[0];
-
-        if (firstRow) {
-            const slCell = firstRow.querySelector('td:nth-child(1)');
-            const kraCell = firstRow.querySelector('td:nth-child(2)');
-
-            slCell.setAttribute('rowspan', kraRows.length);
-            kraCell.setAttribute('rowspan', kraRows.length);
-        }
-    }
-
-    // Save KPI row
-    function saveKpiRow(row, kraId, kpiId = null) {
-        const isNewKra = !kpiId;
-        const inputs = row.querySelectorAll('input[data-field], select[data-field]');
-        let hasErrors = false;
-
-        // Validate inputs
-        inputs.forEach(input => {
-            if (input.hasAttribute('required') && !input.value.trim() && !input.disabled) {
-                input.style.borderColor = '#c9252c';
-                hasErrors = true;
-            } else {
-                input.style.borderColor = '#d1d5db';
-            }
-        });
-
-        // Validate weightage
-        const weightageInput = row.querySelector('input[data-field="weightage"]');
-        if (weightageInput) {
-            const weightage = parseInt(weightageInput.value) || 0;
-            if (weightage <= 0 || weightage > 100) {
-                weightageInput.style.borderColor = '#c9252c';
-                hasErrors = true;
-                alert('Weightage must be between 1 and 100');
-            }
-        }
-
-        if (hasErrors) return;
-
-        // Get values
-        const kraValue = row.querySelector('input[data-field="kra"]') ?
-            row.querySelector('input[data-field="kra"]').value :
-            row.querySelector('td:nth-child(2)').textContent;
-
-        const kpiValue = row.querySelector('input[data-field="kpi"]').value;
-        const weightageValue = row.querySelector('input[data-field="weightage"]').value;
-        const kpiTypeValue = row.querySelector('select[data-field="kpi-type"]').value;
-        const targetWordValue = row.querySelector('input[data-field="target-word"]').value;
-        const targetValue = row.querySelector('input[data-field="target"]').value;
-
-        // Update row with saved values
-        row.className = 'kpi-row saved';
-
-        if (isNewKra) {
-            row.innerHTML = `
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
-                        <div class="flex items-center justify-center h-full">
-                            ${kraCounter}
-                        </div>
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
-                        <div class="h-full">
-                            ${kraValue}
-                        </div>
-                    </td>
-                    <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                        ${kpiValue}
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        ${weightageValue}
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        ${kpiTypeValue === 'targeted' ? 'Targeted KPI' : 'Non Targeted KPI'}
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        ${targetWordValue}
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        ${targetValue}
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <button class="action-btn edit-btn" data-kra-id="${kraId}">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="action-btn add-btn" data-kra-id="${kraId}">
-                            <i class="fas fa-plus"></i> Add KPI
-                        </button>
-                        <button class="action-btn delete-btn" data-kra-id="${kraId}">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </td>
-                `;
-
-            // Add event listeners for the new buttons
-            const editBtn = row.querySelector('.edit-btn');
-            editBtn.addEventListener('click', function() {
-                editKpiRow(row, kraId);
-            });
-
-            const addBtn = row.querySelector('.add-btn');
-            addBtn.addEventListener('click', function() {
-                addKpiToKra(kraId);
-            });
-
-            const deleteBtn = row.querySelector('.delete-btn');
-            deleteBtn.addEventListener('click', function() {
-                if (confirm('Are you sure you want to delete this KRA and all its KPIs?')) {
-                    // Remove all rows with this KRA ID
-                    const kraRows = document.querySelectorAll(`tr[data-kra-id="${kraId}"]`);
-                    kraRows.forEach(row => row.remove());
-                    updateWeightageTotal();
-                }
-            });
-        } else {
-            row.innerHTML = `
-
-                    <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                        ${kpiValue}
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        ${weightageValue}
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        ${kpiTypeValue === 'targeted' ? 'Targeted KPI' : 'Non Targeted KPI'}
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        ${targetWordValue}
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        ${targetValue}
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <button class="action-btn edit-btn" data-kpi-id="${kpiId}">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="action-btn delete-btn" data-kpi-id="${kpiId}">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </td>
-                `;
-
-            // Add event listeners for the new buttons
-            const editBtn = row.querySelector('.edit-btn');
-            editBtn.addEventListener('click', function() {
-                editKpiRow(row, kraId, kpiId);
-            });
-
-            const deleteBtn = row.querySelector('.delete-btn');
-            deleteBtn.addEventListener('click', function() {
-                if (confirm('Are you sure you want to delete this KPI?')) {
-                    row.remove();
-                    updateKraRowspan(kraId);
-                    updateWeightageTotal();
-                }
-            });
-        }
-
-        updateWeightageTotal();
-    }
-
-    // Edit KPI row
-    function editKpiRow(row, kraId, kpiId = null) {
-        const isKraRow = !kpiId;
-        const cells = row.cells;
-
-        // Get current values
-        const kraValue = isKraRow ? cells[1].textContent.trim() :
-            document.querySelector(`tr[data-kra-id="${kraId}"] td:nth-child(2)`).textContent.trim();
-        const kpiValue = cells[2].textContent.trim();
-        const weightageValue = cells[3].textContent.trim();
-        const kpiTypeValue = cells[4].textContent.trim() === 'Targeted KPI' ? 'targeted' : 'non-targeted';
-        const targetWordValue = cells[5].textContent.trim();
-        const targetValue = cells[6].textContent.trim();
-
-        row.className = 'kpi-row editing';
-
-        if (isKraRow) {
-            row.innerHTML = `
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
-                        <div class="flex items-center justify-center h-full">
-                            ${kraCounter}
-                        </div>
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
-                        <input type="text" class="editable-input" value="${kraValue}" data-field="kra">
-                    </td>
-                    <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                        <input type="text" class="editable-input" value="${kpiValue}" data-field="kpi">
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <input type="number" class="editable-input" value="${weightageValue}" data-field="weightage" min="0" max="100">
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <select class="editable-select" data-field="kpi-type">
-                            <option value="targeted" ${kpiTypeValue === 'targeted' ? 'selected' : ''}>Targeted KPI</option>
-                            <option value="non-targeted" ${kpiTypeValue === 'non-targeted' ? 'selected' : ''}>Non Targeted KPI</option>
-                        </select>
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <input type="text" class="editable-input" value="${targetWordValue}" data-field="target-word">
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <input type="text" class="editable-input" value="${targetValue}" data-field="target" ${kpiTypeValue === 'non-targeted' ? 'disabled' : ''}>
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <button class="action-btn add-btn" data-kra-id="${kraId}">
-                            <i class="fas fa-plus"></i> Add KPI
-                        </button>
-                        <button class="action-btn save-btn" data-kra-id="${kraId}">
-                            <i class="fas fa-save"></i> Save
-                        </button>
-                        <button class="action-btn cancel-btn" data-kra-id="${kraId}">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                    </td>
-                `;
-
-            // Add event listener for KPI type change
-            const kpiTypeSelect = row.querySelector('select[data-field="kpi-type"]');
+            
+            // Add event listener for checkbox change
+            const kpiCheckbox = row.querySelector('.kpi-checkbox');
             const targetInput = row.querySelector('input[data-field="target"]');
-
-            kpiTypeSelect.addEventListener('change', function() {
-                if (this.value === 'targeted') {
+            
+            kpiCheckbox.addEventListener('change', function() {
+                if (this.checked) {
                     targetInput.disabled = false;
                     targetInput.value = '';
                 } else {
@@ -1801,20 +1595,20 @@
                     targetInput.disabled = true;
                 }
             });
-
+            
             // Add event listener for save button
             const saveBtn = row.querySelector('.save-btn');
             saveBtn.addEventListener('click', function() {
                 saveKpiRow(row, kraId);
             });
-
+            
             // Add event listener for cancel button
             const cancelBtn = row.querySelector('.cancel-btn');
             cancelBtn.addEventListener('click', function() {
                 // Revert to saved state
                 saveKpiRow(row, kraId);
             });
-
+            
             // Add event listener for add button
             const addBtn = row.querySelector('.add-btn');
             addBtn.addEventListener('click', function() {
@@ -1822,40 +1616,37 @@
             });
         } else {
             row.innerHTML = `
-                    <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                        <input type="text" class="editable-input" value="${kpiValue}" data-field="kpi">
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <input type="number" class="editable-input" value="${weightageValue}" data-field="weightage" min="0" max="100">
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <select class="editable-select" data-field="kpi-type">
-                            <option value="targeted" ${kpiTypeValue === 'targeted' ? 'selected' : ''}>Targeted KPI</option>
-                            <option value="non-targeted" ${kpiTypeValue === 'non-targeted' ? 'selected' : ''}>Non Targeted KPI</option>
-                        </select>
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <input type="text" class="editable-input" value="${targetWordValue}" data-field="target-word">
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <input type="text" class="editable-input" value="${targetValue}" data-field="target" ${kpiTypeValue === 'non-targeted' ? 'disabled' : ''}>
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                        <button class="action-btn save-btn" data-kpi-id="${kpiId}">
-                            <i class="fas fa-save"></i> Save
-                        </button>
-                        <button class="action-btn cancel-btn" data-kpi-id="${kpiId}">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                    </td>
-                `;
-
-            // Add event listener for KPI type change
-            const kpiTypeSelect = row.querySelector('select[data-field="kpi-type"]');
+                <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                    <div class="kpi-checkbox-container">
+                        <input type="checkbox" class="kpi-checkbox" ${isChecked ? 'checked' : ''}>
+                        <input type="text" class="editable-input kpi-text" value="${kpiValue}" data-field="kpi">
+                    </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="number" class="editable-input" value="${weightageValue}" data-field="weightage" min="0" max="100">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="text" class="editable-input" value="${targetWordValue}" data-field="target-word">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="text" class="editable-input" value="${targetValue}" data-field="target" ${!isChecked ? 'disabled' : ''}>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <button class="action-btn save-btn" data-kpi-id="${kpiId}">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button class="action-btn cancel-btn" data-kpi-id="${kpiId}">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </td>
+            `;
+            
+            // Add event listener for checkbox change
+            const kpiCheckbox = row.querySelector('.kpi-checkbox');
             const targetInput = row.querySelector('input[data-field="target"]');
-
-            kpiTypeSelect.addEventListener('change', function() {
-                if (this.value === 'targeted') {
+            
+            kpiCheckbox.addEventListener('change', function() {
+                if (this.checked) {
                     targetInput.disabled = false;
                     targetInput.value = '';
                 } else {
@@ -1863,13 +1654,13 @@
                     targetInput.disabled = true;
                 }
             });
-
+            
             // Add event listener for save button
             const saveBtn = row.querySelector('.save-btn');
             saveBtn.addEventListener('click', function() {
                 saveKpiRow(row, kraId, kpiId);
             });
-
+            
             // Add event listener for cancel button
             const cancelBtn = row.querySelector('.cancel-btn');
             cancelBtn.addEventListener('click', function() {
@@ -1877,7 +1668,7 @@
                 saveKpiRow(row, kraId, kpiId);
             });
         }
-
+        
         updateWeightageTotal();
     }
 
@@ -1885,7 +1676,7 @@
     function updateWeightageTotal() {
         const weightageCells = document.querySelectorAll('td:nth-child(4)');
         let total = 0;
-
+        
         weightageCells.forEach(cell => {
             // Only count cells that are not in editing mode and have numeric content
             const weightage = parseInt(cell.textContent);
@@ -1893,20 +1684,8 @@
                 total += weightage;
             }
         });
-
+        
         totalWeightageElement.textContent = 100;
-
-        // Update status message
-        // if (total === 100) {
-        //     weightageStatusElement.textContent = 'Weightage is perfectly allocated';
-        //     weightageStatusElement.className = 'text-sm text-green-600';
-        // } else if (total < 100) {
-        //     weightageStatusElement.textContent = `Weightage is underallocated by ${100 - total}`;
-        //     weightageStatusElement.className = 'text-sm text-yellow-600';
-        // } else {
-        //     weightageStatusElement.textContent = `Weightage is overallocated by ${total - 100}`;
-        //     weightageStatusElement.className = 'text-sm text-red-600';
-        // }
     }
 
     // Initialize edit and delete buttons for existing rows
@@ -1924,11 +1703,24 @@
             const kpiId = this.getAttribute('data-kpi-id');
             const row = this.closest('tr');
             const kraId = row.getAttribute('data-kra-id');
+            
+            row.remove();
+            updateKraRowspan(kraId);
+            updateWeightageTotal();
+        });
+    });
 
-            if (confirm('Are you sure you want to delete this KPI?')) {
-                row.remove();
-                updateKraRowspan(kraId);
-                updateWeightageTotal();
+    // Add checkbox functionality for existing rows
+    document.querySelectorAll('.kpi-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const row = this.closest('tr');
+            const targetCell = row.querySelector('td:nth-child(6)');
+            
+            if (this.checked) {
+                targetCell.textContent = '';
+                targetCell.innerHTML = '<input type="text" class="editable-input" value="">';
+            } else {
+                targetCell.textContent = 'N/A';
             }
         });
     });
