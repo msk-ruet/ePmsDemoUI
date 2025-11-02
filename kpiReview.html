@@ -1,1611 +1,1366 @@
 <!DOCTYPE html>
-<html lang="en"
-      x-data="{ 
-        sidebarOpen: false, 
-        darkMode: localStorage.getItem('darkMode') === 'true',
-        sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
-        activeMenu: null
-      }"
-      x-init="
-        $watch('darkMode', val => localStorage.setItem('darkMode', val));
-        $watch('sidebarCollapsed', val => localStorage.setItem('sidebarCollapsed', val));
-      "
-      :class="darkMode ? 'dark' : ''">
+<html lang="en" x-data="{ 
+  sidebarOpen: false, 
+  darkMode: localStorage.getItem('darkMode') === 'true',
+  sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+  activeMenu: null
+}" x-init="
+  $watch('darkMode', val => {
+    localStorage.setItem('darkMode', val);
+    document.documentElement.classList.toggle('dark', val);
+  });
+  $watch('sidebarCollapsed', val => localStorage.setItem('sidebarCollapsed', val));
+  if (darkMode) {
+    document.documentElement.classList.add('dark');
+  }
+" :class="{ 'dark': darkMode }">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Tailwind & Alpine.js -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
-    <!-- Google Material Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!--<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>-->
-    <!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
-    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">-->
-   <!-- <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">-->
-
-    <title>KPI PMS - Supervisor Screen</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'sidebar-blue': '#034ea2',
-                        'table-blue': '#2E3094',
-                        'table-bg': '#F7F9FB',
-                        'edit-green': '#39b54a',
-                        'delete-red': '#c9252c',
-                    },
-                    fontFamily: {
-                        'roboto': ['Roboto', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        .progress-bar {
-            height: 6px;
-            border-radius: 3px;
-            background-color: #e5e7eb;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-
-        .comment-section {
-            position: relative;
-        }
-
-        .comment-input {
-            width: 100%;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            padding: 6px;
-            font-size: 0.75rem;
-            resize: vertical;
-            min-height: 50px;
-        }
-
-        .send-btn {
-            background-color: #2E3094;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 6px 12px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .send-btn:hover {
-            background-color: #1e2074;
-        }
-
-        .score-input {
-            width: 100%;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            padding: 3px;
-            font-size: 0.75rem;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        .compact-table th,
-        .compact-table td {
-            padding: 6px 8px !important;
-        }
-
-        .action-btn {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-right: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .details-btn {
-            background-color: #2E3094;
-            color: white;
-            border: none;
-        }
-
-        .details-btn:hover {
-            background-color: #1e2074;
-        }
-
-        .kra-cell {
-            background-color: #F7F9FB;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            border-radius: 8px;
-            width: 90%;
-            /*max-width: 1000px;
-            max-height: 90vh;*/
-            overflow-y: auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            .table-container table {
-                font-size: 0.7rem;
-            }
-
-            .compact-table th,
-            .compact-table td {
-                padding: 4px 6px !important;
-            }
-
-            .action-btn {
-                display: block;
-                width: 100%;
-                margin-bottom: 4px;
-            }
-        }
-    </style>
-    <style>
-        .hidden {
-            display: none;
-        }
-
-        /* Enhanced DIU Color Palette */
-        .bg-diu-900 {
-            background-color: #034ea2;
-        }
-
-        .bg-diu-800 {
-            background-color: #0072BC;
-        }
-
-        .bg-diu-700 {
-            background-color: #0089CF;
-        }
-
-        .bg-diu-600 {
-            background-color: #00A1E4;
-        }
-
-        .bg-diu-500 {
-            background-color: #53B7E8;
-        }
-
-        .bg-diu-400 {
-            background-color: #9AC8EC;
-        }
-
-        .bg-diu-300 {
-            background-color: #D4E7F7;
-        }
-
-        .bg-diu-200 {
-            background-color: #E8F2FC;
-        }
-
-        .bg-diu-100 {
-            background-color: #F5FAFF;
-        }
-
-        /* Text colors */
-        .text-diu-900 {
-            color: #034ea2;
-        }
-
-        .text-diu-800 {
-            color: #0072BC;
-        }
-
-        .text-diu-700 {
-            color: #0089CF;
-        }
-
-        /* Border colors */
-        .border-diu-900 {
-            border-color: #034ea2;
-        }
-
-        .border-diu-600 {
-            border-color: #00A1E4;
-        }
-
-        .border-diu-300 {
-            border-color: #D4E7F7;
-        }
-
-        .border-diu-200 {
-            border-color: #E8F2FC;
-        }
-
-        /* Enhanced shadows */
-        .shadow-soft {
-            box-shadow: 0 4px 6px -1px rgba(3, 78, 162, 0.1), 0 2px 4px -1px rgba(3, 78, 162, 0.06);
-        }
-
-        .shadow-card {
-            box-shadow: 0 10px 15px -3px rgba(3, 78, 162, 0.1), 0 4px 6px -2px rgba(3, 78, 162, 0.05);
-        }
-
-        /* Hover effects */
-        .hover-lift {
-            transition: all 0.3s ease;
-        }
-
-        .hover-lift:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(3, 78, 162, 0.1), 0 10px 10px -5px rgba(3, 78, 162, 0.04);
-        }
-
-        /* Large icon styles */
-        .icon-large {
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        .sidebar {
-            background-color: #034ea2;
-            color: white;
-            transition: all 0.3s;
-        }
-
-        .sidebar a:hover {
-            background-color: #1e40af;
-        }
-
-        .header {
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .status-badge {
-            background-color: #e0f2fe;
-            color: #0369a1;
-        }
-
-        .btn-primary {
-            background-color: #2563eb;
-        }
-
-        .btn-primary:hover {
-            background-color: #1d4ed8;
-        }
-
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            border-radius: 0.5rem;
-            width: 70%;
-            /*max-width: 600px;*/
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .table-header {
-            background-color: #0089CF;
-        }
-
-        .edit-btn {
-            background-color: #39b54a;
-        }
-
-        .edit-btn:hover {
-            background-color: #2e9c3e;
-        }
-
-        .delete-btn {
-            background-color: #c9252c;
-        }
-
-        .delete-btn:hover {
-            background-color: #b01e24;
-        }
-    </style>
-
-    <style>
-        /* Custom Dark Theme Override - Only for sidebar and header */
-        .dark .dark\:bg-gray-800 {
-            background-color: #22246f !important;
-        }
-
-        .dark .dark\:bg-gray-900 {
-            background-color: #22246f !important;
-        }
-
-        .dark .dark\:border-gray-700 {
-            border-color: #3a3ccf !important;
-        }
-
-        .dark .dark\:text-gray-200 {
-            color: #e4e6ff !important;
-        }
-
-        .dark .dark\:hover\:bg-indigo-900\/40:hover {
-            background-color: #2c2ea3 !important;
-        }
-
-        .dark .dark\:bg-gray-700 {
-            background-color: #2c2ea3 !important;
-        }
-
-        .dark .dark\:hover\:bg-gray-700:hover {
-            background-color: #2c2ea3 !important;
-        }
-
-        /* Sidebar collapse transitions */
-        .sidebar-transition {
-            transition: width 0.3s ease;
-        }
-
-        .text-transition {
-            transition: opacity 0.2s ease;
-        }
-
-        .tooltip {
-            position: relative;
-        }
-
-        .tooltip .tooltip-text {
-            visibility: hidden;
-            width: max-content;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 4px;
-            padding: 5px 10px;
-            position: absolute;
-            z-index: 1;
-            left: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-left: 8px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            white-space: nowrap;
-        }
-
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        /* Submenu styling for collapsed mode */
-        .menu-item-wrapper {
-            position: relative;
-        }
-
-        .submenu-collapsed {
-            position: fixed;
-            left: 64px; /* Match collapsed sidebar width */
-            background: white;
-            border-radius: 0 8px 8px 0;
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
-            z-index: 45;
-            min-width: 200px;
-            max-height: 70vh;
-            overflow-y: auto;
-            border: 1px solid #e5e7eb;
-            border-left: none;
-        }
-
-        .dark .submenu-collapsed {
-            background: #2c2ea3;
-            border-color: #3a3ccf;
-        }
-
-        /* Custom scrollbar for submenus */
-        .submenu-collapsed::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .submenu-collapsed::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-
-        .submenu-collapsed::-webkit-scrollbar-thumb {
-            background: #c5c5c5;
-            border-radius: 3px;
-        }
-
-        .submenu-collapsed::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-
-        .dark .submenu-collapsed::-webkit-scrollbar-track {
-            background: #1e1e6f;
-        }
-
-        .dark .submenu-collapsed::-webkit-scrollbar-thumb {
-            background: #4f52cc;
-        }
-
-        .dark .submenu-collapsed::-webkit-scrollbar-thumb:hover {
-            background: #6366f1;
-        }
-
-        .submenu-item {
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            border-bottom: 1px solid #f3f4f6;
-            white-space: nowrap;
-        }
-
-        .dark .submenu-item {
-            border-bottom-color: #3a3ccf;
-            color: #e4e6ff;
-        }
-
-        .submenu-item:last-child {
-            border-bottom: none;
-        }
-
-        .submenu-item:hover {
-            background-color: #f3f4f6;
-        }
-
-        .dark .submenu-item:hover {
-            background-color: #3a3ccf;
-        }
-
-        .submenu-item .material-symbols-outlined {
-            margin-right: 12px;
-            font-size: 18px;
-        }
-
-        /* Hide scrollbar but allow scrolling for main sidebar */
-        .no-scrollbar {
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
-        }
-
-        .no-scrollbar::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
-        }
-
-        /* Active menu indicator */
-        .active-menu-indicator {
-            position: absolute;
-            right: -8px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 20px;
-            background-color: #6366f1;
-            border-radius: 2px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DIU Sun Light Admin Console</title>
+
+  <!-- Essential CSS & JS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'sidebar-blue': '#034ea2',
+            'table-blue': '#2E3094',
+            'dark-primary': '#22246f',
+            'dark-secondary': '#2c2ea3',
+            'dark-accent': '#3a3ccf',
+            'table-bg': '#F7F9FB',
+            'edit-green': '#39b54a',
+            'delete-red': '#c9252c',
+          },
+          fontFamily: {
+            'roboto': ['Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+    
+    /* Sidebar collapse transitions */
+    .sidebar-transition {
+      transition: width 0.3s ease;
+    }
+    
+    .text-transition {
+      transition: opacity 0.2s ease;
+    }
+    
+    .tooltip {
+      position: relative;
+    }
+    
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      width: max-content;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 4px;
+      padding: 5px 10px;
+      position: absolute;
+      z-index: 1;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-left: 8px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      white-space: nowrap;
+    }
+    
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    /* Submenu styling for collapsed mode */
+    .menu-item-wrapper {
+      position: relative;
+    }
+    
+    .submenu-collapsed {
+      position: fixed;
+      left: 64px; /* Match collapsed sidebar width */
+      background: white;
+      border-radius: 0 8px 8px 0;
+      box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+      z-index: 45;
+      min-width: 200px;
+      max-height: 70vh;
+      overflow-y: auto;
+      border: 1px solid #e5e7eb;
+      border-left: none;
+    }
+    
+    .dark .submenu-collapsed {
+      background: #2c2ea3;
+      border-color: #3a3ccf;
+      color: #e4e6ff;
+    }
+    
+    .submenu-item {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      border-bottom: 1px solid #f3f4f6;
+      white-space: nowrap;
+    }
+    
+    .dark .submenu-item {
+      border-bottom-color: #3a3ccf;
+      color: #e4e6ff;
+    }
+    
+    .submenu-item:last-child {
+      border-bottom: none;
+    }
+    
+    .submenu-item:hover {
+      background-color: #f3f4f6;
+    }
+    
+    .dark .submenu-item:hover {
+      background-color: #3a3ccf;
+    }
+    
+    .submenu-item .material-symbols-outlined {
+      margin-right: 12px;
+      font-size: 18px;
+    }
+    
+    /* Hide scrollbar but allow scrolling for main sidebar */
+    .no-scrollbar {
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+    }
+    
+    .no-scrollbar::-webkit-scrollbar {
+      display: none; /* Chrome, Safari and Opera */
+    }
+    
+    /* Active menu indicator */
+    .active-menu-indicator {
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 20px;
+      background-color: #6366f1;
+      border-radius: 2px;
+    }
+
+    /* Dark mode specific styles with #22246f color */
+    .dark {
+      color-scheme: dark;
+    }
+    
+    .dark .bg-gray-50 {
+      background-color: #111827;
+    }
+    
+    .dark .bg-white {
+      background-color: #22246f !important;
+    }
+    
+    .dark .bg-gray-800 {
+      background-color: #22246f !important;
+    }
+    
+    .dark .bg-gray-700 {
+      background-color: #2c2ea3 !important;
+    }
+    
+    .dark .text-gray-800 {
+      color: #f9fafb;
+    }
+    
+    .dark .border-gray-200 {
+      border-color: #3a3ccf;
+    }
+    
+    .dark .border-gray-700 {
+      border-color: #3a3ccf;
+    }
+    
+    .dark .border-gray-100 {
+      border-color: #3a3ccf;
+    }
+    
+    .dark .bg-gray-100 {
+      background-color: #2c2ea3;
+    }
+    
+    .dark .text-gray-600 {
+      color: #e4e6ff;
+    }
+    
+    .dark .text-gray-700 {
+      color: #e4e6ff;
+    }
+    
+    .dark .text-gray-200 {
+      color: #e4e6ff;
+    }
+    
+    .dark .text-gray-300 {
+      color: #e4e6ff;
+    }
+    
+    .dark .text-gray-400 {
+      color: #c7c9ff;
+    }
+    
+    .dark .hover\:text-indigo-500:hover {
+      color: #a5b4fc;
+    }
+    
+    .dark .hover\:bg-indigo-900\/40:hover {
+      background-color: #2c2ea3 !important;
+    }
+    
+    .dark .hover\:bg-gray-700:hover {
+      background-color: #2c2ea3 !important;
+    }
+    
+    /* Custom hover effects for dark mode */
+    .dark .hover\:bg-indigo-50:hover {
+      background-color: #2c2ea3 !important;
+    }
+
+    /* KPI Table Styles */
+    .progress-bar {
+      height: 6px;
+      border-radius: 3px;
+      background-color: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    .comment-section {
+      position: relative;
+    }
+
+    .comment-input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 0.75rem;
+      resize: vertical;
+      min-height: 50px;
+    }
+
+    .send-btn {
+      background-color: #2E3094;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .send-btn:hover {
+      background-color: #1e2074;
+    }
+
+    .score-input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 3px;
+      font-size: 0.75rem;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .compact-table th,
+    .compact-table td {
+      padding: 6px 8px !important;
+    }
+
+    .action-btn {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      margin-right: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .details-btn {
+      background-color: #2E3094;
+      color: white;
+      border: none;
+    }
+
+    .details-btn:hover {
+      background-color: #1e2074;
+    }
+
+    .kra-cell {
+      background-color: #F7F9FB;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 1000px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      .table-container table {
+        font-size: 0.7rem;
+      }
+
+      .compact-table th,
+      .compact-table td {
+        padding: 4px 6px !important;
+      }
+      
+      .action-btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 4px;
+      }
+    }
+  </style>
 </head>
 
-<body class="bg-gray-50 text-gray-800 transition-colors duration-300"
-      x-data="{}"
-      @click="activeMenu = null">
+<body class="bg-gray-50 text-gray-800 transition-colors duration-300" x-data="{}" @click="activeMenu = null">
 
 <div class="flex h-screen overflow-hidden">
 
-    <!-- Sidebar -->
-    <aside
-            class="fixed inset-y-0 left-0 z-40 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 sidebar-transition
-             md:translate-x-0"
-            :class="sidebarCollapsed ? 'w-16' : 'w-64'"
-            :class="{ '-translate-x-full': !sidebarOpen && window.innerWidth < 768 }"
-            @click.stop>
+  <!-- Sidebar -->
+  <aside class="fixed inset-y-0 left-0 z-40 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 sidebar-transition
+           md:translate-x-0"
+        :class="sidebarCollapsed ? 'w-16' : 'w-64'"
+        :class="{ '-translate-x-full': !sidebarOpen && window.innerWidth < 768 }"
+        @click.stop>
 
-        <!-- Logo -->
-        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <div class="flex items-center">
-                <h1 class="text-lg font-bold text-indigo-600 dark:text-indigo-300"
-                    :class="sidebarCollapsed ? 'hidden' : 'block'">DIU Sun Light</h1>
-                <button
-                        @click="sidebarCollapsed = !sidebarCollapsed; activeMenu = null;"
-                        class="ml-2 text-gray-600 dark:text-gray-300 hover:text-indigo-500 p-1 rounded"
-                        :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-                    <span class="material-symbols-outlined"
-                          x-text="sidebarCollapsed ? 'chevron_right' : 'chevron_left'"></span>
-                </button>
-            </div>
-            <button class="md:hidden text-gray-600 dark:text-gray-300" @click="sidebarOpen = false">✕</button>
-        </div>
-
-        <!-- Navigation -->
-        <nav class="overflow-y-auto p-4 space-y-2 no-scrollbar">
-
-            <!-- Dashboard -->
-            <div class="menu-item-wrapper">
-                <a href="index.html"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'dashboard' }">
-                    <span class="material-symbols-outlined mr-3">dashboard</span>
-                    <span class="text-transition"
-                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Dashboard</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Dashboard</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'dashboard'"></div>
-                </a>
-            </div>
-
-            <!-- User Management -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
-              activeMenu = activeMenu === 'user-management' ? null : 'user-management';
-            } else { 
-              open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'user-management' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">group</span>
-                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">User Management</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">User Management</span>
-                    <div class="active-menu-indicator"
-                         x-show="sidebarCollapsed && activeMenu === 'user-management'"></div>
-                </button>
-
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">person</span> Users
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">admin_panel_settings</span> Roles
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">history</span> Audit Logs
-                    </a>
-                </div>
-
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'user-management'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">person</span>
-                        Users
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">admin_panel_settings</span>
-                        Roles
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">history</span>
-                        Audit Logs
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">security</span>
-                        Permissions
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">groups</span>
-                        User Groups
-                    </div>
-                </div>
-            </div>
-
-            <!-- HR & Attendance -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
-              activeMenu = activeMenu === 'hr-attendance' ? null : 'hr-attendance';
-            } else { 
-              open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'hr-attendance' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">calendar_month</span>
-                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">HR & Attendance</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">HR & Attendance</span>
-                    <div class="active-menu-indicator"
-                         x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"></div>
-                </button>
-
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">badge</span> Employees
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">schedule</span> Attendance
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">timer</span> Overtime
-                    </a>
-                </div>
-
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">badge</span>
-                        Employees
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">schedule</span>
-                        Attendance
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">timer</span>
-                        Overtime
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">work_history</span>
-                        Shift Management
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">event_available</span>
-                        Holidays
-                    </div>
-                </div>
-            </div>
-
-            <!-- ePMS -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
-              activeMenu = activeMenu === 'epms' ? null : 'epms';
-            } else { 
-              open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'epms' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">assignment</span>
-                        <span class="text-transition"
-                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">ePMS</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">ePMS</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'epms'"></div>
-                </button>
-
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="kpiAssign.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
-                    </a>
-                    <a href="myKpi.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI
-                    </a>
-                    <a href="kpiReview.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
-                    </a>
-                    <a href="kpiReports.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Reports
-                    </a>
-                </div>
-
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'epms'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">task</span>
-                        Performance Reviews
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">trending_up</span>
-                        KPIs
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">target</span>
-                        Goals
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">assessment</span>
-                        Appraisals
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">emoji_events</span>
-                        Rewards
-                    </div>
-                </div>
-            </div>
-
-            <!-- Payroll -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
-              activeMenu = activeMenu === 'payroll' ? null : 'payroll';
-            } else { 
-              open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'payroll' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">payments</span>
-                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Payroll</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Payroll</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'payroll'"></div>
-                </button>
-
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">receipt</span> Salary Processing
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">request_quote</span> Payslips
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">savings</span> Tax Management
-                    </a>
-                </div>
-
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'payroll'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">receipt</span>
-                        Salary Processing
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">request_quote</span>
-                        Payslips
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">savings</span>
-                        Tax Management
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">account_balance</span>
-                        Bank Transfers
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">receipt_long</span>
-                        Payroll Reports
-                    </div>
-                </div>
-            </div>
-
-            <!-- Leave -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
-              activeMenu = activeMenu === 'leave' ? null : 'leave';
-            } else { 
-              open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'leave' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">beach_access</span>
-                        <span class="text-transition"
-                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Leave</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Leave</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'leave'"></div>
-                </button>
-
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">event_available</span> Apply Leave
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">pending_actions</span> Leave Requests
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">calendar_today</span> Leave Calendar
-                    </a>
-                </div>
-
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'leave'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">event_available</span>
-                        Apply Leave
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">pending_actions</span>
-                        Leave Requests
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">calendar_today</span>
-                        Leave Calendar
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">airline_seat_recline_extra</span>
-                        Sick Leave
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">flight_takeoff</span>
-                        Vacation
-                    </div>
-                </div>
-            </div>
-
-            <!-- Visit -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
-                <button
-                        @click="if (sidebarCollapsed) {
-              activeMenu = activeMenu === 'visit' ? null : 'visit';
-            } else { 
-              open = !open; 
-            }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'visit' }">
-                    <div class="flex items-center">
-                        <span class="material-symbols-outlined mr-3">travel_explore</span>
-                        <span class="text-transition"
-                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Visit</span>
-                    </div>
-                    <span class="material-symbols-outlined text-sm transition-transform"
-                          :class="open ? 'rotate-180' : ''"
-                          x-show="!sidebarCollapsed">expand_more</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Visit</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'visit'"></div>
-                </button>
-
-                <!-- Expanded Mode Submenu -->
-                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">person_search</span> Visitor Registration
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">meeting_room</span> Meeting Rooms
-                    </a>
-                    <a href="#"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">schedule</span> Visit Schedule
-                    </a>
-                </div>
-
-                <!-- Collapsed Mode Submenu -->
-                <div x-show="sidebarCollapsed && activeMenu === 'visit'"
-                     class="submenu-collapsed"
-                     :style="`top: ${$el.parentElement.offsetTop}px;`"
-                     @click.stop>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">person_search</span>
-                        Visitor Registration
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">meeting_room</span>
-                        Meeting Rooms
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">schedule</span>
-                        Visit Schedule
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">badge</span>
-                        Visitor Pass
-                    </div>
-                    <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">history</span>
-                        Visit History
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reports -->
-            <div class="menu-item-wrapper">
-                <a href="#"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'reports' }">
-                    <span class="material-symbols-outlined mr-3">bar_chart</span>
-                    <span class="text-transition"
-                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Reports</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Reports</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'reports'"></div>
-                </a>
-            </div>
-
-            <!-- Settings -->
-            <div class="menu-item-wrapper">
-                <a href="#"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'settings' }">
-                    <span class="material-symbols-outlined mr-3">settings</span>
-                    <span class="text-transition"
-                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Settings</span>
-                    <span class="tooltip-text" x-show="sidebarCollapsed">Settings</span>
-                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'settings'"></div>
-                </a>
-            </div>
-        </nav>
-
-        <!-- Footer -->
-        <div class="border-t border-gray-200 dark:border-gray-700 p-4">
-            <button class="flex items-center w-full text-gray-700  text-gray-700 dark:text-gray-200 tooltip">
-                <span class="material-symbols-outlined mr-2">logout</span>
-                <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Logout</span>
-                <span class="tooltip-text" x-show="sidebarCollapsed">Logout</span>
-            </button>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col sidebar-transition" :class="sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'">
-
-        <!-- Top Navbar -->
-        <header
-                class="flex items-center justify-between bg-white dark:bg-gray-800 shadow-sm px-4 py-3 sticky top-0 z-30 border-b border-gray-100 dark:border-gray-700">
-            <div class="flex items-center gap-2">
-                <button @click="sidebarOpen = !sidebarOpen" class="md:hidden text-gray-600 dark:text-gray-300">
-                    ☰
-                </button>
-                <input type="text" placeholder="Search..."
-                       class="hidden md:block px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-sm outline-none"/>
-            </div>
-
-            <!-- Right Actions -->
-            <div class="flex items-center gap-4">
-                <!-- Dark Mode Toggle -->
-                <button @click="darkMode = !darkMode" class="text-gray-600 hover:text-indigo-500">
-                    <span x-show="!darkMode" class="material-symbols-outlined">light_mode</span>
-                    <span x-show="darkMode" class="material-symbols-outlined">dark_mode</span>
-                </button>
-
-                <!-- Notifications -->
-                <button class="text-gray-600 hover:text-indigo-500">
-                    <span class="material-symbols-outlined">notifications</span>
-                </button>
-
-                <!-- Admin Dropdown -->
-                <div x-data="{ open: false, role: 'Admin' }" class="relative">
-                    <button @click="open = !open" @mouseenter="open = true" @mouseleave="open = false"
-                            class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-500">
-                        👤 <span>Admin</span>
-                    </button>
-
-                    <!-- Dropdown -->
-                    <div x-show="open" x-transition @mouseenter="open = true" @mouseleave="open = false"
-                         class="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
-                        <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-300">
-                            Role: <span class="font-medium text-indigo-500" x-text="role"></span>
-                        </div>
-                        <a href="#" class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
-                        <a href="#"
-                           class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Settings</a>
-                        <a href="#" class="block px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Logout</a>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
-            <!-- Employee Information Table -->
-            <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
-                <div class="p-4 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800">Employee Information</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full compact-table">
-                        <thead>
-                        <tr class="bg-table-blue text-white">
-                            <th
-                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Employee ID</th>
-                            <th
-                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Employee Name</th>
-                            <th
-                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Category</th>
-                            <th
-                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Department</th>
-                        </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                        <tr>
-                            <td
-                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                                710003896</td>
-                            <td
-                                    class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
-                                Fazlul Alam</td>
-                            <td
-                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                                Admin</td>
-                            <td
-                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                                Software Section</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- KPI Content -->
-            <div id="kpisContent" class="tab-content">
-                <!-- Table -->
-                <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="text-lg font-semibold text-gray-800">Key Performance Indicator</h3>
-                    </div>
-
-                    <div class="table-container">
-                        <table class="min-w-full compact-table" id="kpiTable">
-                            <thead>
-                            <tr class="bg-table-blue text-white">
-                                <th rowspan="2" width="3%"
-                                    class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
-                                    SL</th>
-                                <th rowspan="2" width="10%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
-                                    KRA</th>
-                                <th width="15%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    KPI</th>
-                                <th width="6%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Weightage</th>
-                                <th width="8%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Target Description</th>
-                                <th width="8%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Target</th>
-                                <th width="8%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Achievement</th>
-                                <th width="8%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Achievement (%)</th>
-                                <th width="8%"
-                                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    Score</th>
-                                <th width="5%"
-                                    class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                    ⋮</th>
-                            </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200" id="kpiTableBody">
-                            <!-- Performance KRA -->
-                            <tr class="kpi-row saved" data-kra-id="1">
-                                <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
-                                    <div class="flex items-center justify-center h-full">
-                                        1
-                                    </div>
-                                </td>
-                                <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
-                                    <div class="h-full">
-                                        Performance
-                                    </div>
-                                </td>
-                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                    Revenue Growth
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    30</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Increase revenue by 15%</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    15</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <input type="text" class="score-input" value="14">
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <div class="flex items-center">
-                                        <div class="progress-bar w-full">
-                                            <div class="progress-fill bg-green-600" style="width: 93%"></div>
-                                        </div>
-                                        <span class="ml-1 text-xs">93%</span>
-                                    </div>
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    27.9
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
-                                    <button class="action-btn details-btn" data-kpi-id="1">
-                                        Details
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr class="kpi-row saved" data-kra-id="1">
-                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                    Cost Reduction
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    25</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Reduce operational costs by 10%</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    10</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <input type="text" class="score-input" value="9">
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <div class="flex items-center">
-                                        <div class="progress-bar w-full">
-                                            <div class="progress-fill bg-green-600" style="width: 90%"></div>
-                                        </div>
-                                        <span class="ml-1 text-xs">90%</span>
-                                    </div>
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    22.5
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
-                                    <button class="action-btn details-btn" data-kpi-id="2">
-                                        Details
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr class="kpi-row saved" data-kra-id="1">
-                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                    Profit Margin
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    20</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Achieve 22% profit margin</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    22</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <input type="text" class="score-input" value="21">
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <div class="flex items-center">
-                                        <div class="progress-bar w-full">
-                                            <div class="progress-fill bg-green-600" style="width: 95%"></div>
-                                        </div>
-                                        <span class="ml-1 text-xs">95%</span>
-                                    </div>
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    19
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
-                                    <button class="action-btn details-btn" data-kpi-id="3">
-                                        Details
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <!-- Customer Satisfaction KRA -->
-                            <tr class="kpi-row saved" data-kra-id="2">
-                                <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-center kra-cell">
-                                    <div class="flex items-center justify-center h-full">
-                                        2
-                                    </div>
-                                </td>
-                                <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 align-top border-l border-r border-gray-200 text-left kra-cell">
-                                    <div class="h-full">
-                                        Customer Satisfaction
-                                    </div>
-                                </td>
-                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                    NPS Score
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    15</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Financial reporting process documentation</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    N/A</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <select class="score-input">
-                                        <option value="5">Excellent</option>
-                                        <option value="4" selected>Very Good</option>
-                                        <option value="3">Good</option>
-                                        <option value="2">Average</option>
-                                    </select>
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <div class="flex items-center">
-                                        <div class="progress-bar w-full">
-                                            <div class="progress-fill bg-green-600" style="width: 100%"></div>
-                                        </div>
-                                        <span class="ml-1 text-xs">100%</span>
-                                    </div>
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    15
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
-                                    <button class="action-btn details-btn" data-kpi-id="4">
-                                        Details
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr class="kpi-row saved" data-kra-id="2">
-                                <td class="px-2 py-2 text-sm font-medium text-gray-900 border-b border-r border-gray-200">
-                                    Customer Retention
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    10</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    Maintain customer retention rate of 85%</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    85</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <input type="text" class="score-input" value="82">
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    <div class="flex items-center">
-                                        <div class="progress-bar w-full">
-                                            <div class="progress-fill bg-green-600" style="width: 96%"></div>
-                                        </div>
-                                        <span class="ml-1 text-xs">96%</span>
-                                    </div>
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200">
-                                    9.6
-                                </td>
-                                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-b border-r border-gray-200 text-center">
-                                    <button class="action-btn details-btn" data-kpi-id="5">
-                                        Details
-                                    </button>
-                                </td>
-                            </tr>
-                            </tbody>
-                            <tfoot>
-                            <tr class="weightage-total">
-                                <td colspan="3" class="px-2 py-2 text-right font-medium">Total Weightage:</td>
-                                <td id="totalWeightage" class="px-2 py-2 text-center font-medium">100</td>
-                                <td colspan="4" class="px-2 py-2 text-center">
-                                    <span id="weightageStatus" class="text-sm text-green-600"></span>
-                                </td>
-                                <td class="px-2 py-2 text-center font-medium">94</td>
-                            </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </main>
+    <!-- Logo -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center">
+        <h1 class="text-lg font-bold text-indigo-600 dark:text-indigo-300"
+            :class="sidebarCollapsed ? 'hidden' : 'block'">DIU Sun Light</h1>
+        <button
+                @click="sidebarCollapsed = !sidebarCollapsed; activeMenu = null;"
+                class="ml-2 text-gray-600 dark:text-gray-300 hover:text-indigo-500 p-1 rounded"
+                :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+          <span class="material-symbols-outlined"
+                x-text="sidebarCollapsed ? 'chevron_right' : 'chevron_left'"></span>
+        </button>
+      </div>
+      <button class="md:hidden text-gray-600 dark:text-gray-300" @click="sidebarOpen = false">✕</button>
     </div>
+
+    <!-- Navigation -->
+    <nav class="overflow-y-auto p-4 space-y-2 no-scrollbar">
+
+      <!-- Dashboard -->
+      <div class="menu-item-wrapper">
+        <a href="index.html"
+           class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+           :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'dashboard' }">
+          <span class="material-symbols-outlined mr-3">dashboard</span>
+          <span class="text-transition"
+                :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Dashboard</span>
+          <span class="tooltip-text" x-show="sidebarCollapsed">Dashboard</span>
+          <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'dashboard'"></div>
+        </a>
+      </div>
+
+      <!-- User Management -->
+      <div x-data="{ open: false }" class="menu-item-wrapper">
+        <button
+                @click="if (sidebarCollapsed) {
+          activeMenu = activeMenu === 'user-management' ? null : 'user-management';
+        } else { 
+          open = !open; 
+        }"
+                class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'user-management' }">
+          <div class="flex items-center">
+            <span class="material-symbols-outlined mr-3">group</span>
+            <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">User Management</span>
+          </div>
+          <span class="material-symbols-outlined text-sm transition-transform"
+                :class="open ? 'rotate-180' : ''"
+                x-show="!sidebarCollapsed">expand_more</span>
+          <span class="tooltip-text" x-show="sidebarCollapsed">User Management</span>
+          <div class="active-menu-indicator"
+               x-show="sidebarCollapsed && activeMenu === 'user-management'"></div>
+        </button>
+
+        <!-- Expanded Mode Submenu -->
+        <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">person</span> Users
+          </a>
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">admin_panel_settings</span> Roles
+          </a>
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">history</span> Audit Logs
+          </a>
+        </div>
+
+        <!-- Collapsed Mode Submenu -->
+        <div x-show="sidebarCollapsed && activeMenu === 'user-management'"
+             class="submenu-collapsed"
+             :style="`top: ${$el.parentElement.offsetTop}px;`"
+             @click.stop>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">person</span>
+            Users
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">admin_panel_settings</span>
+            Roles
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">history</span>
+            Audit Logs
+          </div>
+        </div>
+      </div>
+
+      <!-- HR & Attendance -->
+      <div x-data="{ open: false }" class="menu-item-wrapper">
+        <button
+                @click="if (sidebarCollapsed) {
+          activeMenu = activeMenu === 'hr-attendance' ? null : 'hr-attendance';
+        } else { 
+          open = !open; 
+        }"
+                class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'hr-attendance' }">
+          <div class="flex items-center">
+            <span class="material-symbols-outlined mr-3">calendar_month</span>
+            <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">HR & Attendance</span>
+          </div>
+          <span class="material-symbols-outlined text-sm transition-transform"
+                :class="open ? 'rotate-180' : ''"
+                x-show="!sidebarCollapsed">expand_more</span>
+          <span class="tooltip-text" x-show="sidebarCollapsed">HR & Attendance</span>
+          <div class="active-menu-indicator"
+               x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"></div>
+        </button>
+
+        <!-- Expanded Mode Submenu -->
+        <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">badge</span> Employees
+          </a>
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">schedule</span> Attendance
+          </a>
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">timer</span> Overtime
+          </a>
+        </div>
+
+        <!-- Collapsed Mode Submenu -->
+        <div x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"
+             class="submenu-collapsed"
+             :style="`top: ${$el.parentElement.offsetTop}px;`"
+             @click.stop>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">badge</span>
+            Employees
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">schedule</span>
+            Attendance
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">timer</span>
+            Overtime
+          </div>
+        </div>
+      </div>
+
+      <!-- ePMS -->
+      <div x-data="{ open: false }" class="menu-item-wrapper">
+        <button
+                @click="if (sidebarCollapsed) {
+          activeMenu = activeMenu === 'epms' ? null : 'epms';
+        } else { 
+          open = !open; 
+        }"
+                class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'epms' }">
+          <div class="flex items-center">
+            <span class="material-symbols-outlined mr-3">assignment</span>
+            <span class="text-transition"
+                  :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">ePMS</span>
+          </div>
+          <span class="material-symbols-outlined text-sm transition-transform"
+                :class="open ? 'rotate-180' : ''"
+                x-show="!sidebarCollapsed">expand_more</span>
+          <span class="tooltip-text" x-show="sidebarCollapsed">ePMS</span>
+          <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'epms'"></div>
+        </button>
+
+        <!-- Expanded Mode Submenu -->
+        <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+          <a href="kpiAssign.html"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
+          </a>
+          <a href="myKpi.html"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI
+          </a>
+          <a href="kpiReview.html"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
+          </a>
+        </div>
+
+        <!-- Collapsed Mode Submenu -->
+        <div x-show="sidebarCollapsed && activeMenu === 'epms'"
+             class="submenu-collapsed"
+             :style="`top: ${$el.parentElement.offsetTop}px;`"
+             @click.stop>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">task</span>
+            KPI Assign
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">trending_up</span>
+            My KPI
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">target</span>
+            KPI Review
+          </div>
+        </div>
+      </div>
+
+      <!-- Payroll -->
+      <div x-data="{ open: false }" class="menu-item-wrapper">
+        <button
+                @click="if (sidebarCollapsed) {
+          activeMenu = activeMenu === 'payroll' ? null : 'payroll';
+        } else { 
+          open = !open; 
+        }"
+                class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'payroll' }">
+          <div class="flex items-center">
+            <span class="material-symbols-outlined mr-3">payments</span>
+            <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Payroll</span>
+          </div>
+          <span class="material-symbols-outlined text-sm transition-transform"
+                :class="open ? 'rotate-180' : ''"
+                x-show="!sidebarCollapsed">expand_more</span>
+          <span class="tooltip-text" x-show="sidebarCollapsed">Payroll</span>
+          <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'payroll'"></div>
+        </button>
+
+        <!-- Expanded Mode Submenu -->
+        <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">receipt</span> Salary Processing
+          </a>
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">request_quote</span> Payslips
+          </a>
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">savings</span> Tax Management
+          </a>
+        </div>
+
+        <!-- Collapsed Mode Submenu -->
+        <div x-show="sidebarCollapsed && activeMenu === 'payroll'"
+             class="submenu-collapsed"
+             :style="`top: ${$el.parentElement.offsetTop}px;`"
+             @click.stop>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">receipt</span>
+            Salary Processing
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">request_quote</span>
+            Payslips
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">savings</span>
+            Tax Management
+          </div>
+        </div>
+      </div>
+
+      <!-- Leave -->
+      <div x-data="{ open: false }" class="menu-item-wrapper">
+        <button
+                @click="if (sidebarCollapsed) {
+          activeMenu = activeMenu === 'leave' ? null : 'leave';
+        } else { 
+          open = !open; 
+        }"
+                class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'leave' }">
+          <div class="flex items-center">
+            <span class="material-symbols-outlined mr-3">beach_access</span>
+            <span class="text-transition"
+                  :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Leave</span>
+          </div>
+          <span class="material-symbols-outlined text-sm transition-transform"
+                :class="open ? 'rotate-180' : ''"
+                x-show="!sidebarCollapsed">expand_more</span>
+          <span class="tooltip-text" x-show="sidebarCollapsed">Leave</span>
+          <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'leave'"></div>
+        </button>
+
+        <!-- Expanded Mode Submenu -->
+        <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">event_available</span> Apply Leave
+          </a>
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">pending_actions</span> Leave Requests
+          </a>
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">calendar_today</span> Leave Calendar
+          </a>
+        </div>
+
+        <!-- Collapsed Mode Submenu -->
+        <div x-show="sidebarCollapsed && activeMenu === 'leave'"
+             class="submenu-collapsed"
+             :style="`top: ${$el.parentElement.offsetTop}px;`"
+             @click.stop>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">event_available</span>
+            Apply Leave
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">pending_actions</span>
+            Leave Requests
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">calendar_today</span>
+            Leave Calendar
+          </div>
+        </div>
+      </div>
+
+      <!-- Visit -->
+      <div x-data="{ open: false }" class="menu-item-wrapper">
+        <button
+                @click="if (sidebarCollapsed) {
+          activeMenu = activeMenu === 'visit' ? null : 'visit';
+        } else { 
+          open = !open; 
+        }"
+                class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'visit' }">
+          <div class="flex items-center">
+            <span class="material-symbols-outlined mr-3">travel_explore</span>
+            <span class="text-transition"
+                  :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Visit</span>
+          </div>
+          <span class="material-symbols-outlined text-sm transition-transform"
+                :class="open ? 'rotate-180' : ''"
+                x-show="!sidebarCollapsed">expand_more</span>
+          <span class="tooltip-text" x-show="sidebarCollapsed">Visit</span>
+          <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'visit'"></div>
+        </button>
+
+        <!-- Expanded Mode Submenu -->
+        <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">person_search</span> Visitor Registration
+          </a>
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">meeting_room</span> Meeting Rooms
+          </a>
+          <a href="#"
+             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+            <span class="material-symbols-outlined mr-2 text-base">schedule</span> Visit Schedule
+          </a>
+        </div>
+
+        <!-- Collapsed Mode Submenu -->
+        <div x-show="sidebarCollapsed && activeMenu === 'visit'"
+             class="submenu-collapsed"
+             :style="`top: ${$el.parentElement.offsetTop}px;`"
+             @click.stop>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">person_search</span>
+            Visitor Registration
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">meeting_room</span>
+            Meeting Rooms
+          </div>
+          <div class="submenu-item" @click="activeMenu = null">
+            <span class="material-symbols-outlined">schedule</span>
+            Visit Schedule
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports -->
+      <div class="menu-item-wrapper">
+        <a href="#"
+           class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+           :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'reports' }">
+          <span class="material-symbols-outlined mr-3">bar_chart</span>
+          <span class="text-transition"
+                :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Reports</span>
+          <span class="tooltip-text" x-show="sidebarCollapsed">Reports</span>
+          <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'reports'"></div>
+        </a>
+      </div>
+
+      <!-- Settings -->
+      <div class="menu-item-wrapper">
+        <a href="#"
+           class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+           :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'settings' }">
+          <span class="material-symbols-outlined mr-3">settings</span>
+          <span class="text-transition"
+                :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Settings</span>
+          <span class="tooltip-text" x-show="sidebarCollapsed">Settings</span>
+          <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'settings'"></div>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Footer -->
+    <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+      <button class="flex items-center w-full text-gray-700 dark:text-gray-200 tooltip">
+        <span class="material-symbols-outlined mr-2">logout</span>
+        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Logout</span>
+        <span class="tooltip-text" x-show="sidebarCollapsed">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col sidebar-transition" :class="sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'">
+
+    <!-- Top Navbar -->
+    <header
+            class="flex items-center justify-between bg-white dark:bg-gray-800 shadow-sm px-4 py-3 sticky top-0 z-30 border-b border-gray-100 dark:border-gray-700">
+      <div class="flex items-center gap-2">
+        <button @click="sidebarOpen = !sidebarOpen" class="md:hidden text-gray-600 dark:text-gray-300">
+          ☰
+        </button>
+        <input type="text" placeholder="Search..."
+               class="hidden md:block px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm outline-none"/>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="flex items-center gap-4">
+        <!-- Dark Mode Toggle -->
+        <button @click="darkMode = !darkMode" class="text-gray-600 dark:text-gray-300 hover:text-indigo-500">
+          <span x-show="!darkMode" class="material-symbols-outlined">light_mode</span>
+          <span x-show="darkMode" class="material-symbols-outlined">dark_mode</span>
+        </button>
+
+        <!-- Notifications -->
+        <button class="text-gray-600 dark:text-gray-300 hover:text-indigo-500">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+
+        <!-- Admin Dropdown -->
+        <div x-data="{ open: false, role: 'Admin' }" class="relative">
+          <button @click="open = !open" @mouseenter="open = true" @mouseleave="open = false"
+                  class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-500">
+            👤 <span>Admin</span>
+          </button>
+
+          <!-- Dropdown -->
+          <div x-show="open" x-transition @mouseenter="open = true" @mouseleave="open = false"
+               class="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
+            <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200">
+              Role: <span class="font-medium text-indigo-500" x-text="role"></span>
+            </div>
+            <a href="#" class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Profile</a>
+            <a href="#"
+               class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Settings</a>
+            <a href="#" class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
+      <!-- Employee Information Table -->
+      <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-6">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Employee Information</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full compact-table">
+            <thead>
+            <tr class="bg-table-blue text-white">
+              <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                Employee ID</th>
+              <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                Employee Name</th>
+              <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                Category</th>
+              <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                Department</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr>
+              <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                710003896</td>
+              <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200 border-r border-gray-200 dark:border-gray-700">
+                Fazlul Alam</td>
+              <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                Admin</td>
+              <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                Software Section</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- KPI Content -->
+      <div id="kpisContent" class="tab-content">
+        <!-- Table -->
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Key Performance Indicator</h3>
+          </div>
+
+          <div class="table-container">
+            <table class="min-w-full compact-table" id="kpiTable">
+              <thead>
+              <tr class="bg-table-blue text-white">
+                <th rowspan="2" width="3%"
+                    class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                  SL</th>
+                <th rowspan="2" width="10%"
+                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                  KRA</th>
+                <th width="15%"
+                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                  KPI</th>
+                <th width="6%"
+                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                  Weightage</th>
+                <th width="8%"
+                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                  Target Description</th>
+                <th width="8%"
+                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                  Target</th>
+                <th width="8%"
+                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                  Achievement</th>
+                <th width="8%"
+                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                  Achievement (%)</th>
+                <th width="8%"
+                    class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                  Score</th>
+                <th width="5%"
+                    class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                  ⋮</th>
+              </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="kpiTableBody">
+              <!-- Performance KRA -->
+              <tr class="kpi-row saved" data-kra-id="1">
+                <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-center kra-cell">
+                  <div class="flex items-center justify-center h-full">
+                    1
+                  </div>
+                </td>
+                <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-left kra-cell">
+                  <div class="h-full">
+                    Performance
+                  </div>
+                </td>
+                <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                  Revenue Growth
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  30</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  Increase revenue by 15%</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  15</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  <input type="text" class="score-input dark:bg-gray-700 dark:text-gray-200" value="14">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  <div class="flex items-center">
+                    <div class="progress-bar w-full">
+                      <div class="progress-fill bg-green-600" style="width: 93%"></div>
+                    </div>
+                    <span class="ml-1 text-xs">93%</span>
+                  </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  27.9
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
+                  <button class="action-btn details-btn" data-kpi-id="1">
+                    Details
+                  </button>
+                </td>
+              </tr>
+              <tr class="kpi-row saved" data-kra-id="1">
+                <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                  Cost Reduction
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  25</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  Reduce operational costs by 10%</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  10</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  <input type="text" class="score-input dark:bg-gray-700 dark:text-gray-200" value="9">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  <div class="flex items-center">
+                    <div class="progress-bar w-full">
+                      <div class="progress-fill bg-green-600" style="width: 90%"></div>
+                    </div>
+                    <span class="ml-1 text-xs">90%</span>
+                  </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  22.5
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
+                  <button class="action-btn details-btn" data-kpi-id="2">
+                    Details
+                  </button>
+                </td>
+              </tr>
+              <tr class="kpi-row saved" data-kra-id="1">
+                <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                  Profit Margin
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  20</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  Achieve 22% profit margin</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  22</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  <input type="text" class="score-input dark:bg-gray-700 dark:text-gray-200" value="21">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  <div class="flex items-center">
+                    <div class="progress-bar w-full">
+                      <div class="progress-fill bg-green-600" style="width: 95%"></div>
+                    </div>
+                    <span class="ml-1 text-xs">95%</span>
+                  </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  19
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
+                  <button class="action-btn details-btn" data-kpi-id="3">
+                    Details
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Customer Satisfaction KRA -->
+              <tr class="kpi-row saved" data-kra-id="2">
+                <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-center kra-cell">
+                  <div class="flex items-center justify-center h-full">
+                    2
+                  </div>
+                </td>
+                <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-left kra-cell">
+                  <div class="h-full">
+                    Customer Satisfaction
+                  </div>
+                </td>
+                <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                  NPS Score
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  15</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  Financial reporting process documentation</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  N/A</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  <select class="score-input dark:bg-gray-700 dark:text-gray-200">
+                    <option value="5">Excellent</option>
+                    <option value="4" selected>Very Good</option>
+                    <option value="3">Good</option>
+                    <option value="2">Average</option>
+                  </select>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  <div class="flex items-center">
+                    <div class="progress-bar w-full">
+                      <div class="progress-fill bg-green-600" style="width: 100%"></div>
+                    </div>
+                    <span class="ml-1 text-xs">100%</span>
+                  </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  15
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
+                  <button class="action-btn details-btn" data-kpi-id="4">
+                    Details
+                  </button>
+                </td>
+              </tr>
+              <tr class="kpi-row saved" data-kra-id="2">
+                <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                  Customer Retention
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  10</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  Maintain customer retention rate of 85%</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  85</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  <input type="text" class="score-input dark:bg-gray-700 dark:text-gray-200" value="82">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  <div class="flex items-center">
+                    <div class="progress-bar w-full">
+                      <div class="progress-fill bg-green-600" style="width: 96%"></div>
+                    </div>
+                    <span class="ml-1 text-xs">96%</span>
+                  </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                  9.6
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
+                  <button class="action-btn details-btn" data-kpi-id="5">
+                    Details
+                  </button>
+                </td>
+              </tr>
+              </tbody>
+              <tfoot>
+              <tr class="weightage-total">
+                <td colspan="3" class="px-2 py-2 text-right font-medium dark:text-gray-200">Total Weightage:</td>
+                <td id="totalWeightage" class="px-2 py-2 text-center font-medium dark:text-gray-200">100</td>
+                <td colspan="4" class="px-2 py-2 text-center">
+                  <span id="weightageStatus" class="text-sm text-green-600"></span>
+                </td>
+                <td class="px-2 py-2 text-center font-medium dark:text-gray-200">94</td>
+              </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
 
 <!-- KPI Review Modal -->
 <div id="kpiReviewModal" class="modal">
-    <div class="modal-content">
-        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-            <h3 class="text-lg font-semibold text-gray-800">KPI Review</h3>
-            <button id="closeModal" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        <div class="p-4">
-            <!-- KPI Details Table -->
-            <div class="mb-6">
-                <h4 class="text-md font-semibold text-gray-700 mb-2">KPI Details</h4>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full compact-table">
-                        <thead>
-                        <tr class="bg-table-blue text-white">
-                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                KRA/KPI</th>
-                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Weightage</th>
-                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Target Details</th>
-                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Target</th>
-                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Achievement</th>
-                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Achievement (%)</th>
-                            <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                                Score</th>
-                        </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200" id="modalKpiDetails">
-                        <!-- KPI details will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Evidence URL -->
-            <div class="mb-6">
-                <h4 class="text-md font-semibold text-gray-700 mb-2">Evidence URL</h4>
-                <input type="text" id="evidenceUrl" class="w-full p-2 border border-gray-300 rounded-md" value="https://company.com/evidence/kpi-1" readonly>
-            </div>
-
-            <!-- Comment History -->
-            <div class="mb-6">
-                <h4 class="text-md font-semibold text-gray-700 mb-2">Comment History</h4>
-                <div class="bg-gray-50 p-4 rounded-md max-h-40 overflow-y-auto">
-                    <div class="comment-item mb-3 pb-3 border-b border-gray-200">
-                        <div class="flex justify-between mb-1">
-                            <span class="font-medium text-sm">John Smith (EMP-001)</span>
-                            <span class="text-xs text-gray-500">2023-10-15 14:30</span>
-                        </div>
-                        <p class="text-sm">I've completed the initial analysis and documentation for this KPI. The results are promising.</p>
-                        <div class="status-badge mt-1 inline-block px-2 py-1 rounded text-xs">
-                            <span class="text-green-600">✓ Approved</span>
-                        </div>
-                    </div>
-                    <div class="comment-item mb-3 pb-3 border-b border-gray-200">
-                        <div class="flex justify-between mb-1">
-                            <span class="font-medium text-sm">Sarah Johnson (Supervisor)</span>
-                            <span class="text-xs text-gray-500">2023-10-16 09:15</span>
-                        </div>
-                        <p class="text-sm">Good progress. Please ensure the final report includes comparative analysis with last quarter.</p>
-                        <div class="status-badge mt-1 inline-block px-2 py-1 rounded text-xs">
-                            <span class="text-yellow-600">↻ Sent Back</span>
-                        </div>
-                    </div>
-                    <div class="comment-item">
-                        <div class="flex justify-between mb-1">
-                            <span class="font-medium text-sm">John Smith (EMP-001)</span>
-                            <span class="text-xs text-gray-500">2023-10-17 11:45</span>
-                        </div>
-                        <p class="text-sm">The comparative analysis has been added to the final report. All data is now up to date.</p>
-                        <div class="status-badge mt-1 inline-block px-2 py-1 rounded text-xs">
-                            <span class="text-blue-600">⏳ Pending Review</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Add Comment -->
-            <div>
-                <h4 class="text-md font-semibold text-gray-700 mb-2">Add Comment</h4>
-                <textarea id="commentInput" class="w-full p-2 border border-gray-300 rounded-md comment-input" placeholder="Enter your comment here..."></textarea>
-                <div class="w-full flex justify-end gap-2 mt-2">
-                    <button id="sendBackBtn" class="send-btn bg-yellow-500 hover:bg-yellow-600">Send Back</button>
-                    <button id="approveBtn" class="send-btn bg-green-500 hover:bg-green-600">Approve</button>
-                </div>
-            </div>
-        </div>
+  <div class="modal-content dark:bg-gray-800 dark:text-gray-200">
+    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">KPI Review</h3>
+      <button id="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+        <i class="fas fa-times text-xl"></i>
+      </button>
     </div>
+    <div class="p-4">
+      <!-- KPI Details Table -->
+      <div class="mb-6">
+        <h4 class="text-md font-semibold text-gray-700 dark:text-gray-200 mb-2">KPI Details</h4>
+        <div class="overflow-x-auto">
+          <table class="min-w-full compact-table">
+            <thead>
+            <tr class="bg-table-blue text-white">
+              <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                KRA/KPI</th>
+              <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                Weightage</th>
+              <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                Target Details</th>
+              <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                Target</th>
+              <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                Achievement</th>
+              <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                Achievement (%)</th>
+              <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                Score</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="modalKpiDetails">
+            <!-- KPI details will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Evidence URL -->
+      <div class="mb-6">
+        <h4 class="text-md font-semibold text-gray-700 dark:text-gray-200 mb-2">Evidence URL</h4>
+        <input type="text" id="evidenceUrl" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200" value="https://company.com/evidence/kpi-1" readonly>
+      </div>
+
+      <!-- Comment History -->
+      <div class="mb-6">
+        <h4 class="text-md font-semibold text-gray-700 dark:text-gray-200 mb-2">Comment History</h4>
+        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md max-h-40 overflow-y-auto">
+          <div class="comment-item mb-3 pb-3 border-b border-gray-200 dark:border-gray-600">
+            <div class="flex justify-between mb-1">
+              <span class="font-medium text-sm dark:text-gray-200">John Smith (EMP-001)</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400">2023-10-15 14:30</span>
+            </div>
+            <p class="text-sm dark:text-gray-300">I've completed the initial analysis and documentation for this KPI. The results are promising.</p>
+            <div class="status-badge mt-1 inline-block px-2 py-1 rounded text-xs">
+              <span class="text-green-600 dark:text-green-400">✓ Approved</span>
+            </div>
+          </div>
+          <div class="comment-item mb-3 pb-3 border-b border-gray-200 dark:border-gray-600">
+            <div class="flex justify-between mb-1">
+              <span class="font-medium text-sm dark:text-gray-200">Sarah Johnson (Supervisor)</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400">2023-10-16 09:15</span>
+            </div>
+            <p class="text-sm dark:text-gray-300">Good progress. Please ensure the final report includes comparative analysis with last quarter.</p>
+            <div class="status-badge mt-1 inline-block px-2 py-1 rounded text-xs">
+              <span class="text-yellow-600 dark:text-yellow-400">↻ Sent Back</span>
+            </div>
+          </div>
+          <div class="comment-item">
+            <div class="flex justify-between mb-1">
+              <span class="font-medium text-sm dark:text-gray-200">John Smith (EMP-001)</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400">2023-10-17 11:45</span>
+            </div>
+            <p class="text-sm dark:text-gray-300">The comparative analysis has been added to the final report. All data is now up to date.</p>
+            <div class="status-badge mt-1 inline-block px-2 py-1 rounded text-xs">
+              <span class="text-blue-600 dark:text-blue-400">⏳ Pending Review</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Comment -->
+      <div>
+        <h4 class="text-md font-semibold text-gray-700 dark:text-gray-200 mb-2">Add Comment</h4>
+        <textarea id="commentInput" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md comment-input dark:bg-gray-700 dark:text-gray-200" placeholder="Enter your comment here..."></textarea>
+        <div class="w-full flex justify-end gap-2 mt-2">
+          <button id="sendBackBtn" class="send-btn bg-yellow-500 hover:bg-yellow-600">Send Back</button>
+          <button id="approveBtn" class="send-btn bg-green-500 hover:bg-green-600">Approve</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Overlay for mobile menu -->
-<div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
-
 <script>
-    // Mobile menu functionality
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
+  // Modal functionality
+  const modal = document.getElementById('kpiReviewModal');
+  const closeModal = document.getElementById('closeModal');
+  const detailsButtons = document.querySelectorAll('.details-btn');
+  const modalKpiDetails = document.getElementById('modalKpiDetails');
+  const sendBackBtn = document.getElementById('sendBackBtn');
+  const approveBtn = document.getElementById('approveBtn');
 
-    /*mobileMenuBtn.addEventListener('click', function () {
-        sidebar.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
-    });*/
+  // KPI data for the modal
+  const kpiData = {
+    1: {
+      kra: "Performance",
+      kpi: "Revenue Growth",
+      weightage: "30",
+      targetDetails: "Increase revenue by 15%",
+      target: "15",
+      achievement: "14",
+      achievementPercent: "93%",
+      score: "27.9"
+    },
+    2: {
+      kra: "Performance",
+      kpi: "Cost Reduction",
+      weightage: "25",
+      targetDetails: "Reduce operational costs by 10%",
+      target: "10",
+      achievement: "9",
+      achievementPercent: "90%",
+      score: "22.5"
+    },
+    3: {
+      kra: "Performance",
+      kpi: "Profit Margin",
+      weightage: "20",
+      targetDetails: "Achieve 22% profit margin",
+      target: "22",
+      achievement: "21",
+      achievementPercent: "95%",
+      score: "19"
+    },
+    4: {
+      kra: "Customer Satisfaction",
+      kpi: "NPS Score",
+      weightage: "15",
+      targetDetails: "Financial reporting process documentation",
+      target: "N/A",
+      achievement: "Very Good",
+      achievementPercent: "100%",
+      score: "15"
+    },
+    5: {
+      kra: "Customer Satisfaction",
+      kpi: "Customer Retention",
+      weightage: "10",
+      targetDetails: "Maintain customer retention rate of 85%",
+      target: "85",
+      achievement: "82",
+      achievementPercent: "96%",
+      score: "9.6"
+    }
+  };
 
-    overlay.addEventListener('click', function () {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
+  // Open modal when details button is clicked
+  detailsButtons.forEach(button => {
+    button.addEventListener('click', function () {
+      const kpiId = this.getAttribute('data-kpi-id');
+      const kpi = kpiData[kpiId];
+
+      // Populate modal with KPI details
+      modalKpiDetails.innerHTML = `
+            <tr>
+              <td class="px-2 py-2 text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                <div>${kpi.kra}</div>
+                <div class="font-medium">${kpi.kpi}</div>
+              </td>
+              <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                ${kpi.weightage}
+              </td>
+              <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                ${kpi.targetDetails}
+              </td>
+              <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                ${kpi.target}
+              </td>
+              <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                <input type="text" class="score-input dark:bg-gray-700 dark:text-gray-200" value="${kpi.achievement}">
+              </td>
+              <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                ${kpi.achievementPercent}
+              </td>
+              <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                ${kpi.score}
+              </td>
+            </tr>
+          `;
+
+      // Show modal
+      modal.style.display = 'flex';
     });
+  });
 
-    // Modal functionality
-    const modal = document.getElementById('kpiReviewModal');
-    const closeModal = document.getElementById('closeModal');
-    const detailsButtons = document.querySelectorAll('.details-btn');
-    const modalKpiDetails = document.getElementById('modalKpiDetails');
-    const sendBackBtn = document.getElementById('sendBackBtn');
-    const approveBtn = document.getElementById('approveBtn');
+  // Close modal
+  closeModal.addEventListener('click', function() {
+    modal.style.display = 'none';
+  });
 
-    // KPI data for the modal
-    const kpiData = {
-        1: {
-            kra: "Performance",
-            kpi: "Revenue Growth",
-            weightage: "30",
-            targetDetails: "Increase revenue by 15%",
-            target: "15",
-            achievement: "14",
-            achievementPercent: "93%",
-            score: "27.9"
-        },
-        2: {
-            kra: "Performance",
-            kpi: "Cost Reduction",
-            weightage: "25",
-            targetDetails: "Reduce operational costs by 10%",
-            target: "10",
-            achievement: "9",
-            achievementPercent: "90%",
-            score: "22.5"
-        },
-        3: {
-            kra: "Performance",
-            kpi: "Profit Margin",
-            weightage: "20",
-            targetDetails: "Achieve 22% profit margin",
-            target: "22",
-            achievement: "21",
-            achievementPercent: "95%",
-            score: "19"
-        },
-        4: {
-            kra: "Customer Satisfaction",
-            kpi: "NPS Score",
-            weightage: "15",
-            targetDetails: "Financial reporting process documentation",
-            target: "N/A",
-            achievement: "Very Good",
-            achievementPercent: "100%",
-            score: "15"
-        },
-        5: {
-            kra: "Customer Satisfaction",
-            kpi: "Customer Retention",
-            weightage: "10",
-            targetDetails: "Maintain customer retention rate of 85%",
-            target: "85",
-            achievement: "82",
-            achievementPercent: "96%",
-            score: "9.6"
-        }
-    };
+  // Close modal when clicking outside
+  window.addEventListener('click', function(event) {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
 
-    // Open modal when details button is clicked
-    detailsButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const kpiId = this.getAttribute('data-kpi-id');
-            const kpi = kpiData[kpiId];
+  // Send Back functionality
+  sendBackBtn.addEventListener('click', function() {
+    const commentInput = document.getElementById('commentInput');
+    const comment = commentInput.value.trim();
+    if (comment) {
+      // alert(`KPI has been sent back with comment: ${comment}`);
+      modal.style.display = 'none';
+    } else {
+      // alert('Please add a comment before sending back.');
+    }
+  });
 
-            // Populate modal with KPI details
-            modalKpiDetails.innerHTML = `
-                    <tr>
-                        <td class="px-2 py-2 text-sm text-gray-500 border-r border-gray-200">
-                            <div>${kpi.kra}</div>
-                            <div class="font-medium">${kpi.kpi}</div>
-                        </td>
-                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                            ${kpi.weightage}
-                        </td>
-                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                            ${kpi.targetDetails}
-                        </td>
-                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                            ${kpi.target}
-                        </td>
-                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                            <input type="text" class="score-input" value="${kpi.achievement}">
-                        </td>
-                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                            ${kpi.achievementPercent}
-                        </td>
-                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
-                            ${kpi.score}
-                        </td>
-                    </tr>
-                `;
-
-            // Show modal
-            modal.style.display = 'flex';
-        });
-    });
-
-    // Close modal
-    closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
-
-    // Close modal when clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-
-    // Send Back functionality
-    sendBackBtn.addEventListener('click', function() {
-        const commentInput = document.getElementById('commentInput');
-        const comment = commentInput.value.trim();
-        if (comment) {
-            // alert(`KPI has been sent back with comment: ${comment}`);
-            modal.style.display = 'none';
-        } else {
-            // alert('Please add a comment before sending back.');
-        }
-    });
-
-    // Approve functionality
-    approveBtn.addEventListener('click', function() {
-        const commentInput = document.getElementById('commentInput');
-        const comment = commentInput.value.trim();
-        if (comment) {
-            // alert(`KPI has been approved with comment: ${comment}`);
-            modal.style.display = 'none';
-        } else {
-            // alert('Please add a comment before approving.');
-        }
-    });
-
-    // Create KRA button functionality
-    /*document.getElementById('createKraBtn').addEventListener('click', function() {
-        alert('Create KRA functionality would open a form here');
-        // In a real application, you would open a modal or form to create a new KRA
-    });*/
+  // Approve functionality
+  approveBtn.addEventListener('click', function() {
+    const commentInput = document.getElementById('commentInput');
+    const comment = commentInput.value.trim();
+    if (comment) {
+      // alert(`KPI has been approved with comment: ${comment}`);
+      modal.style.display = 'none';
+    } else {
+      // alert('Please add a comment before approving.');
+    }
+  });
 </script>
 </body>
 </html>
