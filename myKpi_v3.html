@@ -41,9 +41,6 @@
             'dark-primary': '#22246f',
             'dark-secondary': '#2c2ea3',
             'dark-accent': '#3a3ccf',
-            'pending-orange': '#FF9800',
-            'approved-green': '#4CAF50',
-            'sentback-red': '#F44336',
           },
           fontFamily: {
             'roboto': ['Roboto', 'sans-serif'],
@@ -327,7 +324,7 @@
     }
 
     .kra-cell {
-      background-color: white
+      background-color: #F7F9FB;
     }
 
     .modal {
@@ -346,8 +343,8 @@
     .modal-content {
       background-color: white;
       border-radius: 8px;
-      width: 90%;
-      max-width: 1500px;
+      width: 95%;
+      max-width: 1200px;
       max-height: 90vh;
       overflow-y: auto;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -409,6 +406,96 @@
       background-color: #e5e7eb;
     }
 
+    /* New styles for monthly tracking table */
+    .monthly-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+    
+    .monthly-table th {
+      background-color: #2E3094;
+      color: white;
+      font-weight: 500;
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #1e2074;
+    }
+    
+    .monthly-table td {
+      padding: 8px;
+      border: 1px solid #e5e7eb;
+      vertical-align: top;
+    }
+    
+    .dark .monthly-table td {
+      border-color: #3a3ccf;
+    }
+    
+    .monthly-table textarea {
+      width: 100%;
+      height: 32px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 0.75rem;
+      resize: vertical;
+    }
+    
+    .dark .monthly-table textarea {
+      background-color: #2c2ea3;
+      border-color: #3a3ccf;
+      color: #e4e6ff;
+    }
+    
+    .monthly-table .url-input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 0.75rem;
+    }
+    
+    .dark .monthly-table .url-input {
+      background-color: #2c2ea3;
+      border-color: #3a3ccf;
+      color: #e4e6ff;
+    }
+    
+    .monthly-table .send-btn-small {
+      background-color: #2E3094;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    .monthly-table .send-btn-small:hover {
+      background-color: #1e2074;
+    }
+    
+    .monthly-table .status-cell {
+      text-align: center;
+    }
+    
+    .monthly-table .status-pending {
+      color: #f59e0b;
+      font-weight: 500;
+    }
+    
+    .monthly-table .status-approved {
+      color: #10b981;
+      font-weight: 500;
+    }
+    
+    .monthly-table .status-rejected {
+      color: #ef4444;
+      font-weight: 500;
+    }
+
     @media (max-width: 768px) {
       .table-container table {
         font-size: 0.7rem;
@@ -428,29 +515,15 @@
       .modal-actions {
         flex-direction: column;
       }
-      .comment-history {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        
-        .comment-item {
-            border-left: 3px solid #0089CF;
-            padding-left: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .comment-item.approved {
-            border-left-color: #39b54a;
-        }
-        
-        .comment-item.send-back {
-            border-left-color: #c9252c;
-        }
-        .evidence-url {
-            color: #0089CF;
-            text-decoration: underline;
-            word-break: break-all;
-        }
+      
+      .monthly-table {
+        font-size: 0.65rem;
+      }
+      
+      .monthly-table th,
+      .monthly-table td {
+        padding: 4px;
+      }
     }
   </style>
 </head>
@@ -641,6 +714,25 @@
 
         <!-- Expanded Mode Submenu -->
         <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+
+            <a href="kpiAssign_vf.html"
+               class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign VF
+            </a>
+            <a href="myKpi_vf.html"
+               class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI VF
+            </a>
+            <a href="kpiReview_vf.html"
+               class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review VF
+            </a>
+            <a href="kpiReports_vf.html"
+               class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Reports VF
+            </a>
+
+
           <a href="kpiAssign.html"
              class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
             <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
@@ -941,7 +1033,7 @@
         <!-- Table -->
         <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
           <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Key Performance Indicator (2026)</h3>
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Key Performance Indicator</h3>
           </div>
 
           <div class="table-container">
@@ -983,12 +1075,12 @@
               <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600" id="kpiTableBody">
                 <!-- Performance KRA -->
                 <tr class="kpi-row saved" data-kra-id="1">
-                  <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-600 text-center kra-cell dark:bg-[#22246f] dark:text-white">
+                  <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-600 text-center kra-cell">
                     <div class="flex items-center justify-center h-full">
                       1
                     </div>
                   </td>
-                  <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-600 text-left kra-cell dark:bg-[#22246f] dark:text-white">
+                  <td rowspan="3" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-600 text-left kra-cell">
                     <div class="h-full">
                       Performance
                     </div>
@@ -1002,7 +1094,8 @@
                     Increase revenue by 15%</td>
                   <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
                     15</td>
-                  <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">14
+                  <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
+                    <input type="text" class="score-input dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500" value="14" >
                   </td>
                   <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
                     <div class="flex items-center">
@@ -1031,7 +1124,8 @@
                     Reduce operational costs by 10%</td>
                   <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
                     10</td>
-                  <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">9
+                  <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
+                    <input type="text" class="score-input dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500" value="9" >
                   </td>
                   <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
                     <div class="flex items-center">
@@ -1060,7 +1154,8 @@
                     Achieve 22% profit margin</td>
                   <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
                     22</td>
-                  <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">21
+                  <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
+                    <input type="text" class="score-input dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500" value="21" >
                   </td>
                   <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
                     <div class="flex items-center">
@@ -1082,12 +1177,12 @@
                 
                 <!-- Customer Satisfaction KRA -->
                 <tr class="kpi-row saved" data-kra-id="2">
-                  <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-600 text-center kra-cell dark:bg-[#22246f] dark:text-white">
+                  <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-600 text-center kra-cell">
                     <div class="flex items-center justify-center h-full">
                       2
                     </div>
                   </td>
-                  <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-600 text-left kra-cell dark:bg-[#22246f] dark:text-white">
+                  <td rowspan="2" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-600 text-left kra-cell">
                     <div class="h-full">
                       Customer Satisfaction
                     </div>
@@ -1101,7 +1196,8 @@
                     Financial reporting process documentation</td>
                   <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
                     N/A</td>
-                  <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">Exclent
+                  <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
+                    <input type="text" class="score-input dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500" value="Exclent" >
                   </td>
                   <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
                     <div class="flex items-center">
@@ -1130,7 +1226,8 @@
                     Maintain customer retention rate of 85%</td>
                   <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
                     85</td>
-                  <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">82
+                  <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
+                    <input type="text" class="score-input dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500" value="82">
                   </td>
                   <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-600">
                     <div class="flex items-center">
@@ -1170,9 +1267,9 @@
 
 <!-- KPI Review Modal -->
 <div id="kpiReviewModal" class="modal">
-  <div class="modal-content dark:bg-gray-800 dark:text-gray-200 pb-10">
+  <div class="modal-content dark:bg-gray-800 dark:text-gray-200">
     <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">KPI Review (2026)</h3>
+      <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">KPI Review</h3>
       <button id="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
         <i class="fas fa-times text-xl"></i>
       </button>
@@ -1186,9 +1283,7 @@
             <thead>
               <tr class="bg-table-blue text-white">
                 <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                  KRA</th>
-                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
-                  KPI</th>
+                  KRA/KPI</th>
                 <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
                   Weightage</th>
                 <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
@@ -1209,81 +1304,34 @@
           </table>
         </div>
       </div>
-    <div class="flex gap-4">
-        <!-- Comment Box (Always Visible) -->
-        <div class=" w-1/2">
-            <!-- Evidence URL Section -->
-            <div >
-                <h4 class="text-md font-medium text-gray-800 mb-2">Achievement</h4>
-                <input type="text" class="border border-gray-200 rounded p-3 w-full" placeholder="Enter your achievement">        
-                </input>
-            </div>
-            <div >
-                <h4 class="text-md font-medium text-gray-800 mb-2">Evidence URL</h4>
-                <input type="text" class="border border-gray-200 rounded p-3 w-full" placeholder="Enter your url...">        
-                </input>
-            </div>
-            <label for="commentText" class="text-lg font-medium text-gray-800">Add Comment</label>
-            <textarea id="commentText" class="w-full border border-gray-300 rounded text-sm p-3" rows="5"
-                placeholder="Enter your comments here..."></textarea>
-            <!-- Action Buttons -->
-            <div class="flex space-x-3">
-                <button id="sendBackBtn"
-                    class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded text-sm transition-colors">
-                    Send Back
-                </button>
-                <button id="acceptBtn"
-                    class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded text-sm transition-colors">
-                    Recommended
-                </button>
-            </div>
+
+      <!-- Monthly Tracking Table -->
+      <div class="mb-6">
+        <h4 class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-2">Monthly Tracking</h4>
+        <div class="overflow-x-auto">
+          <table class="monthly-table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Achievement</th>
+                <th>Employee Comments</th>
+                <th>Supervisor Status</th>
+                <th>Third Eye Status</th>
+                <th>Comments</th>
+                <th>URL</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="monthlyTrackingBody">
+              <!-- Monthly tracking data will be populated by JavaScript -->
+            </tbody>
+          </table>
         </div>
-        <!-- Comment History Section -->
-        <div class=" w-1/2">
-            <h4 class="text-lg font-medium text-gray-800 mb-2 ">Comment History</h4>
-            <div class="bg-gray-50 rounded-lg overflow-y-auto p-3 max-h-60">
-                <div class="space-y-4">
-                    <!-- Sample Comment 1 -->
-                    <div class="border-l-4 border-sentback-red pl-4 py-1">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-medium text-gray-800">John Doe (EMP001)</p>
-                                <p class="text-sm text-gray-600">Please review the achievement numbers and provide more
-                                    details.
-                                </p>
-                            </div>
-                            <span class="bg-sentback-red text-white text-xs px-2 py-1 rounded">Sent Back</span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">2 hours ago</p>
-                    </div>
-    
-                    <!-- Sample Comment 2 -->
-                    <div class="border-l-4 border-approved-green pl-4 py-1">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-medium text-gray-800">Sarah Smith (EMP002)</p>
-                                <p class="text-sm text-gray-600">All KPI targets are met with proper documentation.</p>
-                            </div>
-                            <span class="bg-approved-green text-white text-xs px-2 py-1 rounded">Approved</span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">1 day ago</p>
-                    </div>
-    
-                    <!-- Sample Comment 3 -->
-                    <div class="border-l-4 border-sentback-red pl-4 py-1">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-medium text-gray-800">Mike Johnson (EMP003)</p>
-                                <p class="text-sm text-gray-600">Need clarification on the revenue growth calculation
-                                    methodology.</p>
-                            </div>
-                            <span class="bg-sentback-red text-white text-xs px-2 py-1 rounded">Sent Back</span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">3 days ago</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
+    <!-- Modal Actions -->
+    <div class="modal-actions">
+      <button id="cancelBtn" class="modal-btn modal-cancel dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">Cancel</button>
+      <button id="submitBtn" class="modal-btn modal-submit">Submit</button>
     </div>
   </div>
 </div>
@@ -1294,6 +1342,7 @@
   const closeModal = document.getElementById('closeModal');
   const detailsButtons = document.querySelectorAll('.details-btn');
   const modalKpiDetails = document.getElementById('modalKpiDetails');
+  const monthlyTrackingBody = document.getElementById('monthlyTrackingBody');
   const sendCommentBtn = document.getElementById('sendComment');
   const submitBtn = document.getElementById('submitBtn');
   const cancelBtn = document.getElementById('cancelBtn');
@@ -1353,6 +1402,22 @@
     }
   };
 
+  // Monthly tracking data
+  const monthlyData = [
+    { month: "January", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "February", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "March", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "April", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "May", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "June", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "July", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "August", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "September", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "October", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "November", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "December", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" }
+  ];
+
   // Open modal when details button is clicked
   detailsButtons.forEach(button => {
     button.addEventListener('click', function () {
@@ -1362,31 +1427,80 @@
       // Populate modal with KPI details
       modalKpiDetails.innerHTML = `
         <tr>
-          <td class="px-2 py-2 text-sm text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+          <td class="px-2 py-2 text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">
             <div>${kpi.kra}</div>
+            <div class="font-medium">${kpi.kpi}</div>
           </td>
-          <td class="px-2 py-2 text-sm text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
-            <div >${kpi.kpi}</div>
-          </td>
-          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">
             ${kpi.weightage}
           </td>
-          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">
             ${kpi.targetDetails}
           </td>
-          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">
             ${kpi.target}
           </td>
-          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-600">${kpi.achievement}
+          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">
+            <input type="text" class="score-input dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500" value="${kpi.achievement}" id="modalAchievement">
           </td>
-          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">
             ${kpi.achievementPercent}
           </td>
-          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+          <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">
             ${kpi.score}
           </td>
         </tr>
       `;
+      
+      // Populate monthly tracking table
+      let monthlyHtml = '';
+      monthlyData.forEach((data, index) => {
+        monthlyHtml += `
+          <tr>
+            <td>${data.month}</td>
+            <td>
+              <textarea class="employee-comment" data-month="${index}" placeholder="Enter your Achievement...">${data.achievement}</textarea>
+            </td>
+            <td>
+              <textarea class="employee-comment" data-month="${index}" placeholder="Enter your comments...">${data.employeeComment}</textarea>
+            </td>
+            <td class="status-cell">
+              <span class="status-${data.supervisorStatus.toLowerCase()}">${data.supervisorStatus}</span>
+            </td>
+            <td class="status-cell">
+              <span class="status-${data.thirdEyeStatus.toLowerCase()}">${data.thirdEyeStatus}</span>
+            </td>
+             <td>
+              <textarea class="employee-comment" data-month="${index}" placeholder="Enter your comments...">${data.employeeComment}</textarea>
+            </td>
+            <td>
+              <input type="text" class="url-input" data-month="${index}" placeholder="Enter URL..." value="${data.url}">
+            </td>
+            <td class="status-cell">
+              <button class="send-btn-small" data-month="${index}">Send</button>
+            </td>
+          </tr>
+        `;
+      });
+      monthlyTrackingBody.innerHTML = monthlyHtml;
+      
+      // Add event listeners for send buttons
+      const sendButtons = document.querySelectorAll('.send-btn-small');
+      sendButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const monthIndex = this.getAttribute('data-month');
+          const commentElement = document.querySelector(`.employee-comment[data-month="${monthIndex}"]`);
+          const urlElement = document.querySelector(`.url-input[data-month="${monthIndex}"]`);
+          
+          // Update status
+          const statusCell = this.closest('tr').querySelector('.status-cell:first-child span');
+          statusCell.textContent = 'Submitted';
+          statusCell.className = 'status-submitted';
+          
+          // Show success message
+          // alert(`Data for ${monthlyData[monthIndex].month} has been submitted successfully!`);
+        });
+      });
       
       // Show modal
       modal.style.display = 'flex';
@@ -1449,6 +1563,7 @@
       commentInput.value = '';
     } 
   });
+  
 </script>
 </body>
 </html>

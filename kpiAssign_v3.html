@@ -265,6 +265,13 @@
             padding: 4px;
             font-size: 0.75rem;
         }
+        .editable-input-we {
+            width: 60%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 4px;
+            font-size: 0.75rem;
+        }
 
         .editable-select {
             width: 100%;
@@ -640,6 +647,22 @@
                 <!-- Expanded Mode Submenu -->
                 <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
 
+                    <a href="kpiAssign_vf.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign VF
+                    </a>
+                    <a href="myKpi_vf.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI VF
+                    </a>
+                    <a href="kpiReview_vf.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review VF
+                    </a>
+                    <a href="kpiReports_vf.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Reports VF
+                    </a>
 
                     <a href="kpiAssign.html"
                        class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
@@ -984,9 +1007,9 @@
                 <!-- Table -->
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
                     <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Key Performance Indicator</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Key Performance Indicator 2026</h3>
                         <button id="createKraBtn" class="bg-table-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Create KRA
+                            <i class="fas fa-plus mr-2"></i>Create
                         </button>
                     </div>
 
@@ -994,26 +1017,26 @@
                         <table class="min-w-full compact-table" id="kpiTable">
                             <thead>
                                 <tr class="bg-table-blue text-white">
-                                    <th rowspan="2" width="3%"
+                                    <th rowspan="2" width="5%"
                                         class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
                                         SL</th>
-                                    <th rowspan="2" width="10%"
+                                    <th rowspan="2" width="15%"
                                         class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
                                         KRA</th>
-                                    <th width="15%"
+                                    <th width="25%"
                                         class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
                                         KPI</th>
-                                    <th width="6%"
+                                    <th width="15%"
                                         class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
                                         Weightage</th>
-                                    <th width="8%"
+                                    <th width="15%"
                                         class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
                                         Target Description</th>
-                                    <th width="8%"
+                                    <th width="10%"
                                         class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
                                         Target</th>
                                     <th width="10%"
-                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-r border-blue-500">
                                         Actions</th>
                                 </tr>
                             </thead>
@@ -1037,17 +1060,18 @@
                                         </div>
                                     </td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
-                                        30</td>
+                                        30 <span class="material-symbols-outlined text-green-600 text-xl">trending_up</span>
+                                    </td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         Increase revenue by 15%</td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         15</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
                                         <button class="action-btn edit-btn" data-kpi-id="1">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="action-btn delete-btn" data-kpi-id="1">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -1059,17 +1083,17 @@
                                         </div>
                                     </td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
-                                        25</td>
+                                        25<span class="material-symbols-outlined text-green-600 text-xl">trending_up</span> </td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         Reduce operational costs by 10%</td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         10</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
                                         <button class="action-btn edit-btn" data-kpi-id="2">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="action-btn delete-btn" data-kpi-id="2">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -1081,17 +1105,17 @@
                                         </div>
                                     </td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
-                                        20</td>
+                                        20 <span class="material-symbols-outlined text-red-600 text-xl">trending_down</span></td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         Achieve 22% profit margin</td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         22</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
                                         <button class="action-btn edit-btn" data-kpi-id="3">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="action-btn delete-btn" data-kpi-id="3">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -1120,12 +1144,12 @@
                                         Financial reporting process documentation</td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         N/A</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
                                         <button class="action-btn edit-btn" data-kpi-id="4">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="action-btn delete-btn" data-kpi-id="4">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -1137,17 +1161,17 @@
                                         </div>
                                     </td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
-                                        10</td>
+                                        10<span class="material-symbols-outlined text-green-600 text-xl">trending_up</span></td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         Maintain customer retention rate of 85%</td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         85</td>
-                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
                                         <button class="action-btn edit-btn" data-kpi-id="5">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="action-btn delete-btn" data-kpi-id="5">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -1168,6 +1192,22 @@
         </main>
     </div>
 </div>
+
+<script>
+
+    function toggleTrend(el) {
+        // el is the <span> clicked
+        const isUp = el.textContent.trim() === 'trending_up';
+        if (isUp) {
+            el.textContent = 'trending_down';
+            el.classList.replace('text-green-600', 'text-red-600');
+        } else {
+            el.textContent = 'trending_up';
+            el.classList.replace('text-red-600', 'text-green-600');
+        }
+    }
+
+</script>
 
 <script>
     // KPI Management Functionality
@@ -1204,7 +1244,9 @@
                 </div>
             </td>
             <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
-                <input type="number" class="editable-input" placeholder="Weightage" data-field="weightage" min="0" max="100">
+                <input type="number" class="editable-input-we" placeholder="Weightage" data-field="weightage" min="0" max="100">
+                <span onclick="toggleTrend(this)" role="button" tabindex="0" class="material-symbols-outlined text-green-600 text-xl trend-icon ">trending_up</span>
+
             </td>
             <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                 <input type="text" class="editable-input" placeholder="Target description" data-field="target-word">
@@ -1212,15 +1254,12 @@
             <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                 <input type="text" class="editable-input" placeholder="Target value" data-field="target">
             </td>
-            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
                 <button class="action-btn add-btn" data-kra-id="${kraId}">
-                    <i class="fas fa-plus"></i> Add KPI
+                    <i class="fas fa-plus"></i>
                 </button>
                 <button class="action-btn save-btn" data-kra-id="${kraId}">
-                    <i class="fas fa-save"></i> Save
-                </button>
-                <button class="action-btn cancel-btn" data-kra-id="${kraId}">
-                    <i class="fas fa-times"></i> Cancel
+                    <i class="fas fa-save"></i>
                 </button>
             </td>
         `;
@@ -1262,6 +1301,7 @@
         });
         
         updateWeightageTotal();
+        test();
     });
 
     // Add KPI to existing KRA
@@ -1296,12 +1336,12 @@
             <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                 <input type="text" class="editable-input" placeholder="Target value" data-field="target">
             </td>
-            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
                 <button class="action-btn save-btn" data-kpi-id="${kpiCounter}">
-                    <i class="fas fa-save"></i> Save
+                    <i class="fas fa-save"></i>
                 </button>
                 <button class="action-btn cancel-btn" data-kpi-id="${kpiCounter}">
-                    <i class="fas fa-times"></i> Cancel
+                    <i class="fas fa-times"></i>
                 </button>
             </td>
         `;
@@ -1428,15 +1468,15 @@
                 <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                     ${targetValue}
                 </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
                     <button class="action-btn edit-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-edit"></i> Edit
+                        <i class="fas fa-edit"></i>
                     </button>
                     <button class="action-btn add-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-plus"></i> Add KPI
+                        <i class="fas fa-plus"></i>
                     </button>
                     <button class="action-btn delete-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-trash"></i> Delete
+                        <i class="fas fa-trash"></i>
                     </button>
                 </td>
             `;
@@ -1488,12 +1528,12 @@
                 <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                     ${targetValue}
                 </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
                     <button class="action-btn edit-btn" data-kpi-id="${kpiId}">
-                        <i class="fas fa-edit"></i> Edit
+                        <i class="fas fa-edit"></i>
                     </button>
                     <button class="action-btn delete-btn" data-kpi-id="${kpiId}">
-                        <i class="fas fa-trash"></i> Delete
+                        <i class="fas fa-trash"></i>
                     </button>
                 </td>
             `;
@@ -1571,15 +1611,15 @@
                 <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                     <input type="text" class="editable-input" value="${targetValue}" data-field="target" ${!isChecked ? 'disabled' : ''}>
                 </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
                     <button class="action-btn add-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-plus"></i> Add KPI
+                        <i class="fas fa-plus"></i>
                     </button>
                     <button class="action-btn save-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-save"></i> Save
+                        <i class="fas fa-save"></i>
                     </button>
                     <button class="action-btn cancel-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-times"></i> Cancel
+                        <i class="fas fa-times"></i>
                     </button>
                 </td>
             `;
@@ -1633,12 +1673,12 @@
                 <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                     <input type="text" class="editable-input" value="${targetValue}" data-field="target" ${!isChecked ? 'disabled' : ''}>
                 </td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 text-center">
                     <button class="action-btn save-btn" data-kpi-id="${kpiId}">
-                        <i class="fas fa-save"></i> Save
+                        <i class="fas fa-save"></i>
                     </button>
                     <button class="action-btn cancel-btn" data-kpi-id="${kpiId}">
-                        <i class="fas fa-times"></i> Cancel
+                        <i class="fas fa-times"></i>
                     </button>
                 </td>
             `;
