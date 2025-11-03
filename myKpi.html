@@ -343,8 +343,8 @@
     .modal-content {
       background-color: white;
       border-radius: 8px;
-      width: 90%;
-      max-width: 1000px;
+      width: 95%;
+      max-width: 1200px;
       max-height: 90vh;
       overflow-y: auto;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -406,6 +406,96 @@
       background-color: #e5e7eb;
     }
 
+    /* New styles for monthly tracking table */
+    .monthly-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+    
+    .monthly-table th {
+      background-color: #2E3094;
+      color: white;
+      font-weight: 500;
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #1e2074;
+    }
+    
+    .monthly-table td {
+      padding: 8px;
+      border: 1px solid #e5e7eb;
+      vertical-align: top;
+    }
+    
+    .dark .monthly-table td {
+      border-color: #3a3ccf;
+    }
+    
+    .monthly-table textarea {
+      width: 100%;
+      height: 32px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 0.75rem;
+      resize: vertical;
+    }
+    
+    .dark .monthly-table textarea {
+      background-color: #2c2ea3;
+      border-color: #3a3ccf;
+      color: #e4e6ff;
+    }
+    
+    .monthly-table .url-input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 0.75rem;
+    }
+    
+    .dark .monthly-table .url-input {
+      background-color: #2c2ea3;
+      border-color: #3a3ccf;
+      color: #e4e6ff;
+    }
+    
+    .monthly-table .send-btn-small {
+      background-color: #2E3094;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    .monthly-table .send-btn-small:hover {
+      background-color: #1e2074;
+    }
+    
+    .monthly-table .status-cell {
+      text-align: center;
+    }
+    
+    .monthly-table .status-pending {
+      color: #f59e0b;
+      font-weight: 500;
+    }
+    
+    .monthly-table .status-approved {
+      color: #10b981;
+      font-weight: 500;
+    }
+    
+    .monthly-table .status-rejected {
+      color: #ef4444;
+      font-weight: 500;
+    }
+
     @media (max-width: 768px) {
       .table-container table {
         font-size: 0.7rem;
@@ -424,6 +514,15 @@
 
       .modal-actions {
         flex-direction: column;
+      }
+      
+      .monthly-table {
+        font-size: 0.65rem;
+      }
+      
+      .monthly-table th,
+      .monthly-table td {
+        padding: 4px;
       }
     }
   </style>
@@ -1187,56 +1286,29 @@
         </div>
       </div>
 
-      <!-- Evidence URL -->
+      <!-- Monthly Tracking Table -->
       <div class="mb-6">
-        <h4 class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-2">Evidence URL</h4>
-        <input type="text" id="evidenceUrl" class="w-full p-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-100 rounded-md" value="https://company.com/evidence/kpi-1">
-      </div>
-
-      <!-- Comment History -->
-      <div class="mb-6">
-        <h4 class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-2">Comment History</h4>
-        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md max-h-40 overflow-y-auto" id="commentHistory">
-          <div class="comment-item mb-3 pb-3 border-b border-gray-200 dark:border-gray-600">
-            <div class="flex justify-between mb-1">
-              <div class="flex items-center">
-                <span class="font-medium text-sm">John Smith (EMP-001)</span>
-                <span class="status-badge status-approved">Approved</span>
-              </div>
-              <span class="text-xs text-gray-500 dark:text-gray-400">2023-10-15 14:30</span>
-            </div>
-            <p class="text-sm">I've completed the initial analysis and documentation for this KPI. The results are promising.</p>
-          </div>
-          <div class="comment-item mb-3 pb-3 border-b border-gray-200 dark:border-gray-600">
-            <div class="flex justify-between mb-1">
-              <div class="flex items-center">
-                <span class="font-medium text-sm">Sarah Johnson (Supervisor)</span>
-                <span class="status-badge status-sent-back">Sent Back</span>
-              </div>
-              <span class="text-xs text-gray-500 dark:text-gray-400">2023-10-16 09:15</span>
-            </div>
-            <p class="text-sm">Good progress. Please ensure the final report includes comparative analysis with last quarter.</p>
-          </div>
-          <div class="comment-item">
-            <div class="flex justify-between mb-1">
-              <div class="flex items-center">
-                <span class="font-medium text-sm">John Smith (EMP-001)</span>
-                <span class="status-badge status-approved">Approved</span>
-              </div>
-              <span class="text-xs text-gray-500 dark:text-gray-400">2023-10-17 11:45</span>
-            </div>
-            <p class="text-sm">The comparative analysis has been added to the final report. All data is now up to date.</p>
-          </div>
+        <h4 class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-2">Monthly Tracking</h4>
+        <div class="overflow-x-auto">
+          <table class="monthly-table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Achievement</th>
+                <th>Employee Comments</th>
+                <th>Supervisor Status</th>
+                <th>Third Eye Status</th>
+                <th>Comments</th>
+                <th>URL</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="monthlyTrackingBody">
+              <!-- Monthly tracking data will be populated by JavaScript -->
+            </tbody>
+          </table>
         </div>
       </div>
-
-      <!-- Add Comment -->
-      <div>
-        <h4 class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-2">Add Comment</h4>
-        <textarea id="commentInput" class="w-full p-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-100 rounded-md comment-input" placeholder="Enter your comment here..."></textarea>
-      </div>
-    </div>
-    
     <!-- Modal Actions -->
     <div class="modal-actions">
       <button id="cancelBtn" class="modal-btn modal-cancel dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">Cancel</button>
@@ -1251,6 +1323,7 @@
   const closeModal = document.getElementById('closeModal');
   const detailsButtons = document.querySelectorAll('.details-btn');
   const modalKpiDetails = document.getElementById('modalKpiDetails');
+  const monthlyTrackingBody = document.getElementById('monthlyTrackingBody');
   const sendCommentBtn = document.getElementById('sendComment');
   const submitBtn = document.getElementById('submitBtn');
   const cancelBtn = document.getElementById('cancelBtn');
@@ -1310,6 +1383,22 @@
     }
   };
 
+  // Monthly tracking data
+  const monthlyData = [
+    { month: "January", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "February", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "March", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "April", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "May", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "June", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "July", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "August", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "September", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "October", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "November", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" },
+    { month: "December", achievement:"", employeeComment: "", supervisorStatus: "Pending", thirdEyeStatus: "Pending", url: "", status: "Pending" }
+  ];
+
   // Open modal when details button is clicked
   detailsButtons.forEach(button => {
     button.addEventListener('click', function () {
@@ -1343,6 +1432,56 @@
           </td>
         </tr>
       `;
+      
+      // Populate monthly tracking table
+      let monthlyHtml = '';
+      monthlyData.forEach((data, index) => {
+        monthlyHtml += `
+          <tr>
+            <td>${data.month}</td>
+            <td>
+              <textarea class="employee-comment" data-month="${index}" placeholder="Enter your Achievement...">${data.achievement}</textarea>
+            </td>
+            <td>
+              <textarea class="employee-comment" data-month="${index}" placeholder="Enter your comments...">${data.employeeComment}</textarea>
+            </td>
+            <td class="status-cell">
+              <span class="status-${data.supervisorStatus.toLowerCase()}">${data.supervisorStatus}</span>
+            </td>
+            <td class="status-cell">
+              <span class="status-${data.thirdEyeStatus.toLowerCase()}">${data.thirdEyeStatus}</span>
+            </td>
+             <td>
+              <textarea class="employee-comment" data-month="${index}" placeholder="Enter your comments...">${data.employeeComment}</textarea>
+            </td>
+            <td>
+              <input type="text" class="url-input" data-month="${index}" placeholder="Enter URL..." value="${data.url}">
+            </td>
+            <td class="status-cell">
+              <button class="send-btn-small" data-month="${index}">Send</button>
+            </td>
+          </tr>
+        `;
+      });
+      monthlyTrackingBody.innerHTML = monthlyHtml;
+      
+      // Add event listeners for send buttons
+      const sendButtons = document.querySelectorAll('.send-btn-small');
+      sendButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const monthIndex = this.getAttribute('data-month');
+          const commentElement = document.querySelector(`.employee-comment[data-month="${monthIndex}"]`);
+          const urlElement = document.querySelector(`.url-input[data-month="${monthIndex}"]`);
+          
+          // Update status
+          const statusCell = this.closest('tr').querySelector('.status-cell:first-child span');
+          statusCell.textContent = 'Submitted';
+          statusCell.className = 'status-submitted';
+          
+          // Show success message
+          // alert(`Data for ${monthlyData[monthIndex].month} has been submitted successfully!`);
+        });
+      });
       
       // Show modal
       modal.style.display = 'flex';
