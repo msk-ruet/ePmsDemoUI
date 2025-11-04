@@ -470,7 +470,7 @@
           @click.stop>
 
     <!-- Logo -->
-    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700">
       <div class="flex items-center">
         <h1 class="text-lg font-bold text-indigo-600 dark:text-indigo-300"
             :class="sidebarCollapsed ? 'hidden' : 'block'">DIU Sun Light</h1>
@@ -617,63 +617,81 @@
         </div>
       </div>
 
-      <!-- ePMS -->
-      <div x-data="{ open: false }" class="menu-item-wrapper">
-        <button
-                @click="if (sidebarCollapsed) {
-          activeMenu = activeMenu === 'epms' ? null : 'epms';
-        } else { 
-          open = !open; 
-        }"
-                class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
-                :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'epms' }">
-          <div class="flex items-center">
-            <span class="material-symbols-outlined mr-3">assignment</span>
-            <span class="text-transition"
-                  :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">ePMS</span>
-          </div>
-          <span class="material-symbols-outlined text-sm transition-transform"
-                :class="open ? 'rotate-180' : ''"
-                x-show="!sidebarCollapsed">expand_more</span>
-          <span class="tooltip-text" x-show="sidebarCollapsed">ePMS</span>
-          <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'epms'"></div>
-        </button>
+        <!-- ePMS -->
+        <div x-data="{ open: false }" class="menu-item-wrapper">
+            <button
+                    @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'epms' ? null : 'epms';
+            } else {
+              open = !open;
+            }"
+                    class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                    :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'epms' }">
+                <div class="flex items-center">
+                    <span class="material-symbols-outlined mr-3">assignment</span>
+                    <span class="text-transition"
+                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">ePMS</span>
+                </div>
+                <span class="material-symbols-outlined text-sm transition-transform"
+                      :class="open ? 'rotate-180' : ''"
+                      x-show="!sidebarCollapsed">expand_more</span>
+                <span class="tooltip-text" x-show="sidebarCollapsed">ePMS</span>
+                <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'epms'"></div>
+            </button>
 
-        <!-- Expanded Mode Submenu -->
-        <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
-          <a href="kpiAssign.html"
-             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-            <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
-          </a>
-          <a href="myKpi.html"
-             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-            <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI
-          </a>
-          <a href="kpiReview.html"
-             class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-            <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
-          </a>
-        </div>
+            <!-- Expanded Mode Submenu -->
+            <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
 
-        <!-- Collapsed Mode Submenu -->
-        <div x-show="sidebarCollapsed && activeMenu === 'epms'"
-             class="submenu-collapsed"
-             :style="`top: ${$el.parentElement.offsetTop}px;`"
-             @click.stop>
-          <div class="submenu-item" @click="activeMenu = null">
-            <span class="material-symbols-outlined">task</span>
-            KPI Assign
-          </div>
-          <div class="submenu-item" @click="activeMenu = null">
-            <span class="material-symbols-outlined">trending_up</span>
-            My KPI
-          </div>
-          <div class="submenu-item" @click="activeMenu = null">
-            <span class="material-symbols-outlined">target</span>
-            KPI Review
-          </div>
+                <a href="kpiAssign.html"
+                   class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                    <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
+                </a>
+                <a href="myKpi.html"
+                   class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                    <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI
+                </a>
+                <a href="kpiReview.html"
+                   class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                    <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
+                </a>
+
+                <a href="kpiReports.html"
+                   class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                    <span class="material-symbols-outlined mr-2 text-base">summarize</span> KPI Reports
+                </a>
+            </div>
+
+            <!-- Collapsed Mode Submenu -->
+            <div x-show="sidebarCollapsed && activeMenu === 'epms'"
+                 class="submenu-collapsed"
+                 :style="`top: ${$el.parentElement.offsetTop}px;`"
+                 @click.stop>
+                <div class="submenu-item" @click="activeMenu = null">
+                    <a href="kpiAssign.html"
+                       class="flex items-center text-sm py-1">
+                        <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
+                    </a>
+                </div>
+                <div class="submenu-item" @click="activeMenu = null">
+                    <a href="myKpi.html"
+                       class="flex items-center text-sm py-1">
+                        <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI
+                    </a>
+                </div>
+                <div class="submenu-item" @click="activeMenu = null">
+                    <a href="kpiReview.html"
+                       class="flex items-center text-sm py-1">
+                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
+                    </a>
+                </div>
+                <div class="submenu-item" @click="activeMenu = null">
+                    <a href="kpiReports.html"
+                       class="flex items-center text-sm py-1">
+                        <span class="material-symbols-outlined">summarize</span> KPI Reports
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
 
       <!-- Payroll -->
       <div x-data="{ open: false }" class="menu-item-wrapper">

@@ -511,7 +511,7 @@
             @click.stop>
 
         <!-- Logo -->
-        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center">
                 <h1 class="text-lg font-bold text-indigo-600 dark:text-indigo-300"
                     :class="sidebarCollapsed ? 'hidden' : 'block'">DIU Sun Light</h1>
@@ -666,8 +666,8 @@
             } else { 
               open = !open; 
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'epms' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'epms' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">assignment</span>
                         <span class="text-transition"
@@ -683,23 +683,6 @@
                 <!-- Expanded Mode Submenu -->
                 <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
 
-                    <a href="kpiAssign_vf.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign VF
-                    </a>
-                    <a href="myKpi_vf.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI VF
-                    </a>
-                    <a href="kpiReview_vf.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review VF
-                    </a>
-                    <a href="kpiReports_vf.html"
-                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
-                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Reports VF
-                    </a>
-
                     <a href="kpiAssign.html"
                        class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
                         <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
@@ -712,6 +695,11 @@
                        class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
                         <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
                     </a>
+
+                    <a href="kpiReports.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">summarize</span> KPI Reports
+                    </a>
                 </div>
 
                 <!-- Collapsed Mode Submenu -->
@@ -720,16 +708,28 @@
                      :style="`top: ${$el.parentElement.offsetTop}px;`"
                      @click.stop>
                     <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">task</span>
-                        KPI Assign
+                        <a href="kpiAssign.html"
+                           class="flex items-center text-sm py-1">
+                            <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
+                        </a>
                     </div>
                     <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">trending_up</span>
-                        My KPI
+                        <a href="myKpi.html"
+                           class="flex items-center text-sm py-1">
+                            <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI
+                        </a>
                     </div>
                     <div class="submenu-item" @click="activeMenu = null">
-                        <span class="material-symbols-outlined">target</span>
-                        KPI Review
+                        <a href="kpiReview.html"
+                           class="flex items-center text-sm py-1">
+                            <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
+                        </a>
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <a href="kpiReports.html"
+                           class="flex items-center text-sm py-1">
+                            <span class="material-symbols-outlined">summarize</span> KPI Reports
+                        </a>
                     </div>
                 </div>
             </div>
