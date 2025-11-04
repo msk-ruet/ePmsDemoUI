@@ -343,6 +343,38 @@
             flex: 1;
         }
 
+        /* KPI Type Styles */
+        .kpi-type-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .kpi-type-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .kpi-type-increase {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .kpi-type-decrease {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .kpi-type-text {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
         /* Dark mode specific styles with #22246f color */
         .dark {
             color-scheme: dark;
@@ -449,6 +481,17 @@
         .dark .weightage-total {
             background-color: #22246f;
             color: #e4e6ff;
+        }
+        
+        /* Dark mode for KPI Type */
+        .dark .kpi-type-increase {
+            background-color: #065f46;
+            color: #d1fae5;
+        }
+        
+        .dark .kpi-type-decrease {
+            background-color: #991b1b;
+            color: #fee2e2;
         }
     </style>
 </head>
@@ -640,6 +683,22 @@
                 <!-- Expanded Mode Submenu -->
                 <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
 
+                    <a href="kpiAssign_vf.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign VF
+                    </a>
+                    <a href="myKpi_vf.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI VF
+                    </a>
+                    <a href="kpiReview_vf.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review VF
+                    </a>
+                    <a href="kpiReports_vf.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Reports VF
+                    </a>
 
                     <a href="kpiAssign.html"
                        class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
@@ -1012,6 +1071,9 @@
                                     <th width="8%"
                                         class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
                                         Target</th>
+                                    <th width="8%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        KPI Type</th>
                                     <th width="10%"
                                         class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
                                         Actions</th>
@@ -1037,17 +1099,26 @@
                                         </div>
                                     </td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
-                                        30</td>
+                                        30
+                                    </td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         Increase revenue by 15%</td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         15</td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <div class="kpi-type-container">
+                                            <div class="kpi-type-icon kpi-type-increase">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </div>
+                                            <span class="kpi-type-text">Increase</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         <button class="action-btn edit-btn" data-kpi-id="1">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="action-btn delete-btn" data-kpi-id="1">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -1065,11 +1136,19 @@
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         10</td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <div class="kpi-type-container">
+                                            <div class="kpi-type-icon kpi-type-decrease">
+                                                <i class="fas fa-arrow-down"></i>
+                                            </div>
+                                            <span class="kpi-type-text">Decrease</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         <button class="action-btn edit-btn" data-kpi-id="2">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="action-btn delete-btn" data-kpi-id="2">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -1087,11 +1166,19 @@
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         22</td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <div class="kpi-type-container">
+                                            <div class="kpi-type-icon kpi-type-increase">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </div>
+                                            <span class="kpi-type-text">Increase</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         <button class="action-btn edit-btn" data-kpi-id="3">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="action-btn delete-btn" data-kpi-id="3">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -1121,11 +1208,19 @@
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         N/A</td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <div class="kpi-type-container">
+                                            <div class="kpi-type-icon kpi-type-increase">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </div>
+                                            <span class="kpi-type-text">Increase</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         <button class="action-btn edit-btn" data-kpi-id="4">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="action-btn delete-btn" data-kpi-id="4">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -1143,20 +1238,28 @@
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         85</td>
                                     <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                                        <div class="kpi-type-container">
+                                            <div class="kpi-type-icon kpi-type-increase">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </div>
+                                            <span class="kpi-type-text">Increase</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                                         <button class="action-btn edit-btn" data-kpi-id="5">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="action-btn delete-btn" data-kpi-id="5">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr class="weightage-total">
-                                    <td colspan="3" class="px-2 py-2 text-right font-medium">Total Weightage:</td>
+                                    <td colspan="4" class="px-2 py-2 text-right font-medium">Total Weightage:</td>
                                     <td id="totalWeightage" class="px-2 py-2 text-center font-medium">100</td>
-                                    <td colspan="3" class="px-2 py-2 text-center">
+                                    <td colspan="4" class="px-2 py-2 text-center">
                                         <span id="weightageStatus" class="text-sm text-green-600">Weightage is perfectly allocated</span>
                                     </td>
                                 </tr>
@@ -1213,14 +1316,20 @@
                 <input type="text" class="editable-input" placeholder="Target value" data-field="target">
             </td>
             <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <select class="editable-select" data-field="kpi-type">
+                    <option value="increase">Increase</option>
+                    <option value="decrease">Decrease</option>
+                </select>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                 <button class="action-btn add-btn" data-kra-id="${kraId}">
-                    <i class="fas fa-plus"></i> Add KPI
+                    <i class="fas fa-plus"></i>
                 </button>
                 <button class="action-btn save-btn" data-kra-id="${kraId}">
-                    <i class="fas fa-save"></i> Save
+                    <i class="fas fa-save"></i>
                 </button>
                 <button class="action-btn cancel-btn" data-kra-id="${kraId}">
-                    <i class="fas fa-times"></i> Cancel
+                    <i class="fas fa-times"></i>
                 </button>
             </td>
         `;
@@ -1297,11 +1406,17 @@
                 <input type="text" class="editable-input" placeholder="Target value" data-field="target">
             </td>
             <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <select class="editable-select" data-field="kpi-type">
+                    <option value="increase">Increase</option>
+                    <option value="decrease">Decrease</option>
+                </select>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                 <button class="action-btn save-btn" data-kpi-id="${kpiCounter}">
-                    <i class="fas fa-save"></i> Save
+                    <i class="fas fa-save"></i>
                 </button>
                 <button class="action-btn cancel-btn" data-kpi-id="${kpiCounter}">
-                    <i class="fas fa-times"></i> Cancel
+                    <i class="fas fa-times"></i>
                 </button>
             </td>
         `;
@@ -1396,10 +1511,33 @@
         const weightageValue = row.querySelector('input[data-field="weightage"]').value;
         const targetWordValue = row.querySelector('input[data-field="target-word"]').value;
         const targetValue = row.querySelector('input[data-field="target"]').value;
+        const kpiTypeValue = row.querySelector('select[data-field="kpi-type"]').value;
         const isChecked = row.querySelector('.kpi-checkbox').checked;
         
         // Update row with saved values
         row.className = 'kpi-row saved';
+        
+        // Determine KPI Type display
+        let kpiTypeDisplay = '';
+        if (kpiTypeValue === 'increase') {
+            kpiTypeDisplay = `
+                <div class="kpi-type-container">
+                    <div class="kpi-type-icon kpi-type-increase">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <span class="kpi-type-text">Increase</span>
+                </div>
+            `;
+        } else {
+            kpiTypeDisplay = `
+                <div class="kpi-type-container">
+                    <div class="kpi-type-icon kpi-type-decrease">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <span class="kpi-type-text">Decrease</span>
+                </div>
+            `;
+        }
         
         if (isNewKra) {
             row.innerHTML = `
@@ -1429,14 +1567,17 @@
                     ${targetValue}
                 </td>
                 <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    ${kpiTypeDisplay}
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                     <button class="action-btn edit-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-edit"></i> Edit
+                        <i class="fas fa-edit"></i>
                     </button>
                     <button class="action-btn add-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-plus"></i> Add KPI
+                        <i class="fas fa-plus"></i>
                     </button>
                     <button class="action-btn delete-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-trash"></i> Delete
+                        <i class="fas fa-trash"></i>
                     </button>
                 </td>
             `;
@@ -1489,11 +1630,14 @@
                     ${targetValue}
                 </td>
                 <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    ${kpiTypeDisplay}
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                     <button class="action-btn edit-btn" data-kpi-id="${kpiId}">
-                        <i class="fas fa-edit"></i> Edit
+                        <i class="fas fa-edit"></i>
                     </button>
                     <button class="action-btn delete-btn" data-kpi-id="${kpiId}">
-                        <i class="fas fa-trash"></i> Delete
+                        <i class="fas fa-trash"></i>
                     </button>
                 </td>
             `;
@@ -1544,6 +1688,14 @@
         const targetWordValue = cells[4].textContent.trim();
         const targetValue = cells[5].textContent.trim();
         
+        // Get KPI Type value
+        const kpiTypeContainer = cells[6].querySelector('.kpi-type-container');
+        let kpiTypeValue = 'increase'; // Default value
+        if (kpiTypeContainer) {
+            const kpiTypeText = kpiTypeContainer.querySelector('.kpi-type-text').textContent.trim();
+            kpiTypeValue = kpiTypeText === 'Decrease' ? 'decrease' : 'increase';
+        }
+        
         row.className = 'kpi-row editing';
         
         if (isKraRow) {
@@ -1572,14 +1724,20 @@
                     <input type="text" class="editable-input" value="${targetValue}" data-field="target" ${!isChecked ? 'disabled' : ''}>
                 </td>
                 <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <select class="editable-select" data-field="kpi-type">
+                        <option value="increase" ${kpiTypeValue === 'increase' ? 'selected' : ''}>Increase</option>
+                        <option value="decrease" ${kpiTypeValue === 'decrease' ? 'selected' : ''}>Decrease</option>
+                    </select>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                     <button class="action-btn add-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-plus"></i> Add KPI
+                        <i class="fas fa-plus"></i>
                     </button>
                     <button class="action-btn save-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-save"></i> Save
+                        <i class="fas fa-save"></i>
                     </button>
                     <button class="action-btn cancel-btn" data-kra-id="${kraId}">
-                        <i class="fas fa-times"></i> Cancel
+                        <i class="fas fa-times"></i>
                     </button>
                 </td>
             `;
@@ -1634,11 +1792,17 @@
                     <input type="text" class="editable-input" value="${targetValue}" data-field="target" ${!isChecked ? 'disabled' : ''}>
                 </td>
                 <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <select class="editable-select" data-field="kpi-type">
+                        <option value="increase" ${kpiTypeValue === 'increase' ? 'selected' : ''}>Increase</option>
+                        <option value="decrease" ${kpiTypeValue === 'decrease' ? 'selected' : ''}>Decrease</option>
+                    </select>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
                     <button class="action-btn save-btn" data-kpi-id="${kpiId}">
-                        <i class="fas fa-save"></i> Save
+                        <i class="fas fa-save"></i>
                     </button>
                     <button class="action-btn cancel-btn" data-kpi-id="${kpiId}">
-                        <i class="fas fa-times"></i> Cancel
+                        <i class="fas fa-times"></i>
                     </button>
                 </td>
             `;
