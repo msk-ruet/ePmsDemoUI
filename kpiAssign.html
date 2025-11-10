@@ -22,7 +22,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIU Sun Light Admin Console</title>
+    <title>DIU HRIS Admin Console</title>
 
     <!-- Essential CSS & JS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -514,7 +514,7 @@
         <div class="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center">
                 <h1 class="text-lg font-bold text-indigo-600 dark:text-indigo-300"
-                    :class="sidebarCollapsed ? 'hidden' : 'block'">DIU Sun Light</h1>
+                    :class="sidebarCollapsed ? 'hidden' : 'block'">DIU HRIS</h1>
                 <button
                         @click="sidebarCollapsed = !sidebarCollapsed; activeMenu = null;"
                         class="ml-2 text-gray-600 dark:text-gray-300 hover:text-indigo-500 p-1 rounded"
@@ -532,8 +532,8 @@
             <!-- Dashboard -->
             <div class="menu-item-wrapper">
                 <a href="index.html"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'dashboard' }">
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'dashboard' }">
                     <span class="material-symbols-outlined mr-3">dashboard</span>
                     <span class="text-transition"
                           :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Dashboard</span>
@@ -543,15 +543,15 @@
             </div>
 
             <!-- User Management -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
+            <!--<div x-data="{ open: false }" class="menu-item-wrapper">
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'user-management' ? null : 'user-management';
-            } else { 
-              open = !open; 
+            } else {
+              open = !open;
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'user-management' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'user-management' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">group</span>
                         <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">User Management</span>
@@ -564,7 +564,7 @@
                          x-show="sidebarCollapsed && activeMenu === 'user-management'"></div>
                 </button>
 
-                <!-- Expanded Mode Submenu -->
+                &lt;!&ndash; Expanded Mode Submenu &ndash;&gt;
                 <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
                     <a href="#"
                        class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
@@ -580,7 +580,7 @@
                     </a>
                 </div>
 
-                <!-- Collapsed Mode Submenu -->
+                &lt;!&ndash; Collapsed Mode Submenu &ndash;&gt;
                 <div x-show="sidebarCollapsed && activeMenu === 'user-management'"
                      class="submenu-collapsed"
                      :style="`top: ${$el.parentElement.offsetTop}px;`"
@@ -597,19 +597,27 @@
                         <span class="material-symbols-outlined">history</span>
                         Audit Logs
                     </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">security</span>
+                        Permissions
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">groups</span>
+                        User Groups
+                    </div>
                 </div>
-            </div>
+            </div>-->
 
             <!-- HR & Attendance -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
+            <!--<div x-data="{ open: false }" class="menu-item-wrapper">
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'hr-attendance' ? null : 'hr-attendance';
-            } else { 
-              open = !open; 
+            } else {
+              open = !open;
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'hr-attendance' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'hr-attendance' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">calendar_month</span>
                         <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">HR & Attendance</span>
@@ -622,7 +630,7 @@
                          x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"></div>
                 </button>
 
-                <!-- Expanded Mode Submenu -->
+                &lt;!&ndash; Expanded Mode Submenu &ndash;&gt;
                 <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
                     <a href="#"
                        class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
@@ -638,7 +646,7 @@
                     </a>
                 </div>
 
-                <!-- Collapsed Mode Submenu -->
+                &lt;!&ndash; Collapsed Mode Submenu &ndash;&gt;
                 <div x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"
                      class="submenu-collapsed"
                      :style="`top: ${$el.parentElement.offsetTop}px;`"
@@ -655,16 +663,24 @@
                         <span class="material-symbols-outlined">timer</span>
                         Overtime
                     </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">work_history</span>
+                        Shift Management
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">event_available</span>
+                        Holidays
+                    </div>
                 </div>
-            </div>
+            </div>-->
 
             <!-- ePMS -->
             <div x-data="{ open: false }" class="menu-item-wrapper">
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'epms' ? null : 'epms';
-            } else { 
-              open = !open; 
+            } else {
+              open = !open;
             }"
                         class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
                         :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'epms' }">
@@ -735,15 +751,15 @@
             </div>
 
             <!-- Payroll -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
+            <!--<div x-data="{ open: false }" class="menu-item-wrapper">
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'payroll' ? null : 'payroll';
-            } else { 
-              open = !open; 
+            } else {
+              open = !open;
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'payroll' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'payroll' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">payments</span>
                         <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Payroll</span>
@@ -755,7 +771,7 @@
                     <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'payroll'"></div>
                 </button>
 
-                <!-- Expanded Mode Submenu -->
+                &lt;!&ndash; Expanded Mode Submenu &ndash;&gt;
                 <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
                     <a href="#"
                        class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
@@ -771,7 +787,7 @@
                     </a>
                 </div>
 
-                <!-- Collapsed Mode Submenu -->
+                &lt;!&ndash; Collapsed Mode Submenu &ndash;&gt;
                 <div x-show="sidebarCollapsed && activeMenu === 'payroll'"
                      class="submenu-collapsed"
                      :style="`top: ${$el.parentElement.offsetTop}px;`"
@@ -788,19 +804,27 @@
                         <span class="material-symbols-outlined">savings</span>
                         Tax Management
                     </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">account_balance</span>
+                        Bank Transfers
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">receipt_long</span>
+                        Payroll Reports
+                    </div>
                 </div>
-            </div>
+            </div>-->
 
             <!-- Leave -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
+            <!--<div x-data="{ open: false }" class="menu-item-wrapper">
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'leave' ? null : 'leave';
-            } else { 
-              open = !open; 
+            } else {
+              open = !open;
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'leave' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'leave' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">beach_access</span>
                         <span class="text-transition"
@@ -813,7 +837,7 @@
                     <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'leave'"></div>
                 </button>
 
-                <!-- Expanded Mode Submenu -->
+                &lt;!&ndash; Expanded Mode Submenu &ndash;&gt;
                 <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
                     <a href="#"
                        class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
@@ -829,7 +853,7 @@
                     </a>
                 </div>
 
-                <!-- Collapsed Mode Submenu -->
+                &lt;!&ndash; Collapsed Mode Submenu &ndash;&gt;
                 <div x-show="sidebarCollapsed && activeMenu === 'leave'"
                      class="submenu-collapsed"
                      :style="`top: ${$el.parentElement.offsetTop}px;`"
@@ -846,19 +870,27 @@
                         <span class="material-symbols-outlined">calendar_today</span>
                         Leave Calendar
                     </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">airline_seat_recline_extra</span>
+                        Sick Leave
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">flight_takeoff</span>
+                        Vacation
+                    </div>
                 </div>
-            </div>
+            </div>-->
 
             <!-- Visit -->
-            <div x-data="{ open: false }" class="menu-item-wrapper">
+            <!--<div x-data="{ open: false }" class="menu-item-wrapper">
                 <button
                         @click="if (sidebarCollapsed) {
               activeMenu = activeMenu === 'visit' ? null : 'visit';
-            } else { 
-              open = !open; 
+            } else {
+              open = !open;
             }"
-                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
-                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'visit' }">
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'visit' }">
                     <div class="flex items-center">
                         <span class="material-symbols-outlined mr-3">travel_explore</span>
                         <span class="text-transition"
@@ -871,7 +903,7 @@
                     <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'visit'"></div>
                 </button>
 
-                <!-- Expanded Mode Submenu -->
+                &lt;!&ndash; Expanded Mode Submenu &ndash;&gt;
                 <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
                     <a href="#"
                        class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
@@ -887,7 +919,7 @@
                     </a>
                 </div>
 
-                <!-- Collapsed Mode Submenu -->
+                &lt;!&ndash; Collapsed Mode Submenu &ndash;&gt;
                 <div x-show="sidebarCollapsed && activeMenu === 'visit'"
                      class="submenu-collapsed"
                      :style="`top: ${$el.parentElement.offsetTop}px;`"
@@ -904,14 +936,22 @@
                         <span class="material-symbols-outlined">schedule</span>
                         Visit Schedule
                     </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">badge</span>
+                        Visitor Pass
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">history</span>
+                        Visit History
+                    </div>
                 </div>
-            </div>
+            </div>-->
 
             <!-- Reports -->
-            <div class="menu-item-wrapper">
+            <!--<div class="menu-item-wrapper">
                 <a href="#"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'reports' }">
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'reports' }">
                     <span class="material-symbols-outlined mr-3">bar_chart</span>
                     <span class="text-transition"
                           :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Reports</span>
@@ -920,28 +960,28 @@
                 </a>
             </div>
 
-            <!-- Settings -->
+            &lt;!&ndash; Settings &ndash;&gt;
             <div class="menu-item-wrapper">
                 <a href="#"
-                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
-                   :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'settings' }">
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'settings' }">
                     <span class="material-symbols-outlined mr-3">settings</span>
                     <span class="text-transition"
                           :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Settings</span>
                     <span class="tooltip-text" x-show="sidebarCollapsed">Settings</span>
                     <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'settings'"></div>
                 </a>
-            </div>
+            </div>-->
         </nav>
 
         <!-- Footer -->
-        <div class="border-t border-gray-200 dark:border-gray-700 p-4">
-            <button class="flex items-center w-full text-gray-700 dark:text-gray-200 tooltip">
+        <!--<div class="border-t border-gray-200 dark:border-gray-700 p-4">
+            <button class="flex items-center w-full text-gray-700  text-gray-700 dark:text-gray-200 tooltip">
                 <span class="material-symbols-outlined mr-2">logout</span>
                 <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Logout</span>
                 <span class="tooltip-text" x-show="sidebarCollapsed">Logout</span>
             </button>
-        </div>
+        </div>-->
     </aside>
 
     <!-- Main Content -->
