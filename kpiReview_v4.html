@@ -501,6 +501,138 @@
               </a>
           </div>
 
+          <!-- User Management -->
+          <!--<div x-data="{ open: false }" class="menu-item-wrapper">
+              <button
+                      @click="if (sidebarCollapsed) {
+            activeMenu = activeMenu === 'user-management' ? null : 'user-management';
+          } else {
+            open = !open;
+          }"
+                      class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                      :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'user-management' }">
+                  <div class="flex items-center">
+                      <span class="material-symbols-outlined mr-3">group</span>
+                      <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">User Management</span>
+                  </div>
+                  <span class="material-symbols-outlined text-sm transition-transform"
+                        :class="open ? 'rotate-180' : ''"
+                        x-show="!sidebarCollapsed">expand_more</span>
+                  <span class="tooltip-text" x-show="sidebarCollapsed">User Management</span>
+                  <div class="active-menu-indicator"
+                       x-show="sidebarCollapsed && activeMenu === 'user-management'"></div>
+              </button>
+
+              &lt;!&ndash; Expanded Mode Submenu &ndash;&gt;
+              <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">person</span> Users
+                  </a>
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">admin_panel_settings</span> Roles
+                  </a>
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">history</span> Audit Logs
+                  </a>
+              </div>
+
+              &lt;!&ndash; Collapsed Mode Submenu &ndash;&gt;
+              <div x-show="sidebarCollapsed && activeMenu === 'user-management'"
+                   class="submenu-collapsed"
+                   :style="`top: ${$el.parentElement.offsetTop}px;`"
+                   @click.stop>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">person</span>
+                      Users
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">admin_panel_settings</span>
+                      Roles
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">history</span>
+                      Audit Logs
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">security</span>
+                      Permissions
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">groups</span>
+                      User Groups
+                  </div>
+              </div>
+          </div>-->
+
+          <!-- HR & Attendance -->
+          <!--<div x-data="{ open: false }" class="menu-item-wrapper">
+              <button
+                      @click="if (sidebarCollapsed) {
+            activeMenu = activeMenu === 'hr-attendance' ? null : 'hr-attendance';
+          } else {
+            open = !open;
+          }"
+                      class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                      :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'hr-attendance' }">
+                  <div class="flex items-center">
+                      <span class="material-symbols-outlined mr-3">calendar_month</span>
+                      <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">HR & Attendance</span>
+                  </div>
+                  <span class="material-symbols-outlined text-sm transition-transform"
+                        :class="open ? 'rotate-180' : ''"
+                        x-show="!sidebarCollapsed">expand_more</span>
+                  <span class="tooltip-text" x-show="sidebarCollapsed">HR & Attendance</span>
+                  <div class="active-menu-indicator"
+                       x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"></div>
+              </button>
+
+              &lt;!&ndash; Expanded Mode Submenu &ndash;&gt;
+              <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">badge</span> Employees
+                  </a>
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">schedule</span> Attendance
+                  </a>
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">timer</span> Overtime
+                  </a>
+              </div>
+
+              &lt;!&ndash; Collapsed Mode Submenu &ndash;&gt;
+              <div x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"
+                   class="submenu-collapsed"
+                   :style="`top: ${$el.parentElement.offsetTop}px;`"
+                   @click.stop>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">badge</span>
+                      Employees
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">schedule</span>
+                      Attendance
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">timer</span>
+                      Overtime
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">work_history</span>
+                      Shift Management
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">event_available</span>
+                      Holidays
+                  </div>
+              </div>
+          </div>-->
+
           <!-- ePMS -->
           <div x-data="{ open: false }" class="menu-item-wrapper">
               <button
@@ -576,7 +708,239 @@
                   </div>
               </div>
           </div>
+
+          <!-- Payroll -->
+          <!--<div x-data="{ open: false }" class="menu-item-wrapper">
+              <button
+                      @click="if (sidebarCollapsed) {
+            activeMenu = activeMenu === 'payroll' ? null : 'payroll';
+          } else {
+            open = !open;
+          }"
+                      class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                      :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'payroll' }">
+                  <div class="flex items-center">
+                      <span class="material-symbols-outlined mr-3">payments</span>
+                      <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Payroll</span>
+                  </div>
+                  <span class="material-symbols-outlined text-sm transition-transform"
+                        :class="open ? 'rotate-180' : ''"
+                        x-show="!sidebarCollapsed">expand_more</span>
+                  <span class="tooltip-text" x-show="sidebarCollapsed">Payroll</span>
+                  <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'payroll'"></div>
+              </button>
+
+              &lt;!&ndash; Expanded Mode Submenu &ndash;&gt;
+              <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">receipt</span> Salary Processing
+                  </a>
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">request_quote</span> Payslips
+                  </a>
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">savings</span> Tax Management
+                  </a>
+              </div>
+
+              &lt;!&ndash; Collapsed Mode Submenu &ndash;&gt;
+              <div x-show="sidebarCollapsed && activeMenu === 'payroll'"
+                   class="submenu-collapsed"
+                   :style="`top: ${$el.parentElement.offsetTop}px;`"
+                   @click.stop>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">receipt</span>
+                      Salary Processing
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">request_quote</span>
+                      Payslips
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">savings</span>
+                      Tax Management
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">account_balance</span>
+                      Bank Transfers
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">receipt_long</span>
+                      Payroll Reports
+                  </div>
+              </div>
+          </div>-->
+
+          <!-- Leave -->
+          <!--<div x-data="{ open: false }" class="menu-item-wrapper">
+              <button
+                      @click="if (sidebarCollapsed) {
+            activeMenu = activeMenu === 'leave' ? null : 'leave';
+          } else {
+            open = !open;
+          }"
+                      class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                      :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'leave' }">
+                  <div class="flex items-center">
+                      <span class="material-symbols-outlined mr-3">beach_access</span>
+                      <span class="text-transition"
+                            :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Leave</span>
+                  </div>
+                  <span class="material-symbols-outlined text-sm transition-transform"
+                        :class="open ? 'rotate-180' : ''"
+                        x-show="!sidebarCollapsed">expand_more</span>
+                  <span class="tooltip-text" x-show="sidebarCollapsed">Leave</span>
+                  <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'leave'"></div>
+              </button>
+
+              &lt;!&ndash; Expanded Mode Submenu &ndash;&gt;
+              <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">event_available</span> Apply Leave
+                  </a>
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">pending_actions</span> Leave Requests
+                  </a>
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">calendar_today</span> Leave Calendar
+                  </a>
+              </div>
+
+              &lt;!&ndash; Collapsed Mode Submenu &ndash;&gt;
+              <div x-show="sidebarCollapsed && activeMenu === 'leave'"
+                   class="submenu-collapsed"
+                   :style="`top: ${$el.parentElement.offsetTop}px;`"
+                   @click.stop>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">event_available</span>
+                      Apply Leave
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">pending_actions</span>
+                      Leave Requests
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">calendar_today</span>
+                      Leave Calendar
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">airline_seat_recline_extra</span>
+                      Sick Leave
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">flight_takeoff</span>
+                      Vacation
+                  </div>
+              </div>
+          </div>-->
+
+          <!-- Visit -->
+          <!--<div x-data="{ open: false }" class="menu-item-wrapper">
+              <button
+                      @click="if (sidebarCollapsed) {
+            activeMenu = activeMenu === 'visit' ? null : 'visit';
+          } else {
+            open = !open;
+          }"
+                      class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                      :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'visit' }">
+                  <div class="flex items-center">
+                      <span class="material-symbols-outlined mr-3">travel_explore</span>
+                      <span class="text-transition"
+                            :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Visit</span>
+                  </div>
+                  <span class="material-symbols-outlined text-sm transition-transform"
+                        :class="open ? 'rotate-180' : ''"
+                        x-show="!sidebarCollapsed">expand_more</span>
+                  <span class="tooltip-text" x-show="sidebarCollapsed">Visit</span>
+                  <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'visit'"></div>
+              </button>
+
+              &lt;!&ndash; Expanded Mode Submenu &ndash;&gt;
+              <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">person_search</span> Visitor Registration
+                  </a>
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">meeting_room</span> Meeting Rooms
+                  </a>
+                  <a href="#"
+                     class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                      <span class="material-symbols-outlined mr-2 text-base">schedule</span> Visit Schedule
+                  </a>
+              </div>
+
+              &lt;!&ndash; Collapsed Mode Submenu &ndash;&gt;
+              <div x-show="sidebarCollapsed && activeMenu === 'visit'"
+                   class="submenu-collapsed"
+                   :style="`top: ${$el.parentElement.offsetTop}px;`"
+                   @click.stop>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">person_search</span>
+                      Visitor Registration
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">meeting_room</span>
+                      Meeting Rooms
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">schedule</span>
+                      Visit Schedule
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">badge</span>
+                      Visitor Pass
+                  </div>
+                  <div class="submenu-item" @click="activeMenu = null">
+                      <span class="material-symbols-outlined">history</span>
+                      Visit History
+                  </div>
+              </div>
+          </div>-->
+
+          <!-- Reports -->
+          <!--<div class="menu-item-wrapper">
+              <a href="#"
+                 class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                 :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'reports' }">
+                  <span class="material-symbols-outlined mr-3">bar_chart</span>
+                  <span class="text-transition"
+                        :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Reports</span>
+                  <span class="tooltip-text" x-show="sidebarCollapsed">Reports</span>
+                  <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'reports'"></div>
+              </a>
+          </div>
+
+          &lt;!&ndash; Settings &ndash;&gt;
+          <div class="menu-item-wrapper">
+              <a href="#"
+                 class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                 :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'settings' }">
+                  <span class="material-symbols-outlined mr-3">settings</span>
+                  <span class="text-transition"
+                        :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Settings</span>
+                  <span class="tooltip-text" x-show="sidebarCollapsed">Settings</span>
+                  <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'settings'"></div>
+              </a>
+          </div>-->
       </nav>
+
+      <!-- Footer -->
+      <!--<div class="border-t border-gray-200 dark:border-gray-700 p-4">
+          <button class="flex items-center w-full text-gray-700  text-gray-700 dark:text-gray-200 tooltip">
+              <span class="material-symbols-outlined mr-2">logout</span>
+              <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Logout</span>
+              <span class="tooltip-text" x-show="sidebarCollapsed">Logout</span>
+          </button>
+      </div>-->
   </aside>
 
   <!-- Main Content -->
@@ -943,42 +1307,30 @@
     <div class="flex gap-4">
         <!-- Comment Box (Always Visible) -->
         <div class=" w-1/2">
-          <!-- Evidence URL Section -->
-          <div>
-            <h4 class="text-md font-medium text-gray-800 mb-2">Evidence URL</h4>
-            <div class="border border-gray-200 rounded p-3 bg-gray-50">
-              <a id="modalEvidenceUrl" href="#" target="_blank" class="evidence-url">
-                <i class="fas fa-external-link-alt mr-1"></i>
-                <span id="evidenceUrlText">https://companyportal.com/reports/revenue-q3-2023</span>
-              </a>
+            <!-- Evidence URL Section -->
+            <div >
+                <h4 class="text-md font-medium text-gray-800 mb-2">Evidence URL</h4>
+                <div class="border border-gray-200 rounded p-3 bg-gray-50">
+                    <a id="modalEvidenceUrl" href="#" target="_blank" class="evidence-url">
+                        <i class="fas fa-external-link-alt mr-1"></i>
+                        <span id="evidenceUrlText">https://companyportal.com/reports/revenue-q3-2023</span>
+                    </a>
+                </div>
             </div>
-          </div>
-          <!-- Achievement Dropdown for N/A Target -->
-          <div id="achievementDropdownContainer" class="mb-4 hidden">
-            <h4 class="text-md font-medium text-gray-800 dark:text-gray-300 mb-2">Achievement</h4>
-            <select id="achievementDropdown"
-              class="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
-              <option value="">Select an option</option>
-              <option value="Excellent">Excellent</option>
-              <option value="Very Good">Very Good</option>
-              <option value="Good">Good</option>
-              <option value="Average">Average</option>
-              <option value="Poor">Poor</option>
-            </select>
-          </div>
-          <label for="commentText" class="text-lg font-medium text-gray-800">Add Comment</label>
-          <textarea id="commentText" class="w-full border border-gray-300 rounded text-sm p-3" rows="5"
-            placeholder="Enter your comments here..."></textarea>
-          <!-- Action Buttons -->
-          <div class="flex space-x-3">
-            <button id="sendBackBtn" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded text-sm transition-colors">
-              Send Back
-            </button>
-            <button id="acceptBtn"
-              class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded text-sm transition-colors">
-              Recommended
-            </button>
-          </div>
+            <label for="commentText" class="text-lg font-medium text-gray-800">Add Comment</label>
+            <textarea id="commentText" class="w-full border border-gray-300 rounded text-sm p-3" rows="5"
+                placeholder="Enter your comments here..."></textarea>
+            <!-- Action Buttons -->
+            <div class="flex space-x-3">
+                <button id="sendBackBtn"
+                    class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded text-sm transition-colors">
+                    Send Back
+                </button>
+                <button id="acceptBtn"
+                    class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded text-sm transition-colors">
+                    Recommended
+                </button>
+            </div>
         </div>
         <!-- Comment History Section -->
         <div class=" w-1/2">
@@ -1036,8 +1388,6 @@
   const closeModal = document.getElementById('closeModal');
   const detailsButtons = document.querySelectorAll('.details-btn');
   const modalKpiDetails = document.getElementById('modalKpiDetails');
-  const achievementDropdownContainer = document.getElementById('achievementDropdownContainer');
-  const achievementDropdown = document.getElementById('achievementDropdown');
   const sendCommentBtn = document.getElementById('sendComment');
   const submitBtn = document.getElementById('submitBtn');
   const cancelBtn = document.getElementById('cancelBtn');
@@ -1053,8 +1403,7 @@
       target: "15",
       achievement: "14",
       achievementPercent: "93%",
-      score: "27.9",
-      hasNumericTarget: true
+      score: "27.9"
     },
     2: {
       kra: "Performance",
@@ -1064,8 +1413,7 @@
       target: "10",
       achievement: "9",
       achievementPercent: "90%",
-      score: "22.5",
-      hasNumericTarget: true
+      score: "22.5"
     },
     3: {
       kra: "Performance",
@@ -1075,8 +1423,7 @@
       target: "22",
       achievement: "21",
       achievementPercent: "95%",
-      score: "19",
-      hasNumericTarget: true
+      score: "19"
     },
     4: {
       kra: "Customer Satisfaction",
@@ -1084,10 +1431,9 @@
       weightage: "15",
       targetDetails: "Financial reporting process documentation",
       target: "N/A",
-      achievement: "Excellent",
+      achievement: "Very Good",
       achievementPercent: "100%",
-      score: "15",
-      hasNumericTarget: false
+      score: "15"
     },
     5: {
       kra: "Customer Satisfaction",
@@ -1097,8 +1443,7 @@
       target: "85",
       achievement: "82",
       achievementPercent: "96%",
-      score: "9.6",
-      hasNumericTarget: true
+      score: "9.6"
     }
   };
 
@@ -1107,15 +1452,6 @@
     button.addEventListener('click', function () {
       const kpiId = this.getAttribute('data-kpi-id');
       const kpi = kpiData[kpiId];
-      
-      // Show or hide achievement dropdown based on target type
-      if (kpi.target === "N/A" || !kpi.hasNumericTarget) {
-        achievementDropdownContainer.classList.remove('hidden');
-        // Set the current value in the dropdown
-        achievementDropdown.value = kpi.achievement;
-      } else {
-        achievementDropdownContainer.classList.add('hidden');
-      }
       
       // Populate modal with KPI details
       modalKpiDetails.innerHTML = `
