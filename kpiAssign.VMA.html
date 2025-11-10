@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="en"
+      x-data="{ 
+        sidebarOpen: false, 
+        darkMode: localStorage.getItem('darkMode') === 'true',
+        sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+        activeMenu: null
+      }"
+      x-init="
+        $watch('darkMode', val => {
+          localStorage.setItem('darkMode', val);
+          document.documentElement.classList.toggle('dark', val);
+        });
+        $watch('sidebarCollapsed', val => localStorage.setItem('sidebarCollapsed', val));
+        // Initialize dark mode on page load
+        if (darkMode) {
+          document.documentElement.classList.add('dark');
+        }
+      "
+      :class="{ 'dark': darkMode }">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIU Sun Light Admin Console</title>
+
+    <!-- Essential CSS & JS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'sidebar-blue': '#034ea2',
+                        'table-blue': '#2E3094',
+                        'edit-green': '#39b54a',
+                        'delete-red': '#c9252c',
+                        'dark-primary': '#22246f',
+                        'dark-secondary': '#2c2ea3',
+                        'dark-accent': '#3a3ccf',
+                    },
+                    fontFamily: {
+                        'roboto': ['Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        /* Sidebar collapse transitions */
+        .sidebar-transition {
+            transition: width 0.3s ease;
+        }
+        
+        .text-transition {
+            transition: opacity 0.2s ease;
+        }
+        
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: max-content;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 1;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Submenu styling for collapsed mode */
+        .menu-item-wrapper {
+            position: relative;
+        }
+        
+        .submenu-collapsed {
+            position: fixed;
+            left: 64px; /* Match collapsed sidebar width */
+            background: white;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 45;
+            min-width: 200px;
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-left: none;
+        }
+        
+        .dark .submenu-collapsed {
+            background: #2c2ea3;
+            border-color: #3a3ccf;
+            color: #e4e6ff;
+        }
+        
+        .submenu-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+            white-space: nowrap;
+        }
+        
+        .dark .submenu-item {
+            border-bottom-color: #3a3ccf;
+            color: #e4e6ff;
+        }
+        
+        .submenu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .submenu-item:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .dark .submenu-item:hover {
+            background-color: #3a3ccf;
+        }
+        
+        .submenu-item .material-symbols-outlined {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        /* Hide scrollbar but allow scrolling for main sidebar */
+        .no-scrollbar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+        
+        /* Active menu indicator */
+        .active-menu-indicator {
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 20px;
+            background-color: #6366f1;
+            border-radius: 2px;
+        }
+
+        /* KPI Table Styles */
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .comment-section {
+            position: relative;
+        }
+
+        .comment-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 6px;
+            font-size: 0.75rem;
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .send-btn {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background-color: #2E3094;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        .send-btn:hover {
+            background-color: #1a1c6e;
+        }
+
+        .score-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 3px;
+            font-size: 0.75rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .compact-table th,
+        .compact-table td {
+            padding: 6px 8px !important;
+        }
+
+        @media (max-width: 768px) {
+            .table-container table {
+                font-size: 0.7rem;
+            }
+
+            .compact-table th,
+            .compact-table td {
+                padding: 4px 6px !important;
+            }
+        }
+
+        .kpi-row {
+            transition: all 0.3s ease;
+        }
+
+        .kpi-row.editing {
+            background-color: #f0f9ff;
+        }
+
+        .kpi-row.saved {
+            background-color: #F7F9FB;
+        }
+
+        .editable-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 4px;
+            font-size: 0.75rem;
+        }
+
+        .editable-select {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 4px;
+            font-size: 0.75rem;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            border: none;
+            margin-right: 4px;
+        }
+
+        .add-btn {
+            background-color: #2E3094;
+            color: white;
+        }
+
+        .save-btn {
+            background-color: #39b54a;
+            color: white;
+        }
+
+        .edit-btn {
+            background-color: #2E3094;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #c9252c;
+            color: white;
+        }
+
+        .weightage-total {
+            font-weight: bold;
+            background-color: white;
+        }
+
+        .weightage-error {
+            color: #c9252c;
+            font-weight: bold;
+        }
+        
+        .kra-cell {
+            vertical-align: top;
+        }
+        
+        .target-type-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .kpi-checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .kpi-checkbox {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .kpi-text {
+            flex: 1;
+        }
+
+        /* KPI Type Styles */
+        .kpi-type-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .kpi-type-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .kpi-type-increase {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .kpi-type-decrease {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .kpi-type-text {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Dark mode specific styles with #22246f color */
+        .dark {
+            color-scheme: dark;
+        }
+        
+        .dark .bg-gray-50 {
+            background-color: #111827;
+        }
+        
+        .dark .bg-white {
+            background-color: #22246f !important;
+        }
+        
+        .dark .bg-gray-800 {
+            background-color: #22246f !important;
+        }
+        
+        .dark .bg-gray-700 {
+            background-color: #2c2ea3 !important;
+        }
+        
+        .dark .text-gray-800 {
+            color: #f9fafb;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: #3a3ccf;
+        }
+        
+        .dark .border-gray-700 {
+            border-color: #3a3ccf;
+        }
+        
+        .dark .border-gray-100 {
+            border-color: #3a3ccf;
+        }
+        
+        .dark .bg-gray-100 {
+            background-color: #2c2ea3;
+        }
+        
+        .dark .text-gray-600 {
+            color: #e4e6ff;
+        }
+        
+        .dark .text-gray-700 {
+            color: #e4e6ff;
+        }
+        
+        .dark .text-gray-200 {
+            color: #e4e6ff;
+        }
+        
+        .dark .text-gray-300 {
+            color: #e4e6ff;
+        }
+        
+        .dark .text-gray-400 {
+            color: #c7c9ff;
+        }
+        
+        .dark .hover\:text-indigo-500:hover {
+            color: #a5b4fc;
+        }
+        
+        .dark .hover\:bg-indigo-900\/40:hover {
+            background-color: #2c2ea3 !important;
+        }
+        
+        .dark .hover\:bg-gray-700:hover {
+            background-color: #2c2ea3 !important;
+        }
+        
+        /* Custom hover effects for dark mode */
+        .dark .hover\:bg-indigo-50:hover {
+            background-color: #2c2ea3 !important;
+        }
+        
+        /* Dark mode for KPI table */
+        .dark .kpi-row.saved {
+            background-color: #2c2ea3;
+        }
+        
+        .dark .kpi-row.editing {
+            background-color: #1a1c6e;
+        }
+        
+        .dark .bg-table-blue {
+            background-color: #2c2ea3;
+        }
+        
+        .dark .border-blue-500 {
+            border-color: #3a3ccf;
+        }
+        
+        .dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+            border-color: #3a3ccf;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: #3a3ccf;
+        }
+        
+        .dark .weightage-total {
+            background-color: #22246f;
+            color: #e4e6ff;
+        }
+        
+        /* Dark mode for KPI Type */
+        .dark .kpi-type-increase {
+            background-color: #065f46;
+            color: #d1fae5;
+        }
+        
+        .dark .kpi-type-decrease {
+            background-color: #991b1b;
+            color: #fee2e2;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 transition-colors duration-300"
+      x-data="{}"
+      @click="activeMenu = null">
+
+<div class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside
+            class="fixed inset-y-0 left-0 z-40 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 sidebar-transition
+             md:translate-x-0"
+            :class="sidebarCollapsed ? 'w-16' : 'w-64'"
+            :class="{ '-translate-x-full': !sidebarOpen && window.innerWidth < 768 }"
+            @click.stop>
+
+        <!-- Logo -->
+        <div class="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center">
+                <h1 class="text-lg font-bold text-indigo-600 dark:text-indigo-300"
+                    :class="sidebarCollapsed ? 'hidden' : 'block'">DIU Sun Light</h1>
+                <button
+                        @click="sidebarCollapsed = !sidebarCollapsed; activeMenu = null;"
+                        class="ml-2 text-gray-600 dark:text-gray-300 hover:text-indigo-500 p-1 rounded"
+                        :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+                    <span class="material-symbols-outlined"
+                          x-text="sidebarCollapsed ? 'chevron_right' : 'chevron_left'"></span>
+                </button>
+            </div>
+            <button class="md:hidden text-gray-600 dark:text-gray-300" @click="sidebarOpen = false">✕</button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="overflow-y-auto p-4 space-y-2 no-scrollbar">
+
+            <!-- Dashboard -->
+            <div class="menu-item-wrapper">
+                <a href="index.html"
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'dashboard' }">
+                    <span class="material-symbols-outlined mr-3">dashboard</span>
+                    <span class="text-transition"
+                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Dashboard</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Dashboard</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'dashboard'"></div>
+                </a>
+            </div>
+
+            <!-- User Management -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'user-management' ? null : 'user-management';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'user-management' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">group</span>
+                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">User Management</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">User Management</span>
+                    <div class="active-menu-indicator"
+                         x-show="sidebarCollapsed && activeMenu === 'user-management'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">person</span> Users
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">admin_panel_settings</span> Roles
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">history</span> Audit Logs
+                    </a>
+                </div>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'user-management'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">person</span>
+                        Users
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">admin_panel_settings</span>
+                        Roles
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">history</span>
+                        Audit Logs
+                    </div>
+                </div>
+            </div>
+
+            <!-- HR & Attendance -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'hr-attendance' ? null : 'hr-attendance';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'hr-attendance' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">calendar_month</span>
+                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">HR & Attendance</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">HR & Attendance</span>
+                    <div class="active-menu-indicator"
+                         x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">badge</span> Employees
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">schedule</span> Attendance
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">timer</span> Overtime
+                    </a>
+                </div>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'hr-attendance'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">badge</span>
+                        Employees
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">schedule</span>
+                        Attendance
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">timer</span>
+                        Overtime
+                    </div>
+                </div>
+            </div>
+
+            <!-- ePMS -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'epms' ? null : 'epms';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-indigo-900/40': activeMenu === 'epms' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">assignment</span>
+                        <span class="text-transition"
+                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">ePMS</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">ePMS</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'epms'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+
+                    <a href="kpiAssign.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
+                    </a>
+                    <a href="myKpi.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI
+                    </a>
+                    <a href="kpiReview.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
+                    </a>
+
+                    <a href="kpiReports.html"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">summarize</span> KPI Reports
+                    </a>
+                </div>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'epms'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <a href="kpiAssign.html"
+                           class="flex items-center text-sm py-1">
+                            <span class="material-symbols-outlined mr-2 text-base">task</span> KPI Assign
+                        </a>
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <a href="myKpi.html"
+                           class="flex items-center text-sm py-1">
+                            <span class="material-symbols-outlined mr-2 text-base">trending_up</span> My KPI
+                        </a>
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <a href="kpiReview.html"
+                           class="flex items-center text-sm py-1">
+                            <span class="material-symbols-outlined mr-2 text-base">target</span> KPI Review
+                        </a>
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <a href="kpiReports.html"
+                           class="flex items-center text-sm py-1">
+                            <span class="material-symbols-outlined">summarize</span> KPI Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payroll -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'payroll' ? null : 'payroll';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'payroll' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">payments</span>
+                        <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Payroll</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Payroll</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'payroll'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">receipt</span> Salary Processing
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">request_quote</span> Payslips
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">savings</span> Tax Management
+                    </a>
+                </div>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'payroll'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">receipt</span>
+                        Salary Processing
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">request_quote</span>
+                        Payslips
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">savings</span>
+                        Tax Management
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leave -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'leave' ? null : 'leave';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'leave' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">beach_access</span>
+                        <span class="text-transition"
+                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Leave</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Leave</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'leave'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">event_available</span> Apply Leave
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">pending_actions</span> Leave Requests
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">calendar_today</span> Leave Calendar
+                    </a>
+                </div>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'leave'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">event_available</span>
+                        Apply Leave
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">pending_actions</span>
+                        Leave Requests
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">calendar_today</span>
+                        Leave Calendar
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visit -->
+            <div x-data="{ open: false }" class="menu-item-wrapper">
+                <button
+                        @click="if (sidebarCollapsed) {
+              activeMenu = activeMenu === 'visit' ? null : 'visit';
+            } else { 
+              open = !open; 
+            }"
+                        class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                        :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'visit' }">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined mr-3">travel_explore</span>
+                        <span class="text-transition"
+                              :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Visit</span>
+                    </div>
+                    <span class="material-symbols-outlined text-sm transition-transform"
+                          :class="open ? 'rotate-180' : ''"
+                          x-show="!sidebarCollapsed">expand_more</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Visit</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'visit'"></div>
+                </button>
+
+                <!-- Expanded Mode Submenu -->
+                <div x-show="open && !sidebarCollapsed" x-collapse class="pl-10 mt-1 space-y-1">
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">person_search</span> Visitor Registration
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">meeting_room</span> Meeting Rooms
+                    </a>
+                    <a href="#"
+                       class="flex items-center text-sm py-1 hover:text-indigo-500 text-gray-600 dark:text-gray-300">
+                        <span class="material-symbols-outlined mr-2 text-base">schedule</span> Visit Schedule
+                    </a>
+                </div>
+
+                <!-- Collapsed Mode Submenu -->
+                <div x-show="sidebarCollapsed && activeMenu === 'visit'"
+                     class="submenu-collapsed"
+                     :style="`top: ${$el.parentElement.offsetTop}px;`"
+                     @click.stop>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">person_search</span>
+                        Visitor Registration
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">meeting_room</span>
+                        Meeting Rooms
+                    </div>
+                    <div class="submenu-item" @click="activeMenu = null">
+                        <span class="material-symbols-outlined">schedule</span>
+                        Visit Schedule
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports -->
+            <div class="menu-item-wrapper">
+                <a href="#"
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'reports' }">
+                    <span class="material-symbols-outlined mr-3">bar_chart</span>
+                    <span class="text-transition"
+                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Reports</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Reports</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'reports'"></div>
+                </a>
+            </div>
+
+            <!-- Settings -->
+            <div class="menu-item-wrapper">
+                <a href="#"
+                   class="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 tooltip relative"
+                   :class="{ 'bg-indigo-50 dark:bg-gray-700': activeMenu === 'settings' }">
+                    <span class="material-symbols-outlined mr-3">settings</span>
+                    <span class="text-transition"
+                          :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Settings</span>
+                    <span class="tooltip-text" x-show="sidebarCollapsed">Settings</span>
+                    <div class="active-menu-indicator" x-show="sidebarCollapsed && activeMenu === 'settings'"></div>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Footer -->
+        <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+            <button class="flex items-center w-full text-gray-700 dark:text-gray-200 tooltip">
+                <span class="material-symbols-outlined mr-2">logout</span>
+                <span class="text-transition" :class="sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'">Logout</span>
+                <span class="tooltip-text" x-show="sidebarCollapsed">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col sidebar-transition" :class="sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'">
+
+        <!-- Top Navbar -->
+        <header
+                class="flex items-center justify-between bg-white dark:bg-gray-800 shadow-sm px-4 py-3 sticky top-0 z-30 border-b border-gray-100 dark:border-gray-700">
+            <div class="flex items-center gap-2">
+                <button @click="sidebarOpen = !sidebarOpen" class="md:hidden text-gray-600 dark:text-gray-300">
+                    ☰
+                </button>
+                <input type="text" placeholder="Search..."
+                       class="hidden md:block px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm outline-none"/>
+            </div>
+
+            <!-- Right Actions -->
+            <div class="flex items-center gap-4">
+                <!-- Dark Mode Toggle -->
+                <button @click="darkMode = !darkMode" class="text-gray-600 dark:text-gray-300 hover:text-indigo-500">
+                    <span x-show="!darkMode" class="material-symbols-outlined">light_mode</span>
+                    <span x-show="darkMode" class="material-symbols-outlined">dark_mode</span>
+                </button>
+
+                <!-- Notifications -->
+                <button class="text-gray-600 dark:text-gray-300 hover:text-indigo-500">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+
+                <!-- Admin Dropdown -->
+                <div x-data="{ open: false, role: 'Admin' }" class="relative">
+                    <button @click="open = !open" @mouseenter="open = true" @mouseleave="open = false"
+                            class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-500">
+                        👤 <span>Admin</span>
+                    </button>
+
+                    <!-- Dropdown -->
+                    <div x-show="open" x-transition @mouseenter="open = true" @mouseleave="open = false"
+                         class="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
+                        <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200">
+                            Role: <span class="font-medium text-indigo-500" x-text="role"></span>
+                        </div>
+                        <a href="#" class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Profile</a>
+                        <a href="#"
+                           class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Settings</a>
+                        <a href="#" class="block px-3 py-2 text-sm hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
+            <!-- Employee Information Table -->
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-6">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Employee Information</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full compact-table">
+                        <thead>
+                            <tr class="bg-table-blue text-white">
+                                <th
+                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    Employee ID</th>
+                                <th
+                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    Employee Name</th>
+                                <th
+                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    Category</th>
+                                <th
+                                    class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                    Department</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <tr>
+                                <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                                    710003896</td>
+                                <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200 border-r border-gray-200 dark:border-gray-700">
+                                    Fazlul Alam</td>
+                                <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                                    Admin</td>
+                                <td
+                                    class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">
+                                    Software Section</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        
+            <!-- KPI Content -->
+            <div id="kpisContent" class="tab-content">
+                <!-- Table -->
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Key Performance Indicator</h3>
+                        <button id="createKraBtn"
+                            class="bg-table-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Create KRA
+                        </button>
+                    </div>
+        
+                    <div class="table-container">
+                        <table class="min-w-full compact-table" id="kpiTable">
+                            <thead>
+                                <tr class="bg-table-blue text-white">
+                                    <th rowspan="2" width="3%"
+                                        class="px-2 py-2 text-center text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                        SL</th>
+                                    <th rowspan="2" width="10%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-l border-r border-blue-500">
+                                        KRA</th>
+                                    <th width="15%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        KPI</th>
+                                    <th width="6%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Weightage</th>
+                                    <th width="8%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Target Description</th>
+                                    <th width="8%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Target (Numeric)</th>
+                                    <th width="10%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        KPI Type</th>
+                                    <th width="8%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                       KPI Direction</th>
+                                    <th width="10%"
+                                        class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider border-r border-blue-500">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+                                id="kpiTableBody">
+                                <!-- KRA data will be dynamically populated here -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="weightage-total">
+                                    <td colspan="3" class="px-2 py-2 text-right font-medium">Total Weightage:</td>
+                                    <td id="totalWeightage" class="px-2 py-2 text-center font-medium">100</td>
+                                    <td colspan="4" class="px-2 py-2 text-center">
+                                        <span id="weightageStatus" class="text-sm text-green-600">Weightage is perfectly
+                                            allocated</span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Real KRA and KPI Data with proper weightage distribution
+    const kraKpiData = [
+    {
+        id: 1,
+        name: "Career Objectives",
+        kpis: [
+            { id: 1, name: "Complete assigned tasks and responsibilities", weightage: 5, targetDescription: "Complete all assigned tasks efficiently", targetValue: "N/A", kpiType: "Individual", trend: "increase" },
+            { id: 2, name: "Ensure documentation and reporting with accuracy", weightage: 5, targetDescription: "Maintain accurate documentation", targetValue: "N/A", kpiType: "Individual", trend: "increase" },
+            { id: 3, name: "Accountability and Initiative in Task Execution", weightage: 5, targetDescription: "Take ownership of tasks", targetValue: "N/A", kpiType: "Individual", trend: "increase" },
+            { id: 4, name: "Responsiveness to Queries", weightage: 5, targetDescription: "Respond to queries promptly", targetValue: "N/A", kpiType: "Individual", trend: "increase" }
+        ]
+    },
+    {
+        id: 2,
+        name: "Technological Objectives",
+        kpis: [
+            { id: 5, name: "Use of digital tools for daily task execution", weightage: 5, targetDescription: "Utilize digital tools effectively", targetValue: "N/A", kpiType: "Departmental", trend: "increase" },
+            { id: 6, name: "Adoption of new office technologies or platforms", weightage: 5, targetDescription: "Adapt to new technologies", targetValue: "N/A", kpiType: "Departmental", trend: "increase" },
+            { id: 7, name: "Participation in IT system enhancement initiatives", weightage: 5, targetDescription: "Contribute to system improvements", targetValue: "N/A", kpiType: "Departmental", trend: "increase" },
+            { id: 8, name: "Compliance with Data Security & Confidentiality Protocols", weightage: 5, targetDescription: "Follow security protocols strictly", targetValue: "N/A", kpiType: "Organizational", trend: "increase" }
+        ]
+    },
+    {
+        id: 3,
+        name: "Innovation-Driven Strategic Objectives",
+        kpis: [
+            { id: 9, name: "Proposing new ideas to improve work efficiency", weightage: 5, targetDescription: "Suggest innovative ideas", targetValue: "N/A", kpiType: "Individual", trend: "increase" },
+            { id: 10, name: "Involvement in process automation or simplification", weightage: 5, targetDescription: "Participate in automation projects", targetValue: "N/A", kpiType: "Departmental", trend: "increase" },
+            { id: 11, name: "Participation in institutional development planning", weightage: 5, targetDescription: "Contribute to institutional growth", targetValue: "N/A", kpiType: "Organizational", trend: "increase" }
+        ]
+    },
+    {
+        id: 4,
+        name: "Personal Development Objectives",
+        kpis: [
+            { id: 12, name: "Self-learning initiatives and certifications", weightage: 5, targetDescription: "Pursue continuous learning", targetValue: "N/A", kpiType: "Individual", trend: "increase" },
+            { id: 13, name: "TNA based training", weightage: 5, targetDescription: "Complete training needs analysis", targetValue: "N/A", kpiType: "Individual", trend: "increase" }
+        ]
+    },
+    {
+        id: 5,
+        name: "Behavioral Objectives",
+        kpis: [
+            { id: 14, name: "Maintaining professional etiquette and discipline", weightage: 5, targetDescription: "Maintain professional conduct", targetValue: "N/A", kpiType: "Individual", trend: "increase" },
+            { id: 15, name: "Collaboration with team and stakeholders", weightage: 5, targetDescription: "Work collaboratively with others", targetValue: "N/A", kpiType: "Departmental", trend: "increase" },
+            { id: 16, name: "Participation in Team Meetings & Briefings", weightage: 5, targetDescription: "Actively participate in meetings", targetValue: "N/A", kpiType: "Departmental", trend: "increase" },
+            { id: 17, name: "Clarity in Written and Verbal Communication", weightage: 5, targetDescription: "Communicate clearly and effectively", targetValue: "N/A", kpiType: "Individual", trend: "increase" },
+            { id: 18, name: "Code of Conduct (CoC)", weightage: 5, targetDescription: "Adhere to code of conduct", targetValue: "N/A", kpiType: "Organizational", trend: "increase" }
+        ]
+    },
+    {
+        id: 6,
+        name: "Management Objectives",
+        kpis: [
+            { id: 19, name: "Resource planning and proper use of office assets", weightage: 5, targetDescription: "Manage resources efficiently", targetValue: "N/A", kpiType: "Departmental", trend: "increase" },
+            { id: 20, name: "Monitoring and improving admin service delivery", weightage: 5, targetDescription: "Enhance service delivery", targetValue: "N/A", kpiType: "Departmental", trend: "increase" }
+        ]
+    }
+];
+
+    // KPI Management Functionality
+    let kraCounter = kraKpiData.length;
+    let kpiCounter = kraKpiData.reduce((total, kra) => total + kra.kpis.length, 0);
+    const kpiTableBody = document.getElementById('kpiTableBody');
+    const createKraBtn = document.getElementById('createKraBtn');
+    const totalWeightageElement = document.getElementById('totalWeightage');
+    const weightageStatusElement = document.getElementById('weightageStatus');
+
+    // Function to render KRA and KPI data
+    function renderKraKpiData() {
+        kpiTableBody.innerHTML = '';
+
+        kraKpiData.forEach((kra, kraIndex) => {
+            kra.kpis.forEach((kpi, kpiIndex) => {
+                const isFirstKpi = kpiIndex === 0;
+                const row = document.createElement('tr');
+                row.className = 'kpi-row saved';
+                row.setAttribute('data-kra-id', kra.id);
+                row.setAttribute('data-kpi-id', kpi.id);
+
+                // Determine KPI Type display
+                let kpiTypeDisplay = '';
+                if (kpi.trend === 'increase') {
+                    kpiTypeDisplay = `
+                        <div class="kpi-type-container">
+                            <div class="kpi-type-icon kpi-type-increase">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                            <span class="kpi-type-text">Increase</span>
+                        </div>
+                    `;
+                } else {
+                    kpiTypeDisplay = `
+                        <div class="kpi-type-container">
+                            <div class="kpi-type-icon kpi-type-decrease">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <span class="kpi-type-text">Decrease</span>
+                        </div>
+                    `;
+                }
+
+                row.innerHTML = `
+                    ${isFirstKpi ? `
+                    <td rowspan="${kra.kpis.length}" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-center kra-cell">
+                        <div class="flex items-center justify-center h-full">
+                            ${kraIndex + 1}
+                        </div>
+                    </td>
+                    <td rowspan="${kra.kpis.length}" class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-left kra-cell">
+                        <div class="h-full">
+                            ${kra.name}
+                        </div>
+                    </td>
+                    ` : ''}
+                    <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                        <div class="kpi-checkbox-container">
+                            <input type="checkbox" class="kpi-checkbox" checked disabled>
+                            <span class="kpi-text">${kpi.name}</span>
+                        </div>
+                    </td>
+                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                        ${kpi.weightage}
+                    </td>
+                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                        ${kpi.targetDescription}
+                    </td>
+                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                        ${kpi.targetValue}
+                    </td>
+                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                        ${kpi.kpiType}
+                    </td>
+                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                        ${kpiTypeDisplay}
+                    </td>
+                    <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                        <button class="action-btn edit-btn" data-kpi-id="${kpi.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete-btn" data-kpi-id="${kpi.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+
+                kpiTableBody.appendChild(row);
+            });
+        });
+
+        // Initialize event listeners for the rendered rows
+        initializeEventListeners();
+    }
+
+    // Initialize event listeners
+    function initializeEventListeners() {
+        // Edit buttons
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const kpiId = parseInt(this.getAttribute('data-kpi-id'));
+                const row = this.closest('tr');
+                const kraId = parseInt(row.getAttribute('data-kra-id'));
+                editKpiRow(row, kraId, kpiId);
+            });
+        });
+
+        // Delete buttons
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const kpiId = parseInt(this.getAttribute('data-kpi-id'));
+                const row = this.closest('tr');
+                const kraId = parseInt(row.getAttribute('data-kra-id'));
+
+                // Remove from data array
+                const kra = kraKpiData.find(k => k.id === kraId);
+                if (kra) {
+                    const kpiIndex = kra.kpis.findIndex(k => k.id === kpiId);
+                    if (kpiIndex > -1) {
+                        kra.kpis.splice(kpiIndex, 1);
+                    }
+
+                    // If no more KPIs in this KRA, remove the KRA too
+                    if (kra.kpis.length === 0) {
+                        const kraIndex = kraKpiData.findIndex(k => k.id === kraId);
+                        if (kraIndex > -1) {
+                            kraKpiData.splice(kraIndex, 1);
+                        }
+                    }
+                }
+
+                // Re-render the table
+                renderKraKpiData();
+                updateWeightageTotal();
+            });
+        });
+
+        // Checkbox functionality
+        document.querySelectorAll('.kpi-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const row = this.closest('tr');
+                const targetCell = row.querySelector('td:nth-child(6)');
+
+                if (this.checked) {
+                    targetCell.textContent = 'N/A';
+                } else {
+                    targetCell.textContent = 'N/A';
+                }
+            });
+        });
+    }
+
+    // Create KRA button functionality
+    createKraBtn.addEventListener('click', function () {
+        kraCounter++;
+        const kraId = kraCounter;
+
+        // Create a new KRA row
+        const kraRow = document.createElement('tr');
+        kraRow.className = 'kpi-row editing';
+        kraRow.setAttribute('data-kra-id', kraId);
+
+        kraRow.innerHTML = `
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-center kra-cell">
+                <div class="flex items-center justify-center h-full">
+                    ${kraCounter}
+                </div>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-left kra-cell">
+                <input type="text" class="editable-input" value="New KRA" data-field="kra">
+            </td>
+            <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                <div class="kpi-checkbox-container">
+                    <input type="checkbox" class="kpi-checkbox" checked>
+                    <input type="text" class="editable-input kpi-text" placeholder="Enter KPI" data-field="kpi">
+                </div>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="number" class="editable-input" placeholder="Weightage" data-field="weightage" min="0" max="100" value="10">
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="text" class="editable-input" placeholder="Target description" data-field="target-word">
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="text" class="editable-input" placeholder="Numeric value" data-field="target" value="N/A" disabled>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <select class="editable-select" data-field="kpi-category">
+                    <option value="Organizational">Organizational</option>
+                    <option value="Departmental">Departmental</option>
+                    <option value="Individual" selected>Individual</option>
+                </select>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <select class="editable-select" data-field="kpi-type">
+                    <option value="increase" selected>Increase</option>
+                    <option value="decrease">Decrease</option>
+                </select>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <button class="action-btn add-btn" data-kra-id="${kraId}">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="action-btn save-btn" data-kra-id="${kraId}">
+                    <i class="fas fa-save"></i>
+                </button>
+                <button class="action-btn cancel-btn" data-kra-id="${kraId}">
+                    <i class="fas fa-times"></i>
+                </button>
+            </td>
+        `;
+
+        kpiTableBody.appendChild(kraRow);
+
+        // Add event listeners for the new row
+        addEventListenersToNewRow(kraRow, kraId);
+        updateWeightageTotal();
+    });
+
+    // Add event listeners to new row
+    function addEventListenersToNewRow(row, kraId) {
+        // Checkbox change
+        const kpiCheckbox = row.querySelector('.kpi-checkbox');
+        const targetInput = row.querySelector('input[data-field="target"]');
+
+        kpiCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                targetInput.disabled = false;
+                targetInput.placeholder = 'Target value';
+                targetInput.value = 'N/A';
+            } else {
+                targetInput.disabled = true;
+                targetInput.value = 'N/A';
+            }
+        });
+
+        // Save button
+        const saveBtn = row.querySelector('.save-btn');
+        saveBtn.addEventListener('click', function () {
+            saveKpiRow(row, kraId);
+        });
+
+        // Cancel button
+        const cancelBtn = row.querySelector('.cancel-btn');
+        cancelBtn.addEventListener('click', function () {
+            row.remove();
+            updateWeightageTotal();
+        });
+
+        // Add button
+        const addBtn = row.querySelector('.add-btn');
+        addBtn.addEventListener('click', function () {
+            addKpiToKra(kraId);
+        });
+    }
+
+    // Add KPI to existing KRA
+    function addKpiToKra(kraId) {
+        kpiCounter++;
+        const kraRows = document.querySelectorAll(`tr[data-kra-id="${kraId}"]`);
+        const kraRow = kraRows[0];
+
+        const kpiRow = document.createElement('tr');
+        kpiRow.className = 'kpi-row editing';
+        kpiRow.setAttribute('data-kra-id', kraId);
+        kpiRow.setAttribute('data-kpi-id', kpiCounter);
+
+        kpiRow.innerHTML = `
+            <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                <div class="kpi-checkbox-container">
+                    <input type="checkbox" class="kpi-checkbox" checked>
+                    <input type="text" class="editable-input kpi-text" placeholder="Enter KPI" data-field="kpi">
+                </div>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="number" class="editable-input" placeholder="Weightage" data-field="weightage" min="0" max="100" value="10">
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="text" class="editable-input" placeholder="Target description" data-field="target-word">
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <input type="text" class="editable-input" placeholder="Target value" data-field="target" value="N/A" disabled>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <select class="editable-select" data-field="kpi-category">
+                    <option value="Organizational">Organizational</option>
+                    <option value="Departmental">Departmental</option>
+                    <option value="Individual" selected>Individual</option>
+                </select>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <select class="editable-select" data-field="kpi-type">
+                    <option value="increase" selected>Increase</option>
+                    <option value="decrease">Decrease</option>
+                </select>
+            </td>
+            <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                <button class="action-btn save-btn" data-kpi-id="${kpiCounter}">
+                    <i class="fas fa-save"></i>
+                </button>
+                <button class="action-btn cancel-btn" data-kpi-id="${kpiCounter}">
+                    <i class="fas fa-times"></i>
+                </button>
+            </td>
+        `;
+
+        const lastKraRow = kraRows[kraRows.length - 1];
+        lastKraRow.parentNode.insertBefore(kpiRow, lastKraRow.nextSibling);
+
+        updateKraRowspan(kraId);
+        addEventListenersToNewKpiRow(kpiRow, kraId, kpiCounter);
+        updateWeightageTotal();
+    }
+
+    // Add event listeners to new KPI row
+    function addEventListenersToNewKpiRow(row, kraId, kpiId) {
+        // Checkbox change
+        const kpiCheckbox = row.querySelector('.kpi-checkbox');
+        const targetInput = row.querySelector('input[data-field="target"]');
+
+        kpiCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                targetInput.disabled = false;
+                targetInput.placeholder = 'Target value';
+                targetInput.value = 'N/A';
+            } else {
+                targetInput.disabled = true;
+                targetInput.value = 'N/A';
+            }
+        });
+
+        // Save button
+        const saveBtn = row.querySelector('.save-btn');
+        saveBtn.addEventListener('click', function () {
+            saveKpiRow(row, kraId, kpiId);
+        });
+
+        // Cancel button
+        const cancelBtn = row.querySelector('.cancel-btn');
+        cancelBtn.addEventListener('click', function () {
+            row.remove();
+            updateKraRowspan(kraId);
+            updateWeightageTotal();
+        });
+    }
+
+    // Update rowspan for KRA
+    function updateKraRowspan(kraId) {
+        const kraRows = document.querySelectorAll(`tr[data-kra-id="${kraId}"]`);
+        const firstRow = kraRows[0];
+
+        if (firstRow) {
+            const slCell = firstRow.querySelector('td:nth-child(1)');
+            const kraCell = firstRow.querySelector('td:nth-child(2)');
+
+            if (slCell) slCell.setAttribute('rowspan', kraRows.length);
+            if (kraCell) kraCell.setAttribute('rowspan', kraRows.length);
+        }
+    }
+
+    // Save KPI row
+    function saveKpiRow(row, kraId, kpiId = null) {
+        const isNewKra = !kpiId;
+        const inputs = row.querySelectorAll('input[data-field], select[data-field]');
+        let hasErrors = false;
+
+        // Validate inputs
+        inputs.forEach(input => {
+            if (input.hasAttribute('required') && !input.value.trim() && !input.disabled) {
+                input.style.borderColor = '#c9252c';
+                hasErrors = true;
+            } else {
+                input.style.borderColor = '#d1d5db';
+            }
+        });
+
+        if (hasErrors) return;
+
+        // Get values
+        const kraValue = row.querySelector('input[data-field="kra"]') ?
+            row.querySelector('input[data-field="kra"]').value :
+            row.querySelector('td:nth-child(2)').textContent;
+
+        const kpiValue = row.querySelector('input[data-field="kpi"]').value;
+        const weightageValue = row.querySelector('input[data-field="weightage"]').value || "10";
+        const targetWordValue = row.querySelector('input[data-field="target-word"]').value;
+        const targetValue = "N/A"; // Always set to N/A
+        const kpiCategoryValue = row.querySelector('select[data-field="kpi-category"]').value;
+        const kpiTypeValue = row.querySelector('select[data-field="kpi-type"]').value;
+        const isChecked = row.querySelector('.kpi-checkbox').checked;
+
+        // Update data array
+        if (isNewKra) {
+            // Add new KRA to data array
+            const newKra = {
+                id: kraId,
+                name: kraValue,
+                kpis: [{
+                    id: kpiCounter + 1,
+                    name: kpiValue,
+                    weightage: parseInt(weightageValue),
+                    targetDescription: targetWordValue,
+                    targetValue: targetValue,
+                    kpiType: kpiCategoryValue,
+                    trend: kpiTypeValue
+                }]
+            };
+            kraKpiData.push(newKra);
+        } else {
+            // Add new KPI to existing KRA
+            const kra = kraKpiData.find(k => k.id === kraId);
+            if (kra) {
+                kra.kpis.push({
+                    id: kpiId,
+                    name: kpiValue,
+                    weightage: parseInt(weightageValue),
+                    targetDescription: targetWordValue,
+                    targetValue: targetValue,
+                    kpiType: kpiCategoryValue,
+                    trend: kpiTypeValue
+                });
+            }
+        }
+
+        // Re-render the table
+        renderKraKpiData();
+        updateWeightageTotal();
+    }
+
+    // Edit KPI row
+    function editKpiRow(row, kraId, kpiId) {
+        const kra = kraKpiData.find(k => k.id === kraId);
+        const kpi = kra?.kpis.find(k => k.id === kpiId);
+
+        if (!kpi) return;
+
+        const cells = row.cells;
+        const isFirstKpi = row.querySelector('td:nth-child(1)') !== null;
+
+        row.className = 'kpi-row editing';
+
+        if (isFirstKpi) {
+            row.innerHTML = `
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-center kra-cell">
+                    <div class="flex items-center justify-center h-full">
+                        ${kraId}
+                    </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 align-top border-l border-r border-gray-200 dark:border-gray-700 text-left kra-cell">
+                    <input type="text" class="editable-input" value="${kra.name}" data-field="kra">
+                </td>
+                <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                    <div class="kpi-checkbox-container">
+                        <input type="checkbox" class="kpi-checkbox" checked>
+                        <input type="text" class="editable-input kpi-text" value="${kpi.name}" data-field="kpi">
+                    </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="number" class="editable-input" value="${kpi.weightage}" data-field="weightage" min="0" max="100">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="text" class="editable-input" value="${kpi.targetDescription}" data-field="target-word">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="text" class="editable-input" value="${kpi.targetValue}" data-field="target" disabled>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <select class="editable-select" data-field="kpi-category">
+                        <option value="Organizational" ${kpi.kpiType === 'Organizational' ? 'selected' : ''}>Organizational</option>
+                        <option value="Departmental" ${kpi.kpiType === 'Departmental' ? 'selected' : ''}>Departmental</option>
+                        <option value="Individual" ${kpi.kpiType === 'Individual' ? 'selected' : ''}>Individual</option>
+                    </select>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <select class="editable-select" data-field="kpi-type">
+                        <option value="increase" ${kpi.trend === 'increase' ? 'selected' : ''}>Increase</option>
+                        <option value="decrease" ${kpi.trend === 'decrease' ? 'selected' : ''}>Decrease</option>
+                    </select>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <button class="action-btn add-btn" data-kra-id="${kraId}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="action-btn save-btn" data-kra-id="${kraId}">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button class="action-btn cancel-btn" data-kra-id="${kraId}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
+            `;
+        } else {
+            row.innerHTML = `
+                <td class="px-2 py-2 text-sm font-medium text-gray-900 dark:text-gray-200 border-b border-r border-gray-200 dark:border-gray-700">
+                    <div class="kpi-checkbox-container">
+                        <input type="checkbox" class="kpi-checkbox" checked>
+                        <input type="text" class="editable-input kpi-text" value="${kpi.name}" data-field="kpi">
+                    </div>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="number" class="editable-input" value="${kpi.weightage}" data-field="weightage" min="0" max="100">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="text" class="editable-input" value="${kpi.targetDescription}" data-field="target-word">
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <input type="text" class="editable-input" value="${kpi.targetValue}" data-field="target" disabled>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <select class="editable-select" data-field="kpi-category">
+                        <option value="Organizational" ${kpi.kpiType === 'Organizational' ? 'selected' : ''}>Organizational</option>
+                        <option value="Departmental" ${kpi.kpiType === 'Departmental' ? 'selected' : ''}>Departmental</option>
+                        <option value="Individual" ${kpi.kpiType === 'Individual' ? 'selected' : ''}>Individual</option>
+                    </select>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <select class="editable-select" data-field="kpi-type">
+                        <option value="increase" ${kpi.trend === 'increase' ? 'selected' : ''}>Increase</option>
+                        <option value="decrease" ${kpi.trend === 'decrease' ? 'selected' : ''}>Decrease</option>
+                    </select>
+                </td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700">
+                    <button class="action-btn save-btn" data-kpi-id="${kpiId}">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button class="action-btn cancel-btn" data-kpi-id="${kpiId}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
+            `;
+        }
+
+        addEventListenersToNewRow(row, kraId);
+        updateWeightageTotal();
+    }
+
+    // Update weightage total
+    function updateWeightageTotal() {
+        const totalWeightage = kraKpiData.reduce((total, kra) => {
+            return total + kra.kpis.reduce((kraTotal, kpi) => kraTotal + kpi.weightage, 0);
+        }, 0);
+
+        totalWeightageElement.textContent = totalWeightage;
+
+        if (totalWeightage === 100) {
+            weightageStatusElement.textContent = "Weightage is perfectly allocated";
+            weightageStatusElement.className = "text-sm text-green-600";
+        } else if (totalWeightage < 100) {
+            weightageStatusElement.textContent = `Weightage is under-allocated by ${100 - totalWeightage}%`;
+            weightageStatusElement.className = "text-sm text-yellow-600";
+        } else {
+            weightageStatusElement.textContent = `Weightage is over-allocated by ${totalWeightage - 100}%`;
+            weightageStatusElement.className = "text-sm text-red-600";
+        }
+    }
+
+    // Initial render
+    renderKraKpiData();
+    updateWeightageTotal();
+</script>
+
+</body>
+</html>
